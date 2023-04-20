@@ -1,0 +1,17 @@
+---
+- name: Get managed disks
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Get facts for all managed disks
+      register: r_disk_info
+      azure.azcollection.azure_rm_manageddisk_info:
+
+    - name: Output disk facts
+      loop: "{{ r_disk_info.ansible_info.azure_managed_disk }}"
+      loop_control:
+        loop_var: disk
+        label: "{{ disk.name }}"
+      ansible.builtin.debug:
+        var: disk

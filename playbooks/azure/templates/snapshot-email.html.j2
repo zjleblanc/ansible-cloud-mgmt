@@ -1,0 +1,49 @@
+<html>
+    <head>
+        <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 50%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #dddddd;
+        }
+        </style>
+    </head>
+    <body>
+        <h2>Snapshots owned by {{ owner_email }} past retention date:</h2>
+        <p><i>Scanned on {{ snapshot_scan_date }}</i></p>
+        <table>
+        <tr>
+            <th>Disk Name</th>
+            <th>Snapshot Name</th>
+            <th>Created Date</th>
+            <th>Age (days)</th>
+            <th>Retention (days)</th>
+            <th>Disk Size (GB)</th>
+            <th>SKU</th>
+            <th>Location</th>
+        </tr>
+        {% for snap in owner_snapshots %}
+        <tr>
+            <td>{{ snap.properties.creationData.sourceResourceId.split('/')[-1] }}</td>
+            <td>{{ snap.name }}</td>
+            <td>{{ snap.properties.timeCreated }}</td>
+            <td>{{ snap.age }}</td>
+            <td>{{ snap.tags.retention }}</td>
+            <td>{{ snap.properties.diskSizeGB }}</td>
+            <td>{{ snap.sku.name }}</td>
+            <td>{{ snap.location }}</td>
+        </tr>
+        {% endfor %}
+        </table>
+    </body>
+</html>

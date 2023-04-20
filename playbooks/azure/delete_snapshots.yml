@@ -1,0 +1,32 @@
+---
+- name: Delete snapshots
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    scan_offset_days: 35
+
+  tasks:
+    - name: Get snapshots
+      register: r_snapshot_info
+      azure.azcollection.azure_rm_resource_info:
+        provider: compute
+        resource_type: snapshots
+
+    # - name: Debug snapshot info
+    #   loop: "{{ r_snapshot_info.response | past_retention(scan_offset_days) }}"
+    #   loop_control:
+    #     loop_var: snapshot
+    #     label: "{{ snapshot.name }}"
+    #   ansible.builtin.debug:
+    #     var: snapshot
+
+    - name: Delete snapshot
+      loop: "{{ r_snapshot_info.response | past_retention(scan_offset_days | int) }}"
+      loop_control:
+        loop_var: snapshot
+        label: "{{ snapshot.name }}"
+      azure.azcollection.azure_rm_snapshot:
+        resource_group: "{{ snapshot.id.split('/')[4] }}"
+        name: "{{ snapshot.name }}"
+        state: absent

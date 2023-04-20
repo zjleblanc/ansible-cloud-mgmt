@@ -1,0 +1,25 @@
+---
+- name: Set snapshot date
+  ansible.builtin.set_fact:
+    az_disk_snapshot_date: "{{ lookup('pipe', 'date +%Y%m%d-%H%M%S') }}"
+
+- name: Snapshot disk
+  register: r_disk_snapshot
+  azure.azcollection.azure_rm_snapshot:
+    resource_group: "{{ disk.id.split('/')[4] }}"
+    name: "{{ disk.name }}-{{ az_disk_snapshot_date }}"
+    location: "{{ disk.location }}"
+    creation_data:
+      create_option: Copy
+      source_id: "{{ disk.id }}"
+
+- name: Tag snapshot
+  ansible.builtin.shell: |
+    az snapshot update --resource-group {{ r_disk_snapshot.id.split('/')[4] }} \
+      --name "{{ r_disk_snapshot.id.split('/')[-1] }}" \
+      --set tags.environment={{ disk.tags.environment | default('UNK') }} \
+      --set tags.retention={{ disk.tags.retention | default('30d') }} \
+      --set tags.source={{ disk.name }} \
+      --set tags.owner={{ disk.tags.owner }} \
+      --set tags.createdOn={{ az_disk_snapshot_date }} \
+      --set tags.createdBy=ansible

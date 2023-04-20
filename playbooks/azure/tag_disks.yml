@@ -1,0 +1,22 @@
+---
+- name: Tag managed disks
+  hosts: localhost
+  gather_facts: false
+
+  vars_files:
+    - "{{ playbook_dir }}/vars/disk_tags.yml"
+
+  tasks:
+    - name: Get facts for all managed disks
+      register: r_disk_info
+      azure.azcollection.azure_rm_manageddisk_info:
+
+    - name: Tag disks
+      loop: "{{ r_disk_info.ansible_info.azure_managed_disk }}"
+      loop_control:
+        loop_var: disk
+        label: "{{ disk.name }}"
+      azure.azcollection.azure_rm_manageddisk:
+        name: "{{ disk.name }}"
+        resource_group: "{{ disk.id.split('/')[4] }}"
+        tags: "{{ disk_tags[disk.name] }}"

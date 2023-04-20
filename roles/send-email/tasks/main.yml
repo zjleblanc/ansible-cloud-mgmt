@@ -1,0 +1,23 @@
+---
+# tasks file for send-email
+# dapd dhed bfwu dmdy
+- name: Check for required params
+  ansible.builtin.assert:
+    that:
+      - email_smtp_to_address is defined
+      - email_smtp_username is defined
+      - email_smtp_password is defined
+
+- name: Sending notification email
+  ansible.builtin.mail:
+    host: "{{ email_smtp_server }}"
+    port: "{{ email_smtp_server_port }}"
+    secure: try
+    from: "{{ email_smtp_from_address }}"
+    to: "{{ email_smtp_to_address }}"
+    subject: "{{ email_smtp_subject }}"
+    body: "{{ email_smtp_body }}"
+    subtype: "{{ email_smtp_subtype }}"
+    headers: "{{ email_headers | default(omit) }}"
+    username: "{{ email_smtp_username }}"
+    password: "{{ email_smtp_password }}"

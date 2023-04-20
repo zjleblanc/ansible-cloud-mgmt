@@ -1,0 +1,24 @@
+disk_tags:
+  dev-disk-1:
+    environment: dev
+    retention: 30d
+    owner: zleblanc+disk1@redhat.com
+  dev-disk-2:
+    environment: dev
+    retention: 35d
+    owner: zleblanc+disk2@redhat.com
+  dev-disk-3:
+    environment: dev
+    owner: zleblanc+disk3@redhat.com
+  prod-disk-1:
+    environment: prod
+    retention: 40d
+    owner: zleblanc+disk1@redhat.com
+  prod-disk-2:
+    environment: prod
+    retention: 40d
+    owner: zleblanc+disk2@redhat.com
+  prod-disk-3:
+    environment: prod
+    retention: 45d
+    owner: zleblanc+disk3@redhat.com

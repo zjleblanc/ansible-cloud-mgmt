@@ -1,0 +1,30 @@
+---
+- name: Tag snapshots
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Get snapshots
+      register: r_snapshot_info
+      azure.azcollection.azure_rm_resource_info:
+        provider: compute
+        resource_type: snapshots
+
+    - name: Debug snapshot info
+      loop: "{{ r_snapshot_info.response }}"
+      loop_control:
+        loop_var: snapshot
+        label: "{{ snapshot.name }}"
+      ansible.builtin.debug:
+        var: snapshot
+
+    - name: Tag snapshot
+      loop: "{{ r_snapshot_info.response }}"
+      loop_control:
+        loop_var: snapshot
+        label: "{{ snapshot.name }}"
+      changed_when: true
+      ansible.builtin.shell: |
+        az snapshot update --resource-group {{ snapshot.id.split('/')[4] }} \
+          --name "{{ snapshot.name }}" \
+          --set tags.createdBy=ansible

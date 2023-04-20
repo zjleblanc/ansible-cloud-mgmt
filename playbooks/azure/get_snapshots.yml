@@ -1,0 +1,33 @@
+---
+- name: Get snapshots
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    scan_offset_days: 45
+
+  vars_files:
+    - "{{ playbook_dir }}/../../vaulted/email_secrets.yml"
+
+  tasks:
+    - name: Get snapshots
+      register: r_snapshot_info
+      azure.azcollection.azure_rm_resource_info:
+        provider: compute
+        resource_type: snapshots
+
+    - name: Group expired snapshots by owner
+      ansible.builtin.set_fact:
+        snapshots_grouped_by_owner: "{{ r_snapshot_info.response | past_retention(scan_offset_days|int) | groupby('tags.owner') }}"
+        snapshot_scan_date: "{{ scan_offset_days | date_offset }}"
+
+    - name: Send owner email notification with snapshot details
+      loop: "{{ snapshots_grouped_by_owner }}"
+      loop_control:
+        loop_var: snapshot
+        label: "{{ snapshot[0] }}"
+      ansible.builtin.include_tasks:
+        file: tasks/send_snapshot_owner_email.yml
+      vars:
+        owner_email: "{{ snapshot[0] }}"
+        owner_snapshots: "{{ snapshot[1] }}"
