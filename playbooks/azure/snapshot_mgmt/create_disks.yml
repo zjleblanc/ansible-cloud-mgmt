@@ -7,6 +7,17 @@
     - "{{ playbook_dir }}/vars/disk_tags.yml"
 
   tasks:
+    - name: Create resource groups
+      loop:
+        - dev-rg
+        - prod-rg
+      azure.azcollection.azure_rm_resourcegroup:
+        name: "{{ item }}"
+        location: southcentralus
+        tags:
+          createdBy: ansible
+          environment: "{{ item.split('-')[0] }}"
+
     - name: Tag disks
       loop: "{{ disk_tags | dict2items }}"
       loop_control:
