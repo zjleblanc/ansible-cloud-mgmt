@@ -1,0 +1,19 @@
+---
+- name: Create managed disks
+  hosts: localhost
+  gather_facts: false
+
+  vars_files:
+    - "{{ playbook_dir }}/vars/disk_tags.yml"
+
+  tasks:
+    - name: Tag disks
+      loop: "{{ disk_tags | dict2items }}"
+      loop_control:
+        loop_var: disk
+        label: "{{ disk.key }}"
+      azure.azcollection.azure_rm_manageddisk:
+        name: "{{ disk.key }}"
+        resource_group: "{{ disk.value.environment }}-rg"
+        tags: "{{ disk.value }}"
+        state: present
