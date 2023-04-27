@@ -2,6 +2,8 @@
 
 This directory contains playbooks to demonstrate managing disks, and their respective snapshots, in Azure.
 
+[Example E-mail Reports](https://reports.autodotes.com/cloud/snapshot-mgmt/)
+
 ### objectives:
 - create disks with tags
 - snapshot disks

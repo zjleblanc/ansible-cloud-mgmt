@@ -32,3 +32,16 @@
       vars:
         owner_email: "{{ snapshot[0] }}"
         owner_snapshots: "{{ snapshot[1] }}"
+
+    # - name: Publish report for demo purposes
+    #   delegate_to: report-server
+    #   loop: "{{ snapshots_grouped_by_owner }}"
+    #   loop_control:
+    #     loop_var: snapshot
+    #     label: "{{ snapshot[0] }}"
+    #   ansible.builtin.template:
+    #     src: snapshot-email.html.j2
+    #     dest: "/var/www/reports.autodotes.com/cloud/snapshot-mgmt/{{ snapshot[0] }}.html"
+    #   vars:
+    #     owner_email: "{{ snapshot[0] }}"
+    #     owner_snapshots: "{{ snapshot[1] }}"
