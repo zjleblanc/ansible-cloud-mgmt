@@ -18,13 +18,15 @@
           createdBy: ansible
           environment: "{{ item.split('-')[0] }}"
 
-    - name: Tag disks
+    - name: Create disks
       loop: "{{ disk_tags | dict2items }}"
       loop_control:
         loop_var: disk
         label: "{{ disk.key }}"
       azure.azcollection.azure_rm_manageddisk:
+        disk_size_gb: "{{ disk.value.disk_size_gb | default('4') | int }}"
         name: "{{ disk.key }}"
         resource_group: "{{ disk.value.environment }}-rg"
         tags: "{{ disk.value }}"
         state: present
+        storage_account_type: "{{ disk.value.storage_account_type | default('Standard_LRS') }}"

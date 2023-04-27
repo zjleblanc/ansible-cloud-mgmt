@@ -11,14 +11,20 @@ disk_tags:
     environment: dev
     owner: zleblanc+disk3@redhat.com
   prod-disk-1:
+    disk_size_gb: "8"
     environment: prod
     retention: 40d
     owner: zleblanc+disk1@redhat.com
+    storage_account_type: Premium_LRS
   prod-disk-2:
+    disk_size_gb: "8"
     environment: prod
     retention: 40d
     owner: zleblanc+disk2@redhat.com
+    storage_account_type: Premium_LRS
   prod-disk-3:
+    disk_size_gb: "8"
     environment: prod
     retention: 45d
     owner: zleblanc+disk3@redhat.com
+    storage_account_type: Premium_LRS

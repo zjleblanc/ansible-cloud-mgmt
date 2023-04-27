@@ -30,6 +30,7 @@
             <th>Retention (days)</th>
             <th>Disk Size (GB)</th>
             <th>SKU</th>
+            <th>Cost</th>
             <th>Location</th>
         </tr>
         {% for snap in owner_snapshots %}
@@ -41,6 +42,7 @@
             <td>{{ snap.tags.retention }}</td>
             <td>{{ snap.properties.diskSizeGB }}</td>
             <td>{{ snap.sku.name }}</td>
+            <td>${{ (snap.properties.diskSizeGB | int) * (snapshot_costs[snap.sku.name]) }}</td>
             <td>{{ snap.location }}</td>
         </tr>
         {% endfor %}

@@ -7,7 +7,8 @@
     scan_offset_days: 45
 
   vars_files:
-    - "{{ playbook_dir }}/../../vaulted/email_secrets.yml"
+    - "{{ playbook_dir }}/../../../vaulted/email_secrets.yml"
+    - "{{ playbook_dir }}/vars/cost_lookup.yml"
 
   tasks:
     - name: Get snapshots
