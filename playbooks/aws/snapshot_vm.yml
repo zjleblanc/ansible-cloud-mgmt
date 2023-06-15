@@ -33,3 +33,7 @@
         instance_ids: "{{ instance_id }}"
         state: started
         wait: true
+
+    - name: Wait for ec2 to become reachable
+      delegate_to: "{{ instance_hostname }}"
+      ansible.builtin.wait_for_connection:
