@@ -3,6 +3,12 @@
   connection: local
   gather_facts: false
 
+  pre_tasks:
+    - name: Ensure boto3 is installed
+      ansible.builtin.pip:
+        name: boto3
+        state: present
+
   tasks:
     - name: Stop ec2 instance
       amazon.aws.ec2_instance:
