@@ -1,6 +1,5 @@
 - name: Snapshot ec2 volume
-  hosts: aws_ec2
-  connection: local
+  hosts: localhost
   gather_facts: false
 
   pre_tasks:
@@ -8,6 +7,7 @@
       ansible.builtin.pip:
         name: boto3
         state: present
+        executable: /usr/libexec/platform-pip
 
   tasks:
     - name: Stop ec2 instance
@@ -35,7 +35,7 @@
       register: r_snapshots
       amazon.aws.ec2_snapshot_info:
         filters:
-          "tag:Name": "{{ inventory_hostname }}"
+          "tag:Name": "{{ instance_hostname }}"
 
     - name: Create volumes from snapshots
       amazon.aws.ec2_vol:

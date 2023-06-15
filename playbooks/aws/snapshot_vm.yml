@@ -1,6 +1,5 @@
 - name: Snapshot ec2 volume
-  hosts: aws_ec2
-  connection: local
+  hosts: localhost
   gather_facts: false
 
   pre_tasks:
