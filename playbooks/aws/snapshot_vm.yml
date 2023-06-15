@@ -24,3 +24,9 @@
       amazon.aws.ec2_snapshot:
         volume_id: "{{ volume.id }}"
         description: "Snapshot taken by ansible on {{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
+
+    - name: Start ec2 instance
+      amazon.aws.ec2_instance:
+        instance_ids: "{{ aws_instance_id }}"
+        state: started
+        wait: true
