@@ -1,0 +1,26 @@
+- name: Snapshot ec2 volume
+  hosts: aws_ec2
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: Stop ec2 instance
+      amazon.aws.ec2_instance:
+        instance_ids: "{{ aws_instance_id }}"
+        state: stopped
+        wait: true
+
+    - name: Get EC2 instance volumes
+      register: r_vol_info
+      amazon.aws.ec2_vol_info:
+        filters:
+          attachment.instance-id: "{{ aws_instance_id }}"
+
+    - name: Snapshot volumes
+      loop: "{{ r_vol_info.volumes }}"
+      loop_control:
+        loop_var: volume
+        label: "{{ volume.id }}"
+      amazon.aws.ec2_snapshot:
+        volume_id: "{{ volume.id }}"
+        description: "Snapshot taken by ansible on {{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
