@@ -6,7 +6,7 @@
   tasks:
     - name: Stop ec2 instance
       amazon.aws.ec2_instance:
-        instance_ids: "{{ aws_instance_id }}"
+        instance_ids: "{{ instance_id }}"
         state: stopped
         wait: true
 
@@ -14,7 +14,7 @@
       register: r_vol_info
       amazon.aws.ec2_vol_info:
         filters:
-          attachment.instance-id: "{{ aws_instance_id }}"
+          attachment.instance-id: "{{ instance_id }}"
 
     - name: Snapshot volumes
       loop: "{{ r_vol_info.volumes }}"
@@ -27,6 +27,6 @@
 
     - name: Start ec2 instance
       amazon.aws.ec2_instance:
-        instance_ids: "{{ aws_instance_id }}"
+        instance_ids: "{{ instance_id }}"
         state: started
         wait: true
