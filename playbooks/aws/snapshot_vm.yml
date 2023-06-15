@@ -3,13 +3,6 @@
   gather_facts: false
 
   tasks:
-    - name: Stop ec2 instance
-      amazon.aws.ec2_instance:
-        region: "{{ aws_region }}"
-        instance_ids: "{{ instance_id }}"
-        state: stopped
-        wait: true
-
     - name: Get EC2 instance volumes
       register: r_vol_info
       amazon.aws.ec2_vol_info:
