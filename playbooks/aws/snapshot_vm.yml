@@ -2,15 +2,10 @@
   hosts: localhost
   gather_facts: false
 
-  pre_tasks:
-    - name: Ensure boto3 is installed
-      ansible.builtin.pip:
-        name: boto3
-        state: present
-
   tasks:
     - name: Stop ec2 instance
       amazon.aws.ec2_instance:
+        region: "{{ aws_region }}"
         instance_ids: "{{ instance_id }}"
         state: stopped
         wait: true
@@ -18,6 +13,7 @@
     - name: Get EC2 instance volumes
       register: r_vol_info
       amazon.aws.ec2_vol_info:
+        region: "{{ aws_region }}"
         filters:
           attachment.instance-id: "{{ instance_id }}"
 
@@ -27,11 +23,13 @@
         loop_var: volume
         label: "{{ volume.id }}"
       amazon.aws.ec2_snapshot:
+        region: "{{ aws_region }}"
         volume_id: "{{ volume.id }}"
         description: "Snapshot taken by ansible on {{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
 
     - name: Start ec2 instance
       amazon.aws.ec2_instance:
+        region: "{{ aws_region }}"
         instance_ids: "{{ instance_id }}"
         state: started
         wait: true
