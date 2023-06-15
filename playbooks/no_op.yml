@@ -1,0 +1,10 @@
+---
+- name: No-op for demos
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    - name: "{{ no_op_task_name | default('No-op statement') }}"
+      ansible.builtin.debug:
+        msg: "{{ no_op_task_msg | default('No-op debug task complete') }}"
