@@ -1,6 +1,7 @@
 - name: Patch ec2
   hosts: "{{ _hosts | default('omit') }}"
   gather_facts: true
+  become: true
 
   tasks:
     - name: Patch host with dnf
