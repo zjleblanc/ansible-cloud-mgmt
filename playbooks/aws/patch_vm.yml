@@ -1,0 +1,24 @@
+- name: Patch ec2
+  hosts: "{{ _hosts | default('omit') }}"
+  gather_facts: true
+
+  tasks:
+    - name: Patch host with dnf
+      when: ansible_pkg_mgr == 'dnf'
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+        update_cache: true
+
+    - name: Patch host with yum
+      when: ansible_pkg_mgr == 'yum'
+      ansible.builtin.yum:
+        name: "*"
+        state: latest
+        update_cache: true
+
+    - name: Patch windows host
+      when: ansible_os_family|lower == 'windows'
+      ansible.windows.win_updates:
+        category_names: '*'
+        reboot: true

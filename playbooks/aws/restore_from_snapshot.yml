@@ -1,49 +1,52 @@
 - name: Snapshot ec2 volume
-  hosts: localhost
+  hosts: "{{ _hosts | default('omit') }}"
   gather_facts: false
 
   tasks:
-    - name: Stop ec2 instance
-      amazon.aws.ec2_instance:
-        region: "{{ aws_region }}"
-        instance_ids: "{{ instance_id }}"
-        state: stopped
-        wait: true
+    - name: Restore ec2
+      delegate_to: localhost
+      block:
+        - name: Stop ec2 instance
+          amazon.aws.ec2_instance:
+            region: "{{ aws_region }}"
+            instance_ids: "{{ instance_id }}"
+            state: stopped
+            wait: true
 
-    - name: Get EC2 instance volumes
-      register: r_vol_info
-      amazon.aws.ec2_vol_info:
-        region: "{{ aws_region }}"
-        filters:
-          attachment.instance-id: "{{ instance_id }}"
+        - name: Get EC2 instance volumes
+          register: r_vol_info
+          amazon.aws.ec2_vol_info:
+            region: "{{ aws_region }}"
+            filters:
+              attachment.instance-id: "{{ instance_id }}"
 
-    - name: Detach volumes
-      loop: "{{ r_vol_info.volumes }}"
-      loop_control:
-        loop_var: volume
-        label: "{{ volume.id }}"
-      amazon.aws.ec2_vol:
-        region: "{{ aws_region }}"
-        id: "{{ volume.id }}"
-        instance: None
+        - name: Detach volumes
+          loop: "{{ r_vol_info.volumes }}"
+          loop_control:
+            loop_var: volume
+            label: "{{ volume.id }}"
+          amazon.aws.ec2_vol:
+            region: "{{ aws_region }}"
+            id: "{{ volume.id }}"
+            instance: None
 
-    - name: Get snapshot
-      register: r_snapshots
-      amazon.aws.ec2_snapshot_info:
-        region: "{{ aws_region }}"
-        filters:
-          "tag:Name": "{{ instance_hostname }}"
+        - name: Get snapshot
+          register: r_snapshots
+          amazon.aws.ec2_snapshot_info:
+            region: "{{ aws_region }}"
+            filters:
+              "tag:Name": "{{ instance_hostname }}"
 
-    - name: Create volumes from snapshots
-      amazon.aws.ec2_vol:
-        region: "{{ aws_region }}"
-        instance: "{{ instance_id }}"
-        snapshot: "{{ r_snapshots.snapshots[0].snapshot_id }}"
-        device_name: "/dev/sda1"
+        - name: Create volumes from snapshots
+          amazon.aws.ec2_vol:
+            region: "{{ aws_region }}"
+            instance: "{{ instance_id }}"
+            snapshot: "{{ r_snapshots.snapshots[0].snapshot_id }}"
+            device_name: "/dev/sda1"
 
-    # - name: Start ec2 instance
-    #   amazon.aws.ec2_instance:
-    #     region: "{{ aws_region }}"
-    #     instance_ids: "{{ instance_id }}"
-    #     state: started
-    #     wait: true
+        # - name: Start ec2 instance
+        #   amazon.aws.ec2_instance:
+        #     region: "{{ aws_region }}"
+        #     instance_ids: "{{ instance_id }}"
+        #     state: started
+        #     wait: true
