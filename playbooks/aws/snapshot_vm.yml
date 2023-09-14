@@ -22,7 +22,9 @@
             region: "{{ aws_region }}"
             volume_id: "{{ volume.id }}"
             description: "Snapshot taken by ansible on {{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
-            snapshot_tags: "{{ tags }}"
+            snapshot_tags:
+              name: "{{ tags['Name'] }}"
+              ansible_inventory_hostname: "{{ inventory_hostname }}"
 
         - name: Start ec2 instance
           amazon.aws.ec2_instance:
@@ -32,5 +34,5 @@
             wait: true
 
         - name: Wait for ec2 to become reachable
-          delegate_to: "{{ instance_hostname }}"
+          delegate_to: "{{ inventory_hostname }}"
           ansible.builtin.wait_for_connection:

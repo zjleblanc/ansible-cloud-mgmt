@@ -35,7 +35,7 @@
           amazon.aws.ec2_snapshot_info:
             region: "{{ aws_region }}"
             filters:
-              "tag:Name": "{{ instance_hostname }}"
+              "tag:ansible_inventory_hostname": "{{ inventory_hostname }}"
 
         - name: Create volumes from snapshots
           amazon.aws.ec2_vol:
