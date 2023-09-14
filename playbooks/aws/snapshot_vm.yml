@@ -22,8 +22,7 @@
             region: "{{ aws_region }}"
             volume_id: "{{ volume.id }}"
             description: "Snapshot taken by ansible on {{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
-            snapshot_tags:
-              Name: "{{ instance_hostname }}"
+            snapshot_tags: "{{ tags }}"
 
         - name: Start ec2 instance
           amazon.aws.ec2_instance:
