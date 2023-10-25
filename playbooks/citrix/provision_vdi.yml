@@ -1,0 +1,46 @@
+### This playbook is a skeleton and intended to be
+### an example for converting API calls to the URI module
+---
+- name: Provision a VDI on Citrix DaaS
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    site_name: "SITE_NAME"
+    site_query: "Customers[].Sites[?Name=='{{ site_name }}'][].Id"
+    machine_catalog: "CATALOG_NAME"
+    delivery_group: "DELIVERY_GROUP_NAME"
+
+    ### From Custom Credential ###
+    # daas_server_address: <url>
+    # daas_api_username: admin
+    # daas_api_password: secret
+
+    daas_api_base_url: "https://{{ daas_server_address }}/cvad/manage"
+
+  tasks:
+    - name: Authenticate with DaaS API
+      register: r_daas_auth
+      ansible.builtin.uri:
+        url: "{{ daas_api_base_url }}/Tokens"
+        method: POST
+        force_basic_auth: true
+        user: "{{ daas_api_username }}"
+        password: "{{ daas_api_password }}"
+
+    - name: Extract API Token
+      ansible.builtin.set_fact:
+        daas_api_token: "{{ r_daas_auth['json']['token'] }}"
+
+    - name: Get user info
+      register: r_site_id
+      ansible.builtin.uri:
+        url: "{{ daas_api_base_url }}/me"
+        method: GET
+        body_format: json
+        headers:
+          Authorization: "CWS Bearer={{ daas_api_token }}"
+
+    - name: Extract site ID
+      ansible.builtin.set_fact:
+        daas_site_id: "{{ (r_site_id.json | json_query(site_query))[0] }}"
