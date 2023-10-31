@@ -40,8 +40,14 @@
       ansible.builtin.set_fact:
         problem_ec2_instances: "{{ r_ec2_instances.results | json_query('[].json.properties.publicHostName') }}"
 
+    - name: Add hosts to problem_ec2_instances
+      loop: "{{ r_ec2_instances.results | json_query('[].json.properties.publicHostName') }}"
+      ansible.builtin.add_host:
+        name: '{{ item }}'
+        groups: problem_ec2_instances
+
 - name: Remediate Problem
-  hosts: "{{ problem_ec2_instances | default(omit) }}"
+  hosts: problem_ec2_instances
   gather_facts: true
   
   tasks:
