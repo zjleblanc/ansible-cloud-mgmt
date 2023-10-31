@@ -2,14 +2,11 @@
 - name: Process Dynatrace EDA event
   hosts: localhost
 
-  vars:
-    ansible_eda: "{{ lookup('file', playbook_dir + '/files/dynatrace_eda_payload.json') | from_json }}"
-
   tasks:
     - name: Get problem details
       register: r_problem
       ansible.builtin.uri:
-        url: "{{ lookup('env', 'DYNATRACE_HOST') }}/api/v2/problems/{{ ansible_eda.event.problemId }}"
+        url: "{{ lookup('env', 'DYNATRACE_HOST') }}/api/v2/problems/{{ problem_id }}"
         method: GET
         headers:
           Authorization: "Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}"
