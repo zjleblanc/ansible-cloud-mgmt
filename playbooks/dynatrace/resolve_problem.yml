@@ -1,0 +1,51 @@
+---
+- name: Process Dynatrace EDA event
+  hosts: localhost
+
+  vars:
+    ansible_eda: "{{ lookup('file', playbook_dir + '/files/dynatrace_eda_payload.json') | from_json }}"
+
+  tasks:
+    - name: Get problem details
+      register: r_problem
+      ansible.builtin.uri:
+        url: "{{ lookup('env', 'DYNATRACE_HOST') }}/api/v2/problems/{{ ansible_eda.event.problemId }}"
+        method: GET
+        headers:
+          Authorization: "Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}"
+
+    - name: Get problem hosts affected
+      register: r_hosts
+      loop: "{{ r_problem.json | dt_problem_hosts }}"
+      loop_control:
+        loop_var: host_id
+      ansible.builtin.uri:
+        url: "{{ lookup('env', 'DYNATRACE_HOST') }}/api/v2/entities/{{ host_id }}"
+        method: GET
+        headers:
+          Authorization: "Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}"
+
+    - name: Get EC2 instances affected
+      register: r_ec2_instances
+      loop: "{{ r_hosts.results | map(attribute='json') | list }}"
+      loop_control:
+        loop_var: host
+      ansible.builtin.uri:
+        url: "{{ lookup('env', 'DYNATRACE_HOST') }}/api/v2/entities/{{ host['fromRelationships']['runsOn'][0]['id'] }}"
+        method: GET
+        headers:
+          Authorization: "Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}"
+
+    - name: Setup hosts for next play
+      ansible.builtin.set_fact:
+        problem_ec2_instances: "{{ r_ec2_instances.results | json_query('[].json.properties.publicHostName') }}"
+
+- name: Remediate Problem
+  hosts: "{{ problem_ec2_instances | default(omit) }}"
+  gather_facts: true
+  
+  tasks:
+    - name: Start httpd
+      ansible.builtin.service:
+        name: http
+        state: started
