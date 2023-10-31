@@ -6,7 +6,7 @@
     - name: Get problem details
       register: r_problem
       ansible.builtin.uri:
-        url: "{{ lookup('env', 'DYNATRACE_HOST') }}/api/v2/problems/{{ problem_id }}"
+        url: "{{ lookup('env', 'DYNATRACE_HOST') }}/api/v2/problems/{{ ansible_eda.event.problem_id }}"
         method: GET
         headers:
           Authorization: "Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}"
