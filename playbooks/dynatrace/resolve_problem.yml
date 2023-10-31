@@ -50,5 +50,5 @@
   tasks:
     - name: Start httpd
       ansible.builtin.service:
-        name: http
+        name: httpd
         state: started
