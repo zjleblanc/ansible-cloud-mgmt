@@ -49,6 +49,7 @@
   
   tasks:
     - name: Start httpd
+      become: true
       ansible.builtin.service:
         name: httpd
         state: started
