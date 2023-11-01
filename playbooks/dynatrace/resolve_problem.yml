@@ -2,6 +2,9 @@
 - name: Process Dynatrace EDA event
   hosts: localhost
 
+  vars:
+    problem_view: "/ui/apps/dynatrace.classic.problems/#problems"
+
   tasks:
     - name: Get problem details
       register: r_problem
@@ -37,6 +40,22 @@
       ansible.builtin.set_fact:
         problem_ec2_instances: "{{ r_ec2_instances.results | json_query('[].json.properties.publicHostName') }}"
 
+    - name: Setup attachment files
+      ansible.builtin.set_fact:
+        attachment_files:
+          - path: /tmp/event_info.json
+            data: "{{ ansible_eda.event | to_nice_json }}"
+          - path: /tmp/instance_info.json
+            data: "{{ r_ec2_instances.results | json_query('[].json') | to_nice_json }}"
+          - path: /tmp/ansible_facts.json
+            data: "{{ ansible_facts | to_nice_json }}"
+
+    - name: Create attachments
+      loop: "{{ attachment_files }}" 
+      ansible.builtin.copy:
+        content: "{{ item.data }}"
+        dest: "{{ item.path }}"
+
     - name: Create incident
       register: r_incident
       servicenow.itsm.incident:
@@ -46,22 +65,18 @@
         description: Ansible EDA generated event based on Dynatrace Problems API
         impact: low
         urgency: low
+        attachments: "{{ attachment_files | json_query('[].{path: path}') }}"
         other:
-          comments: "[code]<h3>Event-Driven Ansible Payload</h3>[/code]{{ ansible_eda.event | to_nice_json | codify }}"
-
-    - name: Add incident comments | instances affected
-      servicenow.itsm.incident:
-        sys_id: "{{ r_incident.record.sys_id }}"
-        other:
-          comments: "[code]<h3>Affected Instances</h3>[/code]{{ r_ec2_instances.results | json_query('[].json') | to_nice_json | codify }}"
-
-    - name: Add hosts to problem_ec2_instances
-      loop: "{{ r_ec2_instances.results | json_query('[].json.properties.publicHostName') }}"
-      ansible.builtin.add_host:
-        name: '{{ item }}'
-        groups: problem_ec2_instances
-        problem_sys_id: "{{ r_incident.record.sys_id }}"
-        dt_problem_id: "{{ problem_id }}"
+          comments: >
+            [code]
+            <p>Impacted: {{ ansible_eda.event['impactLevel']  }}</p>
+            <p>Impact Type: {{ ansible_eda.event['severityLevel']  }}</p>
+            <p>
+              <a href="{{ lookup('env', 'DYNATRACE_HOST') }}/{{ problem_view }}/problemdetails;gtf=-6h;gf=all;pid={{ ansible_eda.event['problemId'] }}">
+                View Problem Details
+              </a>
+            </p>
+            [/code]
 
 - name: Remediate Problem
   hosts: problem_ec2_instances
