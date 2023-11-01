@@ -4,7 +4,7 @@
   gather_facts: false
 
   vars:
-    problem_view: "/ui/apps/dynatrace.classic.problems/#problems"
+    problem_view: "ui/apps/dynatrace.classic.problems/#problems"
 
   tasks:
     - name: Get problem details
@@ -68,6 +68,7 @@
         name: "{{ item }}"
         groups: problem_ec2_instances
         problem_sys_id: "{{ r_incident.record.sys_id }}"
+        dt_problem_id: "{{ ansible_eda.event['problemId'] }}"
 
 - name: Remediate Problem
   hosts: problem_ec2_instances
@@ -81,6 +82,7 @@
         state: started
 
     - name: Setup attachment files
+      delegate_to: localhost
       ansible.builtin.set_fact:
         attachment_files:
           - path: /tmp/event_info.json
@@ -89,6 +91,7 @@
             data: "{{ ansible_facts | to_nice_json }}"
 
     - name: Create attachments
+      delegate_to: localhost
       loop: "{{ attachment_files }}" 
       ansible.builtin.copy:
         content: "{{ item.data }}"
