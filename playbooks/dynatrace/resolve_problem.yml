@@ -62,6 +62,13 @@
             </p>
             [/code]
 
+    - name: Add hosts to problem_ec2_instances
+      loop: "{{ r_ec2_instances.results | json_query('[].json.properties.publicHostName') }}"
+      ansible.builtin.add_host:
+        name: "{{ item }}"
+        groups: problem_ec2_instances
+        problem_sys_id: "{{ r_incident.record.sys_id }}"
+
 - name: Remediate Problem
   hosts: problem_ec2_instances
   gather_facts: true
