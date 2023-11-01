@@ -108,6 +108,7 @@
   
   tasks:
     - name: "Add incident comments | {{ inventory_hostname }} facts"
+      delegate_to: localhost
       servicenow.itsm.incident:
         sys_id: "{{ problem_sys_id }}"
         other:
@@ -119,7 +120,8 @@
         name: httpd
         state: started
 
-    - name: "Close incident"
+    - name: Close incident
+      delegate_to: localhost
       servicenow.itsm.incident:
         sys_id: "{{ problem_sys_id }}"
         state: closed
