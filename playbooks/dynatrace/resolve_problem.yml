@@ -1,6 +1,7 @@
 ---
 - name: Process Dynatrace EDA event
   hosts: localhost
+  gather_facts: false
 
   vars:
     problem_view: "/ui/apps/dynatrace.classic.problems/#problems"
@@ -40,22 +41,6 @@
       ansible.builtin.set_fact:
         problem_ec2_instances: "{{ r_ec2_instances.results | json_query('[].json.properties.publicHostName') }}"
 
-    - name: Setup attachment files
-      ansible.builtin.set_fact:
-        attachment_files:
-          - path: /tmp/event_info.json
-            data: "{{ ansible_eda.event | to_nice_json }}"
-          - path: /tmp/instance_info.json
-            data: "{{ r_ec2_instances.results | json_query('[].json') | to_nice_json }}"
-          - path: /tmp/ansible_facts.json
-            data: "{{ ansible_facts | to_nice_json }}"
-
-    - name: Create attachments
-      loop: "{{ attachment_files }}" 
-      ansible.builtin.copy:
-        content: "{{ item.data }}"
-        dest: "{{ item.path }}"
-
     - name: Create incident
       register: r_incident
       servicenow.itsm.incident:
@@ -65,14 +50,13 @@
         description: Ansible EDA generated event based on Dynatrace Problems API
         impact: low
         urgency: low
-        attachments: "{{ attachment_files | json_query('[].{path: path}') }}"
         other:
           comments: >
             [code]
             <p>Impacted: {{ ansible_eda.event['impactLevel']  }}</p>
-            <p>Impact Type: {{ ansible_eda.event['severityLevel']  }}</p>
+            <p>Type: {{ ansible_eda.event['severityLevel']  }}</p>
             <p>
-              <a href="{{ lookup('env', 'DYNATRACE_HOST') }}/{{ problem_view }}/problemdetails;gtf=-6h;gf=all;pid={{ ansible_eda.event['problemId'] }}">
+              <a href="{{ lookup('env', 'DYNATRACE_HOST') | replace('live', 'apps') }}/{{ problem_view }}/problemdetails;gtf=-6h;gf=all;pid={{ ansible_eda.event['problemId'] }}">
                 View Problem Details
               </a>
             </p>
@@ -83,24 +67,32 @@
   gather_facts: true
   
   tasks:
-    - name: "Add incident comments | {{ inventory_hostname }} facts"
-      delegate_to: localhost
-      servicenow.itsm.incident:
-        sys_id: "{{ problem_sys_id }}"
-        other:
-          comments: "[code]<h3>{{ inventory_hostname }} Facts</h3>[/code]{{ ansible_facts | to_nice_json | codify }}"
-
     - name: Start httpd
       become: true
       ansible.builtin.service:
         name: httpd
         state: started
 
+    - name: Setup attachment files
+      ansible.builtin.set_fact:
+        attachment_files:
+          - path: /tmp/event_info.json
+            data: "{{ ansible_eda.event | to_nice_json }}"
+          - path: /tmp/ansible_facts.json
+            data: "{{ ansible_facts | to_nice_json }}"
+
+    - name: Create attachments
+      loop: "{{ attachment_files }}" 
+      ansible.builtin.copy:
+        content: "{{ item.data }}"
+        dest: "{{ item.path }}"
+
     - name: Close incident
       delegate_to: localhost
       servicenow.itsm.incident:
         sys_id: "{{ problem_sys_id }}"
         state: closed
+        attachments: "{{ attachment_files | json_query('[].{path: path}') }}"
         close_code: "Solved (Permanently)"
         close_notes: "Dynatrace + Event-Driven Ansible auto-remediation successful"
 
