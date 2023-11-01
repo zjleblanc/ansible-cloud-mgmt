@@ -2,46 +2,6 @@
 - name: Process Dynatrace EDA event
   hosts: localhost
 
-  vars:
-    problem_id: '-5866282792450541296_1698840380842V2'
-    ansible_eda:
-      ruleset: Poll Dynatrace Problems API
-      rule: Launch Remediation Job Template
-      event:
-        impactedEntities:
-          - name: httpd
-            entityId:
-              id: CUSTOM_DEVICE-CA31601A750160B8
-              type: os:service
-        problemFilters:
-          - name: Default
-            id: c21f969b-5f03-333d-83e0-4f8f136e7682
-        entityTags: []
-        rootCauseEntity: null
-        recentComments:
-          comments: []
-          totalCount: 0
-        title: httpd is in undesirable (inactive) state
-        affectedEntities:
-          - name: httpd
-            entityId:
-              id: CUSTOM_DEVICE-CA31601A750160B8
-              type: os:service
-        impactLevel: INFRASTRUCTURE
-        severityLevel: AVAILABILITY
-        managementZones: []
-        meta:
-          received_at: '2023-11-01T13:41:01.375583Z'
-          source:
-            name: dynatrace.event_driven_ansible.dt_esa_api
-            type: dynatrace.event_driven_ansible.dt_esa_api
-          uuid: 851333a0-e84a-49ce-ae87-f65b3a73d991
-        startTime: 1698840380842
-        endTime: -1
-        problemId: '-5866282792450541296_1698840380842V2'
-        displayId: P-23116
-        status: OPEN
-
   tasks:
     - name: Get problem details
       register: r_problem
@@ -101,6 +61,7 @@
         name: '{{ item }}'
         groups: problem_ec2_instances
         problem_sys_id: "{{ r_incident.record.sys_id }}"
+        dt_problem_id: "{{ problem_id }}"
 
 - name: Remediate Problem
   hosts: problem_ec2_instances
@@ -127,3 +88,14 @@
         state: closed
         close_code: "Solved (Permanently)"
         close_notes: "Dynatrace + Event-Driven Ansible auto-remediation successful"
+
+    - name: Close Dynatrace problem
+      delegate_to: localhost
+      ansible.builtin.uri:
+        url: "{{ lookup('env', 'DYNATRACE_HOST') }}/api/v2/problems/{{ dt_problem_id }}/close"
+        method: POST
+        headers:
+          Authorization: "Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}"
+        body_format: json
+        body:
+          message: "Dynatrace + Event-Driven Ansible auto-remediation successful"
