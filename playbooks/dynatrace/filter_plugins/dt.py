@@ -4,8 +4,12 @@ from datetime import datetime, timedelta
 class FilterModule(object):
     def filters(self):
         return {
-            'dt_problem_hosts': self.dt_problem_hosts,
+            'codify': self.do_codify,
+            'dt_problem_hosts': self.dt_problem_hosts
         }
+    
+    def do_codify(self, content, endline='\n'):
+        return '[code]<pre>' + content.replace(endline,'<br>') + '</pre>[/code]'
     
     def dt_problem_hosts(self, problem):
         hosts = []
