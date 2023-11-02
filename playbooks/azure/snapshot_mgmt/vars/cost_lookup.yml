@@ -1,3 +1,4 @@
+---
 snapshot_costs:
   Premium_LRS: .05
   Standard_LRS: .03

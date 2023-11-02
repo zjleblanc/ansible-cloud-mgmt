@@ -1,3 +1,4 @@
+---
 - name: Snapshot ec2 volume
   hosts: "{{ _hosts | default('omit') }}"
   gather_facts: false
@@ -21,7 +22,7 @@
           amazon.aws.ec2_snapshot:
             region: "{{ aws_region }}"
             volume_id: "{{ volume.id }}"
-            description: "Snapshot taken by ansible on {{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}"
+            description: Snapshot taken by ansible on {{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}
             snapshot_tags:
               name: "{{ tags['Name'] }}"
               ansible_inventory_hostname: "{{ inventory_hostname }}"

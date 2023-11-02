@@ -1,3 +1,4 @@
+---
 - name: Snapshot ec2 volume
   hosts: "{{ _hosts | default('omit') }}"
   gather_facts: false
@@ -35,14 +36,14 @@
           amazon.aws.ec2_snapshot_info:
             region: "{{ aws_region }}"
             filters:
-              "tag:ansible_inventory_hostname": "{{ inventory_hostname }}"
+              tag:ansible_inventory_hostname: "{{ inventory_hostname }}"
 
         - name: Create volumes from snapshots
           amazon.aws.ec2_vol:
             region: "{{ aws_region }}"
             instance: "{{ instance_id }}"
             snapshot: "{{ r_snapshots.snapshots[0].snapshot_id }}"
-            device_name: "/dev/sda1"
+            device_name: /dev/sda1
 
         # - name: Start ec2 instance
         #   amazon.aws.ec2_instance:

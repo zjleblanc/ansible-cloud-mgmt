@@ -1,3 +1,4 @@
+---
 - name: Patch ec2
   hosts: "{{ _hosts | default('omit') }}"
   gather_facts: true
@@ -21,5 +22,5 @@
     - name: Patch windows host
       when: ansible_os_family|lower == 'windows'
       ansible.windows.win_updates:
-        category_names: '*'
+        category_names: "*"
         reboot: true
