@@ -6,17 +6,17 @@
   gather_facts: false
 
   vars:
-    site_name: "SITE_NAME"
-    site_query: "Customers[].Sites[?Name=='{{ site_name }}'][].Id"
-    machine_catalog: "CATALOG_NAME"
-    delivery_group: "DELIVERY_GROUP_NAME"
+    site_name: SITE_NAME
+    site_query: Customers[].Sites[?Name=='{{ site_name }}'][].Id
+    machine_catalog: CATALOG_NAME
+    delivery_group: DELIVERY_GROUP_NAME
 
     ### From Custom Credential ###
     # daas_server_address: <url>
     # daas_api_username: admin
     # daas_api_password: secret
 
-    daas_api_base_url: "https://{{ daas_server_address }}/cvad/manage"
+    daas_api_base_url: https://{{ daas_server_address }}/cvad/manage
 
   tasks:
     - name: Authenticate with DaaS API
@@ -39,7 +39,7 @@
         method: GET
         body_format: json
         headers:
-          Authorization: "CWS Bearer={{ daas_api_token }}"
+          Authorization: CWS Bearer={{ daas_api_token }}
 
     - name: Extract site ID
       ansible.builtin.set_fact:

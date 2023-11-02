@@ -1,5 +1,5 @@
 ---
-- name: "Send expired snapshots email to {{ owner_email }}"
+- name: Send expired snapshots email to {{ owner_email }}
   ansible.builtin.include_role:
     name: send-email
   vars:

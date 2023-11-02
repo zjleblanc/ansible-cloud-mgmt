@@ -12,7 +12,7 @@
     creation_data:
       create_option: Copy
       source_id: "{{ disk.id }}"
-    sku: 
+    sku:
       name: "{{ disk.storage_account_type }}"
 
 - name: Tag snapshot

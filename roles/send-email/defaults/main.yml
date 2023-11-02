@@ -4,7 +4,7 @@ email_smtp_server: smtp.gmail.com
 email_smtp_server_port: 587
 email_smtp_from_address: ansible-zach@gmail.com
 email_smtp_subject: Ansible Notification
-email_smtp_body: "This is an ansible notification."
+email_smtp_body: This is an ansible notification.
 email_smtp_replyto_address: no-reply@gmail.com
 email_smtp_subtype: plain
 

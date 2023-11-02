@@ -4,7 +4,7 @@
   gather_facts: false
 
   vars:
-    problem_view: "ui/apps/dynatrace.classic.problems/#problems"
+    problem_view: ui/apps/dynatrace.classic.problems/#problems
 
   tasks:
     - name: Get problem details
@@ -13,7 +13,7 @@
         url: "{{ lookup('env', 'DYNATRACE_HOST') }}/api/v2/problems/{{ ansible_eda.event['problemId'] }}"
         method: GET
         headers:
-          Authorization: "Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}"
+          Authorization: Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}
 
     - name: Get problem hosts affected
       register: r_hosts
@@ -24,7 +24,7 @@
         url: "{{ lookup('env', 'DYNATRACE_HOST') }}/api/v2/entities/{{ host_id }}"
         method: GET
         headers:
-          Authorization: "Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}"
+          Authorization: Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}
 
     - name: Get EC2 instances affected
       register: r_ec2_instances
@@ -35,7 +35,7 @@
         url: "{{ lookup('env', 'DYNATRACE_HOST') }}/api/v2/entities/{{ host['fromRelationships']['runsOn'][0]['id'] }}"
         method: GET
         headers:
-          Authorization: "Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}"
+          Authorization: Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}
 
     - name: Setup hosts for next play
       ansible.builtin.set_fact:
@@ -56,7 +56,8 @@
             <p>Impacted: {{ ansible_eda.event['impactLevel']  }}</p>
             <p>Type: {{ ansible_eda.event['severityLevel']  }}</p>
             <p>
-              <a href="{{ lookup('env', 'DYNATRACE_HOST') | replace('live', 'apps') }}/{{ problem_view }}/problemdetails;gtf=-6h;gf=all;pid={{ ansible_eda.event['problemId'] }}">
+              <a href="{{ lookup('env', 'DYNATRACE_HOST') | replace('live', 'apps') }}/{{ problem_view }}/problemdetails;gtf=-6h;gf=all;pid={{ ansible_eda.event['problemId']
+            }}">
                 View Problem Details
               </a>
             </p>
@@ -73,7 +74,7 @@
 - name: Remediate Problem
   hosts: problem_ec2_instances
   gather_facts: true
-  
+
   tasks:
     - name: Start httpd
       become: true
@@ -92,7 +93,7 @@
 
     - name: Create attachments
       delegate_to: localhost
-      loop: "{{ attachment_files }}" 
+      loop: "{{ attachment_files }}"
       ansible.builtin.copy:
         content: "{{ item.data }}"
         dest: "{{ item.path }}"
@@ -103,8 +104,8 @@
         sys_id: "{{ problem_sys_id }}"
         state: closed
         attachments: "{{ attachment_files | json_query('[].{path: path}') }}"
-        close_code: "Solved (Permanently)"
-        close_notes: "Dynatrace + Event-Driven Ansible auto-remediation successful"
+        close_code: Solved (Permanently)
+        close_notes: Dynatrace + Event-Driven Ansible auto-remediation successful
 
     - name: Close Dynatrace problem
       delegate_to: localhost
@@ -112,7 +113,7 @@
         url: "{{ lookup('env', 'DYNATRACE_HOST') }}/api/v2/problems/{{ dt_problem_id }}/close"
         method: POST
         headers:
-          Authorization: "Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}"
+          Authorization: Api-Token {{ lookup('env', 'DYNATRACE_API_TOKEN') }}
         body_format: json
         body:
-          message: "Dynatrace + Event-Driven Ansible auto-remediation successful"
+          message: Dynatrace + Event-Driven Ansible auto-remediation successful
