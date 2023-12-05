@@ -4,7 +4,7 @@
   gather_facts: false
 
   vars:
-    problem_view: ui/apps/dynatrace.classic.problems/#problems
+    problem_view: ui/apps/dynatrace.classic.problems/#problems/problemdetails;gtf=-6h;gf=all;
 
   tasks:
     - name: Get problem details
@@ -56,8 +56,7 @@
             <p>Impacted: {{ ansible_eda.event['impactLevel']  }}</p>
             <p>Type: {{ ansible_eda.event['severityLevel']  }}</p>
             <p>
-              <a href="{{ lookup('env', 'DYNATRACE_HOST') | replace('live', 'apps') }}/{{ problem_view }}/problemdetails;gtf=-6h;gf=all;pid={{ ansible_eda.event['problemId']
-            }}">
+              <a href="{{ lookup('env', 'DYNATRACE_HOST') | replace('live', 'apps') }}/{{ problem_view }}pid={{ ansible_eda.event['problemId'] }}">
                 View Problem Details
               </a>
             </p>
@@ -76,11 +75,11 @@
   gather_facts: true
 
   tasks:
-    - name: Start httpd
-      become: true
-      ansible.builtin.service:
-        name: httpd
-        state: started
+    # - name: Remediation task(s)
+    #   become: true
+    #   ansible.builtin.service:
+    #     name: httpd
+    #     state: started
 
     - name: Setup attachment files
       delegate_to: localhost
@@ -97,6 +96,7 @@
       ansible.builtin.copy:
         content: "{{ item.data }}"
         dest: "{{ item.path }}"
+        mode: 0755
 
     - name: Close incident
       delegate_to: localhost
