@@ -14,14 +14,21 @@
       source_id: "{{ disk.id }}"
     sku:
       name: "{{ disk.storage_account_type }}"
+    tags:
+      environment: "{{ disk.tags.environment | default('UNK') }}"
+      retention: "{{ disk.tags.retention | default('30d') }}"
+      source: "{{ disk.name }}"
+      owner: "{{ disk.tags.owner }}"
+      createdOn: "{{ az_disk_snapshot_date }}"
+      createdBy: "ansible"
 
-- name: Tag snapshot
-  ansible.builtin.shell: |
-    az snapshot update --resource-group {{ r_disk_snapshot.id.split('/')[4] }} \
-      --name "{{ r_disk_snapshot.id.split('/')[-1] }}" \
-      --set tags.environment={{ disk.tags.environment | default('UNK') }} \
-      --set tags.retention={{ disk.tags.retention | default('30d') }} \
-      --set tags.source={{ disk.name }} \
-      --set tags.owner={{ disk.tags.owner }} \
-      --set tags.createdOn={{ az_disk_snapshot_date }} \
-      --set tags.createdBy=ansible
+# - name: Tag snapshot
+#   ansible.builtin.shell: |
+#     az snapshot update --resource-group {{ r_disk_snapshot.id.split('/')[4] }} \
+#       --name "{{ r_disk_snapshot.id.split('/')[-1] }}" \
+#       --set tags.environment={{ disk.tags.environment | default('UNK') }} \
+#       --set tags.retention={{ disk.tags.retention | default('30d') }} \
+#       --set tags.source={{ disk.name }} \
+#       --set tags.owner={{ disk.tags.owner }} \
+#       --set tags.createdOn={{ az_disk_snapshot_date }} \
+#       --set tags.createdBy=ansible

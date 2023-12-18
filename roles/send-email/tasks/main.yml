@@ -1,6 +1,5 @@
 ---
 # tasks file for send-email
-# dapd dhed bfwu dmdy
 - name: Check for required params
   ansible.builtin.assert:
     that:
