@@ -27,6 +27,7 @@
   ansible.builtin.uri:
     url: "https://login.microsoftonline.com/{{ lookup('env', 'AZURE_TENANT') }}/oauth2/v2.0/token"
     method: POST
+    status_code: [200,202]
     body_format: form-urlencoded
     body:
       grant_type: client_credentials
