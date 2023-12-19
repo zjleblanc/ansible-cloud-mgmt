@@ -25,13 +25,13 @@
 - name: Get ARM API token
   register: r_arm_login
   ansible.builtin.uri:
-    url: "https://login.microsoftonline.com/{{ lookup('env', 'AZURE_TENANT_ID') }}/oauth2/v2.0/token"
+    url: "https://login.microsoftonline.com/{{ lookup('env', 'AZURE_TENANT') }}/oauth2/v2.0/token"
     method: POST
     body_format: form-urlencoded
     body:
       grant_type: client_credentials
       client_id: "{{ lookup('env', 'AZURE_CLIENT_ID') }}"
-      client_secret: "{{ lookup('env', 'AZURE_CLIENT_SECRET') }}"
+      client_secret: "{{ lookup('env', 'AZURE_SECRET') }}"
       scope: https://management.azure.com/.default
 
 - name: Tag snapshot
