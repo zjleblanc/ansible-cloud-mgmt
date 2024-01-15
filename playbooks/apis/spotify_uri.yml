@@ -1,0 +1,52 @@
+---
+- name: Interact with Spotify API using the URI module
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    spotify_client_id: "{{ lookup('env', 'SPOTIFY_CLIENT_ID') }}"
+    spotify_client_secret: "{{ lookup('env', 'SPOTIFY_CLIENT_SECRET') }}"
+
+  tasks:
+    - name: Get access token
+      register: r_login
+      ansible.builtin.uri:
+        url: https://accounts.spotify.com/api/token
+        method: POST
+        headers:
+          Authorization: "Basic {{ (spotify_client_id + ':' + spotify_client_secret) | b64encode }}"
+        body_format: form-urlencoded
+        body:
+          grant_type: client_credentials
+
+    - name: Print login response
+      ansible.builtin.debug:
+        var: r_login.json
+
+    - name: Get artist id (Turnpike Troubadors)
+      register: r_artist_id
+      ansible.builtin.uri:
+        url: https://api.spotify.com/v1/search?q=turnpike&type=artist&market=US
+        method: GET
+        headers:
+          Authorization: "Bearer {{ r_login.json.access_token }}"
+
+    - name: Print login response
+      ansible.builtin.debug:
+        var: r_artist_id.json
+
+    - name: Use json query for better info
+      ansible.builtin.debug:
+        msg: "{{ r_artist_id.json | json_query('artists.items[].{name: name, id: id}') }}"
+
+    - name: Get artist details (Turnpike Troubadors)
+      register: r_artist_details
+      ansible.builtin.uri:
+        url: "https://api.spotify.com/v1/artists/{{ (r_artist_id.json | json_query('artists.items[]'))[0].id }}"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ r_login.json.access_token }}"
+
+    - name: Print artist details
+      ansible.builtin.debug:
+        msg: "{{ r_artist_details.json | json_query('{name: name, id: id, followers: followers.total, genres: genres}') }}"

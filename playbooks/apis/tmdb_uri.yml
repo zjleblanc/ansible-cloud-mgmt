@@ -1,0 +1,55 @@
+---
+- hosts: localhost
+  name: Manage TMDB account with uri
+  gather_facts: false
+
+  vars:
+    tmdb_api_url: "https://api.themoviedb.org/3"
+    tmdb_account_id: "20850360"
+    tmdb_api_key: "{{ lookup('env', 'TMDB_API_KEY') }}"
+    tmdb_username: "{{ lookup('env', 'TMDB_USERNAME') }}"
+    tmdb_password: "{{ lookup('env', 'TMDB_PASSWORD') }}"
+
+  tasks:
+    - name: Create request token
+      register: r_req_token
+      ansible.builtin.uri:
+        url: "{{ tmdb_api_url }}/authentication/token/new?api_key={{ tmdb_api_key }}"
+        method: GET
+
+    - name: Debug request token
+      ansible.builtin.debug:
+        var: r_req_token.json
+
+    - name: Validate token with login
+      ansible.builtin.uri:
+        url: "{{ tmdb_api_url }}/authentication/token/validate_with_login?api_key={{ tmdb_api_key }}"
+        method: POST
+        body_format: json
+        body:
+          username: "{{ tmdb_username }}"
+          password: "{{ tmdb_password }}"
+          request_token: "{{ r_req_token['json']['request_token'] }}"
+
+    - name: Create session
+      register: r_session
+      ansible.builtin.uri:
+        url: "{{ tmdb_api_url }}/authentication/session/new?api_key={{ tmdb_api_key }}"
+        method: POST
+        body_format: json
+        body:
+          request_token: "{{ r_req_token['json']['request_token'] }}"
+
+    - name: Set auth query
+      ansible.builtin.set_fact:
+        tmdb_auth_query: "api_key={{ tmdb_api_key }}&session_id={{ r_session['json']['session_id'] }}"
+
+    - name: Get favorite movies
+      register: r_fav_movies
+      ansible.builtin.uri:
+        url: "{{ tmdb_api_url }}/account/{{ tmdb_account_id }}/favorite/movies?{{ tmdb_auth_query }}"
+        method: GET
+
+    - name: Debug favorite movies
+      ansible.builtin.debug:
+        var: r_fav_movies.json
