@@ -3,6 +3,9 @@
   hosts: localhost
   gather_facts: false
 
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
   tasks:
     - name: Gather information about a particular instance using ID
       register: r_instance_info
