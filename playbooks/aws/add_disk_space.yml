@@ -48,7 +48,7 @@
   tasks:
     - name: Wait for system to become reachable over WinRM
       ansible.builtin.wait_for_connection:
-        timeout: 300
+        timeout: "{{ reboot_timeout | default(120) }}"
 
     - name: Resize drive to max available size
       community.windows.win_partition:
