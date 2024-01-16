@@ -2,6 +2,7 @@
 - name: Add disk space to EC2 instance
   hosts: localhost
   gather_facts: false
+  tags: expand_disk
 
   vars:
     ansible_python_interpreter: /usr/bin/python3
@@ -42,6 +43,7 @@
 - name: Expand the filesystem
   hosts: "{{ _host | default(omit) }}"
   gather_facts: false
+  tags: expand_fs
 
   tasks:
     - name: Wait for system to become reachable over WinRM
