@@ -1,0 +1,37 @@
+<powershell>
+# Disable .Net Optimization Service
+Get-ScheduledTask *ngen* | Disable-ScheduledTask
+
+# Disable Windows Auto Updates
+# https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/troubleshooting-windows-instances.html#high-cpu-issue
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v AUOptions /t REG_DWORD /d 1 /f
+net stop wuauserv
+net start wuauserv
+
+# Remove policies stopping us from enabling WinRM
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service" /v AllowBasic /f
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service" /v AllowUnencryptedTraffic /f
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service" /v DisableRunAs /f
+
+# Disable Windows Defender Monitoring
+Set-MpPreference -DisableRealtimeMonitoring $true
+
+# Enable WinRM
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/ansible/ansible/devel/examples/scripts/ConfigureRemotingForAnsible.ps1 -OutFile C:\ConfigureRemotingForAnsible.ps1
+C:\ConfigureRemotingForAnsible.ps1 -ForceNewSSLCert -EnableCredSSP
+
+# add ec2-user
+$Password = ConvertTo-SecureString "{{ ansible_password }}" -AsPlainText -Force
+New-LocalUser -Name "ec2-user" -Description "Ansible Service Account" -Password $Password
+Add-LocalGroupMember -Group "Administrators" -Member "ec2-user"
+
+# install NewRelic
+[Net.ServicePointManager]::SecurityProtocol = 'tls12, tls'; $WebClient = New-Object System.Net.WebClient
+$WebClient.Proxy = New-Object System.Net.WebProxy($env:HTTPS_PROXY, $true)
+$WebClient.DownloadFile("https://download.newrelic.com/install/newrelic-cli/scripts/install.ps1", "$env:TEMP\install.ps1")
+& PowerShell.exe -ExecutionPolicy Bypass -File $env:TEMP\install.ps1; $env:NEW_RELIC_API_KEY='{{ new_relic_api_key }}'
+$env:NEW_RELIC_ACCOUNT_ID='{{ new_relic_account_id }}'
+& 'C:\Program Files\New Relic\New Relic CLI\newrelic.exe' install -y
+
+Rename-Computer -NewName {{ ec2_instance_name }} -Force -Restart
+</powershell>
