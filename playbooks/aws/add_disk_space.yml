@@ -35,7 +35,8 @@
   handlers:
     - name: Restart ec2
       amazon.aws.ec2_instance:
-        name: "{{ _host }}"
+        instance_ids:
+          - "{{ r_instance_info['instances'][0]['instance_id'] }}"
         state: restarted
 
 - name: Expand the filesystem
