@@ -54,7 +54,7 @@
         ansible_host: "{{ r_post_reboot_info['instances'][0]['public_ip_address'] }}"
 
 - name: Expand the filesystem
-  hosts: "{{ ec2_post_reboot | default(_host) | default(omit) }}"
+  hosts: ec2_post_reboot
   gather_facts: false
   tags: expand_fs
 
