@@ -1,4 +1,7 @@
 <powershell>
+# AWS Windows AMI - Retrieve Instance Metadata
+# https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/instancedata-data-retrieval.html#instance-metadata-ex-7
+
 # Disable .Net Optimization Service
 Get-ScheduledTask *ngen* | Disable-ScheduledTask
 
@@ -33,5 +36,19 @@ $WebClient.DownloadFile("https://download.newrelic.com/install/newrelic-cli/scri
 $env:NEW_RELIC_ACCOUNT_ID='{{ new_relic_account_id }}'
 & 'C:\Program Files\New Relic\New Relic CLI\newrelic.exe' install -y
 
-Rename-Computer -NewName {{ ec2_instance_name }} -Force -Restart
+# change Windows computer name to Name tag
+$instanceId = (Invoke-WebRequest http://169.254.169.254/latest/meta-data/instance-id -UseBasicParsing).Content
+$instanceName = (Get-EC2Tag -filter @{ Name="resource-id"; Value=$instanceid }, @{ Name="key"; Value="Name"}).Value
+$pattern = "^(?![0-9]{1,15}$)[a-zA-Z0-9-]{1,15}$"
+If ($instanceName -match $pattern) {
+	Try {
+		Rename-Computer -NewName $instanceName -Force -Restart -ErrorAction Stop
+	} Catch {
+		$ErrorMessage = $_.Exception.Message
+    Write-Output "Rename failed: $ErrorMessage"
+  }
+}
+Else {
+	Throw "Provided name not a valid hostname. Please ensure Name value is between 1 and 15 characters in length and contains only alphanumeric or hyphen characters"
+}
 </powershell>

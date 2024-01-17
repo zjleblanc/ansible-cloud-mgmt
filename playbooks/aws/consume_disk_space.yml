@@ -1,8 +1,12 @@
 - name: Expand the filesystem
   hosts: "{{ _host | default(omit) }}"
-  gather_facts: false
+  gather_facts: true
 
   tasks:
+    - name: Debug the facts
+      ansible.builtin.debug:
+        msg: "{{ ansible_facts['hostname'] }}"
+
     - name: Wait for system to become reachable over WinRM
       ansible.windows.win_powershell:
         script: $file = [System.IO.File]::Create("C:\users\ec2-user\dummylarge.txt"); $file.SetLength(10GB); $file.Close();
