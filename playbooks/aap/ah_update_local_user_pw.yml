@@ -1,0 +1,12 @@
+---
+- name: Update the password for an Automation Hub local user
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: "Update password for {{ pah_username }}"
+      infra.ah_configuration.user:
+        username: "{{ pah_username }}"
+        password: "{{ pah_new_password }}"
+        state: 
