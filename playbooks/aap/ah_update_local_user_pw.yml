@@ -9,4 +9,4 @@
       infra.ah_configuration.user:
         username: "{{ pah_username }}"
         password: "{{ pah_new_password }}"
-        state: 
+        state: present
