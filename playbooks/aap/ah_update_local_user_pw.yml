@@ -5,8 +5,8 @@
   become: false
 
   tasks:
-    - name: Update password for user
-      infra.ah_configuration.user:
+    - name: "Update password for {{ pah_username }}"
+      infra.ah_configuration.ah_user:
         username: "{{ pah_username }}"
         password: "{{ pah_new_password }}"
         state: present
