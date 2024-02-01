@@ -5,11 +5,14 @@
   gather_facts: false
 
   tasks:
-    - name: Gather env facts
-      ansible.builtin.setup:
-        gather_subset:
-          - env
-
-    - name: Print the env
-      ansible.builtin.debug:
-        var: hostvars[inventory_hostname]['ansible_env']
+    - name: Get an access token
+      register: r_refresh_token
+      no_log: true
+      ansible.builtin.uri:
+        url: https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+        method: POST
+        body_format: form-urlencoded
+        body:
+          grant_type: refresh_token
+          client_id: cloud-services
+          refresh_token: "{{ generic_token }}"

@@ -1,0 +1,10 @@
+---
+- name: Create a vm instance on aws using the Windows AMI
+  hosts: localhost
+
+  tasks:
+    # Create a new VPC in AWS
+
+    # Create a subnet in VPC
+
+    # Create a new Windows VM in the subnet

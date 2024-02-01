@@ -1,0 +1,39 @@
+---
+- name: Snapshot ec2 volume
+  hosts: "{{ _hosts | default('omit') }}"
+  gather_facts: false
+
+  tasks:
+    - name: Snapshot ec2
+      delegate_to: localhost
+      block:
+        - name: Get EC2 instance volumes
+          register: r_vol_info
+          ec2_vol_info:
+            region: "{{ aws_region }}"
+            filters:
+              attachment.instance-id: "{{ instance_id }}"
+
+        - name: Snapshot volumes
+          loop: "{{ r_vol_info.volumes }}"
+          loop_control:
+            loop_var: volume
+            label: "{{ volume.id }}"
+          ec2_snapshot:
+            region: "{{ aws_region }}"
+            volume_id: "{{ volume.id }}"
+            description: Snapshot taken by ansible on {{ lookup('pipe', 'date +%Y%m%d%H%M%S') }}
+            snapshot_tags:
+              name: "{{ tags['Name'] }}"
+              ansible_inventory_hostname: "{{ inventory_hostname }}"
+
+        - name: Start ec2 instance
+          ec2_instance:
+            region: "{{ aws_region }}"
+            instance_ids: "{{ instance_id }}"
+            state: started
+            wait: true
+
+        - name: Wait for ec2 to become reachable
+          delegate_to: "{{ inventory_hostname }}"
+          ansible.builtin.wait_for_connection:
