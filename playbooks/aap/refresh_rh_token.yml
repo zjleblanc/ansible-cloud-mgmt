@@ -1,0 +1,15 @@
+---
+- name: Refresh Red Hat Automation Hub Token
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  tasks:
+    - name: Gather env facts
+      ansible.builtin.setup:
+        gather_subset:
+          - env
+
+    - name: Print the env
+      ansible.builtin.debug:
+        var: hostvars[inventory_hostname]['ansible_env']
