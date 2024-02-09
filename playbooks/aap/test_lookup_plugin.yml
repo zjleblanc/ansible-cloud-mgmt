@@ -6,7 +6,9 @@
 
   tasks:
     - name: Use the Azure Key Vault lookup plugin
-      when: az_client_secret is defined
+      when:
+        - az_client_secret is defined
+        - az_client_secret != ''
       environment:
         AZ_TENANT_ID: "{{ az_tenant_id }}"
         AZ_CLIENT_ID: "{{ az_client_id }}"
