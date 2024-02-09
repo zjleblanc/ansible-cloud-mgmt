@@ -14,4 +14,4 @@
         AZ_CLIENT_ID: "{{ az_client_id }}"
         AZ_CLIENT_SECRET: "{{ az_client_secret }}"
       ansible.builtin.set_fact:
-        test_secret: "{{ lookup('azure.azcollection.azure_keyvault_secret', az_kv_secret_name, vault_url=az_vault_url) }}"
+        test_secret: "{{ lookup('azure.azcollection.azure_keyvault_secret', az_kv_secret_name, vault_url=az_vault_url, use_msi=False) }}"
