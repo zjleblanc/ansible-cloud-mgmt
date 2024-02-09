@@ -9,9 +9,10 @@
       when:
         - az_client_secret is defined
         - az_client_secret != ''
-      environment:
-        AZ_TENANT_ID: "{{ az_tenant_id }}"
-        AZ_CLIENT_ID: "{{ az_client_id }}"
-        AZ_CLIENT_SECRET: "{{ az_client_secret }}"
-      ansible.builtin.set_fact:
-        test_secret: "{{ lookup('azure.azcollection.azure_keyvault_secret', az_kv_secret_name, vault_url=az_vault_url, use_msi=False) }}"
+      vars:
+        tenant: "{{ az_tenant_id }}"
+        client: "{{ az_client_id }}"
+        secret: "{{ az_client_secret }}"
+        vault: "{{ az_vault_url }}"
+      ansible.builtin.set_fact: # noqa yaml[line-length]
+        test_secret: "{{ lookup('azure.azcollection.azure_keyvault_secret', az_kv_secret_name, vault_url=vault, client_id=client, secret=secret, tenant_id=tenant) }}"
