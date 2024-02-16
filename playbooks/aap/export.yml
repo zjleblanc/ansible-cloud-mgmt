@@ -1,0 +1,16 @@
+---
+- name: Export Controller Resources
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: Export all assets
+      register: r_aap_export
+      ansible.controller.export:
+        all: true
+
+    - name: Print assets
+      ansible.builtin.copy:
+        content: "{{ r_aap_export.assets }}"
+        dest: "{{ playbook_dir }}/assets.json"

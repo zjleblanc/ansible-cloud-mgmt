@@ -1,6 +1,7 @@
 ansible.cfg
 vaulted/
 .vscode/
+**/assets.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
