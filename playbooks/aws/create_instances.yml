@@ -1,0 +1,71 @@
+---
+- name: Create Cloud Infra
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    aws_vm_owner: zach
+    aws_vpc_name: aws-test-vpc
+    aws_keypair_name: autodotes-key
+    aws_instance_size: t3.micro
+    aws_sg_name: aws-test-sg
+    aws_subnet_name: aws-test-subnet
+    aws_userdata: false
+    aws_purpose_tag: "ServiceNow inventory example"
+    aws_ec2_wait: true
+
+  tasks:
+    - name: Create RHEL7 VMs
+      tags: rhel7
+      loop:
+        - tiny_rhel7_demo_01
+        - tiny_rhel7_demo_02
+      loop_control:
+        loop_var: aws_vm_name
+      vars:
+        aws_ansiblegroup_tag: "tiny_rhel7"
+        aws_env_tag: "prod"
+        aws_blueprint: "tiny_rhel7"
+        aws_image_filter: 'RHEL-7.9_HVM*'
+        aws_image_architecture: x86_64
+      ansible.builtin.include_tasks:
+        file: tasks/create_vm.yml
+        apply:
+          tags: rhel7
+
+    - name: Create RHEL9 VMs
+      tags: rhel9
+      loop:
+        - tiny_rhel9_demo_01
+        - tiny_rhel9_demo_02
+      loop_control:
+        loop_var: aws_vm_name
+      vars:
+        aws_ansiblegroup_tag: "tiny_rhel9"
+        aws_env_tag: "prod"
+        aws_blueprint: "tiny_rhel9"
+        aws_image_filter: 'RHEL-9*HVM-*Hourly*'
+        aws_image_architecture: x86_64
+      ansible.builtin.include_tasks:
+        file: tasks/create_vm.yml
+        apply:
+          tags: rhel9
+
+    - name: Create Windows VMs
+      tags: windows
+      loop:
+        - med_win19_demo_01
+        - med_win19_demo_02
+      loop_control:
+        loop_var: aws_vm_name
+      vars:
+        aws_ansiblegroup_tag: "med_win19"
+        aws_env_tag: "prod"
+        aws_blueprint: "med_win19"
+        aws_image_filter: 'Windows_Server-2019-English-Core-Base*'
+        aws_image_architecture: x86_64
+        aws_userdata: true
+      ansible.builtin.include_tasks:
+        file: tasks/create_vm.yml
+        apply:
+          tags: windows

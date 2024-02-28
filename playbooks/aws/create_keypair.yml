@@ -1,0 +1,19 @@
+---
+- name: Create AWS keypair
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  vars:
+    aws_key_name: autodotes-key
+    aws_keypair_owner: zach
+
+  tasks:
+    - name: Create AWS keypair
+      amazon.aws.ec2_key:
+        name: "{{ aws_key_name }}"
+        region: "us-east-2"
+        key_material: "{{ aws_public_key }}"
+        state: present
+        tags:
+          owner: "{{ aws_keypair_owner }}"
