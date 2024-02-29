@@ -1,0 +1,20 @@
+---
+- name: Gather VMWare Info
+  hosts: localhost
+  become: false
+  gather_facts: false
+  
+  vars:
+    vm_name: vmware-demo-1
+    vm_desired_state: poweredoff
+
+  tasks:
+    - name: Find vm info by name
+      register: r_vm_info
+      community.vmware.vmware_vm_info:
+        vm_name: "{{ vm_name }}"
+
+    - name: "Set guest to desired state | {{ vm_desired_state }}"
+      community.vmware.vmware_guest:
+        uuid: "{{ r_vm_info.virtual_machines[0].uuid }}"
+        state: "{{ vm_desired_state }}"

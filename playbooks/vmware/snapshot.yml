@@ -1,0 +1,36 @@
+---
+- name: Gather VMWare Info
+  hosts: localhost
+  become: false
+  gather_facts: false
+  
+  vars:
+    vm_name: vmware-demo-1
+    snapshot_ttl_days: 30
+
+  tasks:
+    - name: Find vm info by name
+      register: r_vm_info
+      community.vmware.vmware_vm_info:
+        vm_name: "{{ vm_name }}"
+
+    - name: Gather snapshot information about the virtual machine in the given vCenter
+      register: r_guest_snapshot_info
+      community.vmware.vmware_guest_snapshot_info:
+        datacenter: "{{ r_vm_info.virtual_machines[0].datacenter }}"
+        folder: "{{ r_vm_info.virtual_machines[0].folder }}"
+        name: "{{ vm_name }}"
+
+    - name: Get recent snapshots
+      ansible.builtin.set_fact:
+        days_since_last_snapshot: "{{ r_guest_snapshot_info.guest_snapshots | last_snapshot }}"
+
+    - name: Create a snapshot
+      when: days_since_last_snapshot|int < 0 or days_since_last_snapshot|int >= snapshot_ttl_days
+      community.vmware.vmware_guest_snapshot:
+        datacenter: "{{ r_vm_info.virtual_machines[0].datacenter }}"
+        folder: "{{ r_vm_info.virtual_machines[0].folder }}"
+        name: "{{ vm_name }}"
+        state: present
+        snapshot_name: "snapshot-{{ lookup('pipe', 'date +%Y%m%d-%H%M%S') }}"
+        description: "Snapshot taken by Ansible on {{ lookup('pipe', 'date +%Y/%m/%d') }}"
