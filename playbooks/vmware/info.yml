@@ -7,7 +7,7 @@
   tasks:
     - name: Gather cluster info from given datacenter
       register: r_cluster_info
-      vmware.vmware_rest.vmware_cluster_info:
+      vmware.vmware_rest.vcenter_cluster_info:
         datacenter: SDDC-Datacenter
 
     - name: Debug cluster info
@@ -17,7 +17,7 @@
 
     - name: Gather information about all datacenters
       register: r_datacenter_info
-      community.vmware.vmware_datacenter_info:
+      vmware.vmware_rest.vcenter_datacenter_info:
 
     - name: Debug datacenter info
       tags: debug
@@ -26,7 +26,7 @@
 
     - name: Gather info for datastores
       register: r_datastore_info
-      community.vmware.vmware_datastore_info:
+      vmware.vmware_rest.vcenter_datastore_info:
         datacenter_name: SDDC-Datacenter
 
     - name: Debug datastore info
@@ -37,16 +37,16 @@
     - name: Gather info for ESXi hosts
       register: r_host_facts
       loop: "{{ r_cluster_info.clusters['Cluster-1'].hosts }}"
-      community.vmware.vmware_host_facts:
-        esxi_hostname: "{{ item.name }}"
-    
+      vmware.vmware_rest.vcenter_host_info:
+        names: "{{ item.name }}"
+
     - name: Debug host facts
       ansible.builtin.debug:
         var: r_host_facts
 
     - name: Gather all registered virtual machines
       register: r_guest_info
-      community.vmware.vmware_vm_info:
+      vmware.vmware_rest.vcenter_vm_info:
 
     - name: Debug guest facts
       ansible.builtin.debug:
