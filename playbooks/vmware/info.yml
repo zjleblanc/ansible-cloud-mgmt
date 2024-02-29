@@ -36,9 +36,7 @@
 
     - name: Gather info for ESXi hosts
       register: r_host_facts
-      loop: "{{ r_cluster_info.clusters['Cluster-1'].hosts }}"
       vmware.vmware_rest.vcenter_host_info:
-        names: "{{ item.name }}"
 
     - name: Debug host facts
       ansible.builtin.debug:
