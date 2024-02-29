@@ -8,7 +8,7 @@
     - name: Gather cluster info from given datacenter
       register: r_cluster_info
       vmware.vmware_rest.vcenter_cluster_info:
-        datacenter: SDDC-Datacenter
+        datacenters: SDDC-Datacenter
 
     - name: Debug cluster info
       tags: debug
@@ -27,7 +27,7 @@
     - name: Gather info for datastores
       register: r_datastore_info
       vmware.vmware_rest.vcenter_datastore_info:
-        datacenter_name: SDDC-Datacenter
+        datacenters: SDDC-Datacenter
 
     - name: Debug datastore info
       tags: debug
