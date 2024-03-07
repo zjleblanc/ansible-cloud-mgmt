@@ -4,6 +4,7 @@
   gather_facts: false
 
   vars:
+    # Alow override in Job Template
     ah_repositories:
       - rh-certified
       - validated
