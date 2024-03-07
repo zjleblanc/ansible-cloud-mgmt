@@ -1,0 +1,19 @@
+---
+- name: Sync Automation Hub repositories
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    ah_repositories:
+      - rh-certified
+      - validated
+      - community
+
+  tasks:
+    - name: Sync rh-certified repo without waiting
+      loop: "{{ ah_repositories }}"
+      loop_control:
+        loop_var: repository
+      infra.ah_configuration.ah_repository_sync:
+        name: "{{ repository }}"
+        wait: false
