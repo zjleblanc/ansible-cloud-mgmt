@@ -14,6 +14,6 @@ class FilterModule(object):
         for dev in devices.keys():
             partitions = devices[dev].get('partitions', {})
             for part in partitions.keys():
-                if 'root' in partitions[part].get('labels', []):
+                if 'root' in partitions[part].get('links', {}).get('labels', []):
                     root_devs.append({"dev": dev, "part": part, "num": dev.replace(part, "")})
         return root_devs
