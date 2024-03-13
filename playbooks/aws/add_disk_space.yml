@@ -50,7 +50,6 @@
     - name: Add host with updated IP
       ansible.builtin.add_host:
         name: ec2_post_reboot
-        groups: platform_windows
         ansible_host: "{{ r_post_reboot_info['instances'][0]['public_ip_address'] }}"
 
 - name: Expand the filesystem
@@ -59,11 +58,27 @@
   tags: expand_fs
 
   tasks:
-    - name: Wait for system to become reachable over WinRM
+    - name: Wait for system to become reachable
       ansible.builtin.wait_for_connection:
         timeout: "{{ reboot_timeout | default(300) }}"
 
+    - name: Gather facts
+      ansible.builtin.setup:
+
     - name: Resize drive to max available size
+      when: ansible_distribution | lower == 'windows'
       community.windows.win_partition:
         drive_letter: C
         partition_size: -1
+
+    - name: Resize root partition
+      when: ansible_system | lower == 'linux'
+      loop: "{{ ansible_devices | root_partitions }}" # filter_plugins.common.do_find_root_partitions
+      loop_control:
+        loop_var: part
+      community.general.parted:
+        device: "/dev/{{ part.dev }}"
+        number: "{{ part.num }}"
+        part_end: "100%"
+        resize: true
+        state: present
