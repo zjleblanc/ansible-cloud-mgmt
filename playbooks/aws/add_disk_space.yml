@@ -25,6 +25,7 @@
           volume-id: "{{ r_instance_info['instances'][0]['block_device_mappings'][0]['ebs']['volume_id'] }}"
 
     - name: Resize volume
+      tags: resize
       register: r_vol
       amazon.aws.ec2_vol:
         instance: "{{ r_instance_info['instances'][0]['instance_id'] }}"
@@ -33,6 +34,7 @@
         volume_size: "{{ (r_vol_info['volumes'][0].size * 1.2) | round(0, 'ceil') | int }}"
 
     - name: Restart ec2
+      tags: resize
       amazon.aws.ec2_instance:
         instance_ids:
           - "{{ r_instance_info['instances'][0]['instance_id'] }}"
@@ -41,6 +43,7 @@
         wait_timeout: 500
 
     - name: Get ec2 instance info after reboot
+      tags: resize
       register: r_post_reboot_info
       amazon.aws.ec2_instance_info:
         filters:
@@ -50,7 +53,7 @@
     - name: Add host with updated IP
       ansible.builtin.add_host:
         name: ec2_post_reboot
-        ansible_host: "{{ r_post_reboot_info['instances'][0]['public_ip_address'] }}"
+        ansible_host: "{{ (r_post_reboot_info | default(r_vol_info))['instances'][0]['public_ip_address'] }}"
 
 - name: Expand the filesystem
   hosts: ec2_post_reboot
