@@ -74,12 +74,9 @@
         drive_letter: C
         partition_size: -1
 
-    - name: debug filter_plugins.common.do_find_root_partitions
-      ansible.builtin.debug:
-        msg: "{{ ansible_devices | root_partitions }}"
-
     - name: Resize root partition
       when: ansible_system | lower == 'linux'
+      become: true
       loop: "{{ ansible_devices | root_partitions }}" # filter_plugins.common.do_find_root_partitions
       loop_control:
         loop_var: part
