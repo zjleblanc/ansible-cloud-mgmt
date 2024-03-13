@@ -8,7 +8,7 @@
     ansible_python_interpreter: /usr/bin/python3
 
   environment:
-    AWS_REGION: us-east-1
+    AWS_REGION: "{{ _aws_region | default('us-east-1') }}"
 
   tasks:
     - name: Gather information about a particular instance using ID
