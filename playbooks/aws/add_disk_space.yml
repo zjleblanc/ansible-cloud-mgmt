@@ -113,7 +113,7 @@
         - name: Add facts to incident
           delegate_to: localhost
           servicenow.itsm.incident:
-            sys_id: "{{ problem_sys_id }}"
+            sys_id: "{{ incident_sys_id }}"
             attachments: "{{ attachment_files | json_query('[].{path: path}') }}"
 
         - name: Set state to closed
