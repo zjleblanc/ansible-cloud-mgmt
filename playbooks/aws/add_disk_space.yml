@@ -72,6 +72,13 @@
       ansible.builtin.wait_for_connection:
         timeout: "{{ reboot_timeout | default(300) }}"
 
+    - name: Gather facts
+      ansible.builtin.setup:
+        gather_subset:
+          - "!all"
+          - "!min"
+          - distribution
+
     - name: Resize drive to max available size
       when: ansible_distribution | lower == 'windows'
       community.windows.win_partition:
@@ -80,6 +87,9 @@
 
     - name: Gather facts
       ansible.builtin.setup:
+        gather_subset:
+          - devices
+          - mounts
 
     - name: Add facts to incident
       when: incident_sys_id is defined
