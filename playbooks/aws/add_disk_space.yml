@@ -11,6 +11,13 @@
     AWS_REGION: "{{ _aws_region | default('us-east-1') }}"
 
   tasks:
+    - name: Update state of incident
+      when: incident_sys_id is defined
+      tags: snow
+      servicenow.itsm.incident:
+        sys_id: "{{ incident_sys_id }}"
+        state: in_progress
+
     - name: Gather information about a particular instance using ID
       register: r_instance_info
       amazon.aws.ec2_instance_info:
@@ -65,11 +72,42 @@
       ansible.builtin.wait_for_connection:
         timeout: "{{ reboot_timeout | default(300) }}"
 
-    - name: Gather facts
-      ansible.builtin.setup:
-
     - name: Resize drive to max available size
       when: ansible_distribution | lower == 'windows'
       community.windows.win_partition:
         drive_letter: C
         partition_size: -1
+
+    - name: Gather facts
+      ansible.builtin.setup:
+
+    - name: Add facts to incident
+      when: incident_sys_id is defined
+      tags: snow
+      block:
+        - name: Setup attachment files
+          delegate_to: localhost
+          ansible.builtin.set_fact:
+            attachment_files:
+              - path: /tmp/ansible_facts.json
+                data: "{{ ansible_facts | to_nice_json }}"
+
+        - name: Create attachments
+          delegate_to: localhost
+          loop: "{{ attachment_files }}"
+          ansible.builtin.copy:
+            content: "{{ item.data }}"
+            dest: "{{ item.path }}"
+            mode: 0755
+
+        - name: Add facts to incident
+          delegate_to: localhost
+          servicenow.itsm.incident:
+            sys_id: "{{ problem_sys_id }}"
+            attachments: "{{ attachment_files | json_query('[].{path: path}') }}"
+
+        - name: Set state to closed
+          ansible.builtin.set_stats:
+            data:
+              incident_state: closed
+              close_notes: Dynatrace + Event-Driven Ansible auto-remediation successful

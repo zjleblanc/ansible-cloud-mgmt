@@ -1,0 +1,76 @@
+---
+- name: Create ServiceNow incident
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    problem_view: ui/apps/dynatrace.classic.problems/#problems/problemdetails;gtf=-6h;gf=all;
+    inc_short_description: "{{ ansible_eda.event['title'] }} [{{ _host }}]"
+    inc_endswith: "[{{ _host }}]"
+    inc_description: Auto-generated incident by Ansible
+    inc_impact: low
+    inc_urgency: low
+
+  tasks:
+    - name: Check if ServiceNow Incident exists
+      register: r_incident_query
+      servicenow.itsm.incident_info:
+        query:
+          - description: ENDSWITH {{ inc_endswith }}
+            short_description: = Demo Site Update Violation
+            caller: = admin
+
+    - name: Create and save incident record info
+      when: r_incident_query.records | length == 0
+      block:
+        - name: Create incident
+          register: r_incident
+          servicenow.itsm.incident:
+            state: new
+            caller: admin
+            short_description: "{{ inc_short_description }}"
+            description: "{{ inc_description }}"
+            impact: "{{ inc_impact }}"
+            urgency: "{{ inc_urgency }}"
+            other: "{{ inc_other | default(omit) }}"
+
+        - name: Save incident id as fact
+          ansible.builtin.set_fact:
+            incident_sys_id: "{{ r_incident.record.sys_id }}"
+
+    - name: Update and save incident record info
+      when: r_incident_query.records | length > 0
+      block:
+        - name: Update incident
+          ansible.builtin.debug:
+            msg: Incident already exists, skipping create step...
+
+        - name: Save incident id as fact
+          ansible.builtin.set_fact:
+            incident_sys_id: "{{ r_incident_query.records[0].sys_id }}"
+
+    - name: Save incident id as artifact
+      ansible.builtin.set_stats:
+        data:
+          incident_sys_id: "{{ incident_sys_id }}"
+
+    - name: Add Event-Driven Ansible payload
+      when: ansible_eda is defined
+      block:
+        - name: Setup attachment files
+          ansible.builtin.set_fact:
+            attachment_files:
+              - path: /tmp/event_info.json
+                data: "{{ ansible_eda.event | to_nice_json }}"
+
+        - name: Create attachments
+          loop: "{{ attachment_files }}"
+          ansible.builtin.copy:
+            content: "{{ item.data }}"
+            dest: "{{ item.path }}"
+            mode: 0755
+
+        - name: Add attachment
+          servicenow.itsm.incident:
+            sys_id: "{{ incident_sys_id }}"
+            attachments: "{{ attachment_files | json_query('[].{path: path}') }}"

@@ -1,0 +1,29 @@
+---
+- name: Update ServiceNow incident
+  hosts: localhost
+  gather_facts: false
+
+  vars:
+    # incident_sys_id:
+    incident_state: on_hold
+    close_code: Solved (Permanently)
+    close_notes: Ansible remediation successful
+    hold_reason: awaiting_change
+
+  tasks:
+    - name: Move incident to closed state
+      when: incident_state == 'closed'
+      servicenow.itsm.incident:
+        sys_id: "{{ incident_sys_id }}"
+        state: "{{ incident_state }}"
+        close_code: "{{ close_code }}"
+        close_notes: "{{ close_notes }}"
+
+    - name: Move incident to on hold state
+      when: incident_state == 'on_hold'
+      servicenow.itsm.incident:
+        sys_id: "{{ incident_sys_id }}"
+        state: "{{ incident_state }}"
+        hold_reason: "{{ hold_reason }}"
+        other:
+          comments: "Ansible remediation workflow failed"
