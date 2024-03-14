@@ -5,6 +5,7 @@
 
   vars:
     problem_view: ui/apps/dynatrace.classic.problems/#problems/problemdetails;gtf=-6h;gf=all;
+    inc_caller: zleblanc
     inc_short_description: "{{ ansible_eda.event['title'] }} [{{ _host }}]"
     inc_endswith: "[{{ _host }}]"
     inc_description: Auto-generated incident by Ansible
@@ -27,7 +28,7 @@
           register: r_incident
           servicenow.itsm.incident:
             state: new
-            caller: admin
+            caller: "{{ inc_caller }}"
             short_description: "{{ inc_short_description }}"
             description: "{{ inc_description }}"
             impact: "{{ inc_impact }}"
