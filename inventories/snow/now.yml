@@ -31,7 +31,7 @@ groups:
   sn_ec2_instances: name.startswith("ec2-") or fqdn.startswith("ec2-")
 
 # Use the fqdn (instead of name) as the inventory_hostname
-inventory_hostname_source: fqdn
+# inventory_hostname_source: fqdn
 
 compose:
   ansible_host: fqdn | ternary(fqdn, ip_address) | ternary(ip_address, name) # precedence fqdn -> ip_adress -> name
