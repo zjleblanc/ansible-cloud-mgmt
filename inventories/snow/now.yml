@@ -1,0 +1,38 @@
+plugin: servicenow.itsm.now
+
+# Environment variables for connection details
+# SN_HOST="https://example.service-now.com"
+# SN_USERNAME="admin"
+# SN_PASSWORD="password"
+
+# No expressions here
+columns: 
+  - name
+  - host_name
+  - fqdn
+  - ip_address
+  - sys_class_name
+  - install_status
+  - classification
+  - vendor
+  - os
+  - os_version
+
+keyed_groups:
+  - key: sys_class_name.replace(" ", "_").lower()
+    prefix: 'sn_class'
+    separator: '_'
+  - key: os.replace(" ", "_").lower()
+    prefix: sn_os
+
+groups:
+  sn_ec2_instances: name.startswith("ec2-") or fqdn.startswith("ec2-")
+
+compose:
+  classification: classification | lower
+
+query:
+  - os: = AIX
+  - os_version: "!="
+
+# sysparm_query: os=AIX^os_version!=
