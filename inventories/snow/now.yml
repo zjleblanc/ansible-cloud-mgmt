@@ -5,7 +5,8 @@ plugin: servicenow.itsm.now
 # SN_USERNAME="admin"
 # SN_PASSWORD="password"
 
-# No expressions here
+# No expressions here, 1:1 mapping between
+# column value and hostvar
 columns: 
   - name
   - host_name
@@ -19,20 +20,27 @@ columns:
   - os_version
 
 keyed_groups:
+    # example: sn_class_windows_server
   - key: sys_class_name.replace(" ", "_").lower()
-    prefix: 'sn_class'
-    separator: '_'
+    prefix: sn_class
+    # example: sn_os_aix
   - key: os.replace(" ", "_").lower()
     prefix: sn_os
 
 groups:
   sn_ec2_instances: name.startswith("ec2-") or fqdn.startswith("ec2-")
 
+# Use the fqdn (instead of name) as the inventory_hostname
+inventory_hostname_source: fqdn
+
 compose:
+  ansible_host: fqdn | ternary(fqdn, ip_address) | ternary(ip_address, name) # precedence fqdn -> ip_adress -> name
   classification: classification | lower
 
-query:
-  - os: = AIX
-  - os_version: "!="
+# If using a single filter or combining with OR, query is a nice structure
+# query:
+#   - os: = AIX
+#   - os_version: "!="
 
-# sysparm_query: os=AIX^os_version!=
+# If using a filter that requires AND operations, sysparm_query is necessary
+sysparm_query: os=AIX^os_version!= # plain english: the os is AIX and the os version is defined
