@@ -36,7 +36,7 @@ groups:
 compose:
   ansible_host: fqdn | ternary(fqdn, ip_address) | ternary(ip_address, name) # precedence fqdn -> ip_adress -> name
   classification: classification | lower
-  target_env: "{{ lookup('ansible.builtin.env', 'target_env') }}"
+  target_env: lookup('ansible.builtin.env', 'target_env')
 
 # If using a single filter or combining with OR, query is a nice structure
 # query:
