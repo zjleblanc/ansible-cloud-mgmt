@@ -36,6 +36,7 @@ groups:
 compose:
   ansible_host: fqdn | ternary(fqdn, ip_address) | ternary(ip_address, name) # precedence fqdn -> ip_adress -> name
   classification: classification | lower
+  target_env: "{{ lookup('ansible.builtin.env', 'target_env') }}"
 
 # If using a single filter or combining with OR, query is a nice structure
 # query:
@@ -43,4 +44,4 @@ compose:
 #   - os_version: "!="
 
 # If using a filter that requires AND operations, sysparm_query is necessary
-sysparm_query: os=AIX^os_version!= # plain english: the os is AIX and the os version is defined
+sysparm_query: os=Linux Red Hat^os_version=Enterprise Server 3 # plain english: the os is AIX and the os version is defined
