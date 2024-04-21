@@ -1,0 +1,14 @@
+---
+- name: Check if record exists
+  register: r_subnet_vpc
+  servicenow.itsm.api_info:
+    resource: "u_aws_vpc"
+    sysparm_query: "u_id={{ subnet.vpc_id }}"
+
+- name: Add Subnet to CMDB
+  vars:
+    __resource: u_aws_subnet
+    __query: "u_id={{ subnet.id }}"
+    __data: "{{ subnet | to_sn_subnet(r_subnet_vpc.record[0].sys_id) }}"
+  ansible.builtin.include_tasks:
+    file: create_record.yml

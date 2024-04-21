@@ -1,0 +1,111 @@
+---
+sn_field_defaults:
+  active: true
+  unique: false
+  mandatory: true
+
+sn_tables:
+  - label: AWS Virtual Private Cloud
+    name: u_aws_vpc
+    alter_access: true
+    update_access: true
+    fields:
+      - element: u_cidr_block
+        sys_name: CIDR Block
+        internal_type: string
+      - element: u_dhcp_options_id
+        sys_name: DHCP Options Id
+        internal_type: string
+      - element: u_enable_dns_hostnames
+        sys_name: Enable DNS Hostnames
+        internal_type: boolean
+      - element: u_enable_dns_support
+        sys_name: Enable DNS Support
+        internal_type: boolean
+      - element: u_id
+        sys_name: Id
+        internal_type: string
+      - element: u_instance_tenancy
+        sys_name: Instance Tenancy
+        internal_type: string
+      - element: u_is_default
+        sys_name: Is Default
+        internal_type: boolean
+      - element: u_owner_id
+        sys_name: Owner Id
+        internal_type: string
+      - element: u_state
+        sys_name: State
+        internal_type: string
+      - element: u_name
+        sys_name: Name
+        internal_type: string
+  - label: AWS Subnet
+    name: u_aws_subnet
+    alter_access: true
+    update_access: true
+    fields:
+      - element: u_assign_ipv6_address_on_creation
+        internal_type: boolean
+        sys_name: Assign Ipv6 Address On Creation
+      - element: u_availability_zone
+        internal_type: string
+        sys_name: Availability Zone
+      - element: u_availability_zone_id
+        internal_type: string
+        sys_name: Availability Zone Id
+      - element: u_available_ip_address_count
+        internal_type: integer
+        sys_name: Available Ip Address Count
+      - element: u_cidr_block
+        internal_type: string
+        sys_name: Cidr Block
+      - element: u_default_for_az
+        internal_type: boolean
+        sys_name: Default For Az
+      - element: u_enable_dns64
+        internal_type: boolean
+        sys_name: Enable Dns64
+      - element: u_id
+        internal_type: string
+        sys_name: Id
+      - element: u_ipv6_native
+        internal_type: boolean
+        sys_name: Ipv6 Native
+      - element: u_map_customer_owned_ip_on_launch
+        internal_type: boolean
+        sys_name: Map Customer Owned Ip On Launch
+      - element: u_map_public_ip_on_launch
+        internal_type: boolean
+        sys_name: Map Public Ip On Launch
+      - element: u_owner_id
+        internal_type: string
+        sys_name: Owner Id
+      - element: u_enable_resource_name_dns_a_record
+        internal_type: boolean
+        sys_name: Enable Resource Name Dns A Record
+      - element: u_enable_resource_name_dns_aaaa_record
+        internal_type: boolean
+        sys_name: Enable Resource Name Dns Aaaa Record
+      - element: u_hostname_type
+        internal_type: string
+        sys_name: Hostname Type
+      - element: u_state
+        internal_type: string
+        sys_name: State
+      - element: u_subnet_arn
+        internal_type: string
+        sys_name: Subnet Arn
+      - element: u_subnet_id
+        internal_type: string
+        sys_name: Subnet Id
+      - element: u_name
+        internal_type: string
+        sys_name: Name
+      - element: u_vpc_id
+        internal_type: string
+        sys_name: Vpc Id
+      - element: u_vpc
+        internal_type: reference
+        sys_name: Virtual Private Cloud
+        reference: u_aws_vpc

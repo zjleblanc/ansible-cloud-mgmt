@@ -1,0 +1,55 @@
+---
+- name: Gather basic AWS inventory
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  tasks:
+    - name: Gather VPCs
+      register: r_vpc_info
+      amazon.aws.ec2_vpc_net_info:
+
+    - name: Add VPCs to CMDB
+      loop: "{{ r_vpc_info.vpcs }}"
+      loop_control:
+        label: "{{ item.tags.Name }}"
+      vars:
+        __resource: u_aws_vpc
+        __query: "u_id={{ item.id }}"
+        __data: "{{ item | to_sn_vpc }}"
+      ansible.builtin.include_tasks:
+        file: tasks/create_record.yml
+
+    - name: Gather Subnets
+      register: r_vpc_subnet_info
+      amazon.aws.ec2_vpc_subnet_info:
+
+    - name: Add Subnets to CMDB
+      loop: "{{ r_vpc_subnet_info.subnets }}"
+      loop_control:
+        label: "{{ subnet.tags.Name }}"
+        loop_var: subnet
+      ansible.builtin.include_tasks:
+        file: tasks/create_subnet.yml
+
+    - name: Gather Security Groups
+      register: r_ec2_sg_info
+      amazon.aws.ec2_security_group_info:
+
+    - name: Gather EC2 Instances
+      register: r_ec2_instance_info
+      amazon.aws.ec2_instance_info:
+
+    - name: Combine data
+      ansible.builtin.set_fact:
+        aws_data:
+          vpcs: "{{ r_vpc_info.vpcs }}"
+          subnets: "{{ r_vpc_subnet_info.subnets }}"
+          security_groups: "{{ r_ec2_sg_info.security_groups }}"
+          instances: "{{ r_ec2_instance_info.instances }}"
+
+    - name: Write to file
+      ansible.builtin.copy:
+        content: "{{ aws_data | to_nice_yaml }}"
+        dest: "{{ playbook_dir }}/aws_data.yml"
+        mode: 0755

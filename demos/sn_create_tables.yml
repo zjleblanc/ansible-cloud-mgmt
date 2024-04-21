@@ -1,0 +1,17 @@
+---
+- name: Create ServiceNow tables
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  vars_files:
+    - vars/tables.yml
+
+  tasks:
+    - name: Create tables and add fields
+      loop: "{{ sn_tables }}"
+      loop_control:
+        loop_var: table
+        label: "{{ table.name }}"
+      ansible.builtin.include_tasks:
+        file: tasks/create_table.yml

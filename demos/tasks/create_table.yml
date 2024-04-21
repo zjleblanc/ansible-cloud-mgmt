@@ -1,0 +1,24 @@
+# Tasks file to create a Service Now table and add custom fields
+---
+- name: Check if table exists
+  register: r_table_check
+  servicenow.itsm.api_info:
+    resource: sys_db_object
+    sysparm_query: "u_name={{ table.name }}"
+
+- name: Create the table in Service Now
+  when: not r_table_check.record | length
+  register: r_table_create
+  servicenow.itsm.api:
+    resource: sys_db_object
+    action: post
+    data: "{{ table | combine({ 'fields': omit }) }}"
+
+- name: Create the table fields in Service Now
+  when: not r_table_check.record | length
+  register: r_table_create_fields
+  loop: "{{ table.fields }}"
+  servicenow.itsm.api:
+    resource: sys_dictionary
+    action: post
+    data: "{{ sn_field_defaults | combine({ 'name': table.name }) | combine(item) }}"

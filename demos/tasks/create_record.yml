@@ -1,0 +1,13 @@
+---
+- name: Check if record exists
+  register: r_record_check
+  servicenow.itsm.api_info:
+    resource: "{{ __resource }}"
+    sysparm_query: "{{ __query }}"
+
+- name: Create the record in Service Now
+  when: not r_record_check.record | length
+  servicenow.itsm.api:
+    resource: "{{ __resource }}"
+    action: post
+    data: "{{ __data }}"

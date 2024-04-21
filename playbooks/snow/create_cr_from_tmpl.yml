@@ -1,0 +1,40 @@
+---
+- name: Create ServiceNow Change Request from Template
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Create a standard change request
+      register: change
+      servicenow.itsm.change_request:
+        type: standard
+        template: Demo Standard Change Template ZL - 1
+        state: new
+        requested_by: zleblanc
+        assignment_group: Ansible West Tigers
+        # short_description: update an application
+        # description: This change is for a test for upgrading an application
+        other:
+          start_date: '2024-05-01 17:00:00' # 12 noon
+          end_date: '2024-05-02 18:00:00'   # 1 PM
+          category: Application
+          u_subcategory: IT Tools
+          u_target_environment: Dev
+          u_impacted_business_unit: Corporate
+          assigned_to: Zach LeBlanc
+          cmdb_ci: Acrobat
+          work_notes: This is a change to Adobe Acrobat
+
+    - name: Print result
+      ansible.builtin.debug:
+        var: change.record
+
+    # - name: Retrieve change request tasks of the above opened change request
+    #   register: chg_task_info
+    #   servicenow.itsm.change_request_task_info:
+    #     query:
+    #       - change_request_number: "= {{ change.record.number }}"
+
+    # - name: Print result
+    #   ansible.builtin.debug:
+    #     var: chg_task_info
