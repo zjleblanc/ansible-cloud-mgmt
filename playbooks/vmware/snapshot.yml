@@ -3,9 +3,9 @@
   hosts: localhost
   become: false
   gather_facts: false
-  
+
   vars:
-    vm_name: vmware-demo-1
+    vm_name: "{{ _host }}"
     snapshot_ttl_days: 30
 
   tasks:

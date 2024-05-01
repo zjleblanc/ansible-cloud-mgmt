@@ -1,0 +1,19 @@
+plugin: community.vmware.vmware_vm_inventory
+strict: false
+validate_certs: false
+
+hostnames:
+- config.name
+
+resources:
+  - datacenter:
+      - SDDC-Datacenter
+    resources:
+      - folder:
+          - sandbox-7qksd
+
+compose:
+  ansible_host: public_ip | default(guest.ipAddress)
+
+groups:
+  vmware: true
