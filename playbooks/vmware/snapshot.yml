@@ -39,6 +39,6 @@
             description: "Snapshot taken by Ansible on {{ lookup('pipe', 'date +%Y/%m/%d') }}"
 
         - name: Set stat
-          ansible.builtin.set_stat:
+          ansible.builtin.set_stats:
             data:
               vmware_snapshot: "{{ r_vmware_snapshot.snapshot_results }}"
