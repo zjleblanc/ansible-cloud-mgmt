@@ -25,12 +25,20 @@
       ansible.builtin.set_fact:
         days_since_last_snapshot: "{{ r_guest_snapshot_info.guest_snapshots | last_snapshot }}"
 
-    - name: Create a snapshot
+    - name: Snapshot vm
       when: days_since_last_snapshot|int < 0 or days_since_last_snapshot|int >= snapshot_ttl_days
-      community.vmware.vmware_guest_snapshot:
-        datacenter: "{{ r_vm_info.virtual_machines[0].datacenter }}"
-        folder: "{{ r_vm_info.virtual_machines[0].folder }}"
-        name: "{{ vm_name }}"
-        state: present
-        snapshot_name: "snapshot-{{ lookup('pipe', 'date +%Y%m%d-%H%M%S') }}"
-        description: "Snapshot taken by Ansible on {{ lookup('pipe', 'date +%Y/%m/%d') }}"
+      block:
+        - name: Create snapshot
+          register: r_vmware_snapshot
+          community.vmware.vmware_guest_snapshot:
+            datacenter: "{{ r_vm_info.virtual_machines[0].datacenter }}"
+            folder: "{{ r_vm_info.virtual_machines[0].folder }}"
+            name: "{{ vm_name }}"
+            state: present
+            snapshot_name: "snapshot-{{ lookup('pipe', 'date +%Y%m%d-%H%M%S') }}"
+            description: "Snapshot taken by Ansible on {{ lookup('pipe', 'date +%Y/%m/%d') }}"
+
+        - name: Set stat
+          ansible.builtin.set_stat:
+            data:
+              vmware_snapshot: "{{ r_vmware_snapshot.snapshot_results }}"
