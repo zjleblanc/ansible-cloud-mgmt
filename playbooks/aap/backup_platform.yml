@@ -1,0 +1,32 @@
+---
+- name: Backup Ansible Automation Platform
+  hosts: "{{ _host }}"
+  gather_facts: false
+
+  vars:
+    ansible_installation_dir: "/path/to/installation/dir"
+    ansible_backups_dir: "/path/to/backup/dir"
+    aws_region: "us-east-2"
+    aws_s3_bucket: "autodotes-app-backups"
+
+  tasks:
+    - name: Run the setup script to perform Backup
+      ansible.builtin.command: 
+        cmd: "{{ ansible_installation_dir }}/setup.sh -e 'backup_dest={{ ansible_backups_dir  }}' -b"
+
+    - name: Get latest symlink stat to determine backup location
+      register: r_latest_symlink
+      ansible.builtin.stat:
+        path: "{{ ansible_backups_dir }}/automation-platform-backup-latest.tar.gz"
+
+    - name: Upload backup to S3 bucket
+      register: r_backup_upload
+      community.aws.s3_sync:
+        region: "{{ aws_region }}"
+        bucket: "{{ aws_s3_bucket }}"
+        file_root: "{{ r_latest_symlink.stat.lnk_target }}"
+
+    - name: Publish backup result as artifact
+      ansible.builtin.set_stat:
+        data:
+          s3_upload_results: "{{ r_backup_upload.uploads }}"
