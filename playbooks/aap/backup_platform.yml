@@ -27,6 +27,6 @@
         file_root: "{{ r_latest_symlink.stat.lnk_target }}"
 
     - name: Publish backup result as artifact
-      ansible.builtin.set_stat:
+      ansible.builtin.set_stats:
         data:
           s3_upload_results: "{{ r_backup_upload.uploads }}"
