@@ -1,0 +1,325 @@
+instances:
+-   ami_launch_index: 0
+    architecture: x86_64
+    block_device_mappings:
+    -   device_name: /dev/sda1
+        ebs:
+            attach_time: '2024-04-22T13:37:07+00:00'
+            delete_on_termination: true
+            status: attached
+            volume_id: vol-0e9459eab62193b9e
+    boot_mode: uefi-preferred
+    capacity_reservation_specification:
+        capacity_reservation_preference: open
+    client_token: 24b9356c-edc2-4b4c-9320-64013cf11e98
+    cpu_options:
+        core_count: 1
+        threads_per_core: 1
+    current_instance_boot_mode: legacy-bios
+    ebs_optimized: false
+    ena_support: true
+    enclave_options:
+        enabled: false
+    hibernation_options:
+        configured: false
+    hypervisor: xen
+    image_id: ami-0d77c9d87c7e619f9
+    instance_id: i-0dd10d8b1c7b1009a
+    instance_type: t2.micro
+    key_name: zleblanc-redhat-mac
+    launch_time: '2024-04-22T13:37:06+00:00'
+    maintenance_options:
+        auto_recovery: default
+    metadata_options:
+        http_endpoint: enabled
+        http_protocol_ipv6: disabled
+        http_put_response_hop_limit: 2
+        http_tokens: required
+        instance_metadata_tags: enabled
+        state: applied
+    monitoring:
+        state: disabled
+    network_interfaces:
+    -   association:
+            ip_owner_id: amazon
+            public_dns_name: ec2-18-218-213-233.us-east-2.compute.amazonaws.com
+            public_ip: 18.218.213.233
+        attachment:
+            attach_time: '2024-04-22T13:37:06+00:00'
+            attachment_id: eni-attach-00da79c24e708bc0a
+            delete_on_termination: true
+            device_index: 0
+            network_card_index: 0
+            status: attached
+        description: ''
+        groups:
+        -   group_id: sg-03b24a1859213b54f
+            group_name: default
+        interface_type: interface
+        ipv6_addresses: []
+        mac_address: 02:48:22:24:e1:0d
+        network_interface_id: eni-014f3838622ba800c
+        owner_id: 067187224584
+        private_dns_name: ip-10-0-0-84.us-east-2.compute.internal
+        private_ip_address: 10.0.0.84
+        private_ip_addresses:
+        -   association:
+                ip_owner_id: amazon
+                public_dns_name: ec2-18-218-213-233.us-east-2.compute.amazonaws.com
+                public_ip: 18.218.213.233
+            primary: true
+            private_dns_name: ip-10-0-0-84.us-east-2.compute.internal
+            private_ip_address: 10.0.0.84
+        source_dest_check: true
+        status: in-use
+        subnet_id: subnet-027acf5d16a587ab0
+        vpc_id: vpc-02911aa095225f958
+    placement:
+        availability_zone: us-east-2a
+        group_name: ''
+        tenancy: default
+    platform_details: Red Hat Enterprise Linux
+    private_dns_name: ip-10-0-0-84.us-east-2.compute.internal
+    private_dns_name_options:
+        enable_resource_name_dns_a_record: false
+        enable_resource_name_dns_aaaa_record: false
+        hostname_type: ip-name
+    private_ip_address: 10.0.0.84
+    product_codes: []
+    public_dns_name: ec2-18-218-213-233.us-east-2.compute.amazonaws.com
+    public_ip_address: 18.218.213.233
+    root_device_name: /dev/sda1
+    root_device_type: ebs
+    security_groups:
+    -   group_id: sg-03b24a1859213b54f
+        group_name: default
+    source_dest_check: true
+    state:
+        code: 16
+        name: running
+    state_transition_reason: ''
+    subnet_id: subnet-027acf5d16a587ab0
+    tags:
+        Name: entergy-demo-vm
+        aws:ec2launchtemplate:id: lt-09741d50375d798d9
+        aws:ec2launchtemplate:version: '4'
+    usage_operation: RunInstances:0010
+    usage_operation_update_time: '2024-04-22T13:37:06+00:00'
+    virtualization_type: hvm
+    vpc_id: vpc-02911aa095225f958
+-   ami_launch_index: 0
+    architecture: x86_64
+    block_device_mappings:
+    -   device_name: /dev/sda1
+        ebs:
+            attach_time: '2024-04-18T18:27:00+00:00'
+            delete_on_termination: true
+            status: attached
+            volume_id: vol-01c35e01f303eec41
+    boot_mode: uefi-preferred
+    capacity_reservation_specification:
+        capacity_reservation_preference: open
+    client_token: f35a976b-088a-4ca7-9aad-58a8df1d1d95
+    cpu_options:
+        core_count: 1
+        threads_per_core: 1
+    current_instance_boot_mode: legacy-bios
+    ebs_optimized: false
+    ena_support: true
+    enclave_options:
+        enabled: false
+    hibernation_options:
+        configured: false
+    hypervisor: xen
+    image_id: ami-0d77c9d87c7e619f9
+    instance_id: i-011962d88e974395d
+    instance_type: t2.micro
+    key_name: zleblanc-redhat-mac
+    launch_time: '2024-04-22T13:36:49+00:00'
+    maintenance_options:
+        auto_recovery: default
+    metadata_options:
+        http_endpoint: enabled
+        http_protocol_ipv6: disabled
+        http_put_response_hop_limit: 2
+        http_tokens: required
+        instance_metadata_tags: enabled
+        state: applied
+    monitoring:
+        state: disabled
+    network_interfaces:
+    -   attachment:
+            attach_time: '2024-04-18T18:26:59+00:00'
+            attachment_id: eni-attach-0475e8db8d184c95c
+            delete_on_termination: true
+            device_index: 0
+            network_card_index: 0
+            status: attached
+        description: ''
+        groups:
+        -   group_id: sg-03b24a1859213b54f
+            group_name: default
+        interface_type: interface
+        ipv6_addresses: []
+        mac_address: 02:33:60:02:6a:59
+        network_interface_id: eni-04db2722fe4cdd35e
+        owner_id: 067187224584
+        private_dns_name: ip-10-0-7-146.us-east-2.compute.internal
+        private_ip_address: 10.0.7.146
+        private_ip_addresses:
+        -   primary: true
+            private_dns_name: ip-10-0-7-146.us-east-2.compute.internal
+            private_ip_address: 10.0.7.146
+        source_dest_check: true
+        status: in-use
+        subnet_id: subnet-027acf5d16a587ab0
+        vpc_id: vpc-02911aa095225f958
+    placement:
+        availability_zone: us-east-2a
+        group_name: ''
+        tenancy: default
+    platform_details: Red Hat Enterprise Linux
+    private_dns_name: ip-10-0-7-146.us-east-2.compute.internal
+    private_dns_name_options:
+        enable_resource_name_dns_a_record: false
+        enable_resource_name_dns_aaaa_record: false
+        hostname_type: ip-name
+    private_ip_address: 10.0.7.146
+    product_codes: []
+    public_dns_name: ''
+    root_device_name: /dev/sda1
+    root_device_type: ebs
+    security_groups:
+    -   group_id: sg-03b24a1859213b54f
+        group_name: default
+    source_dest_check: true
+    state:
+        code: 80
+        name: stopped
+    state_reason:
+        code: Client.UserInitiatedShutdown
+        message: 'Client.UserInitiatedShutdown: User initiated shutdown'
+    state_transition_reason: User initiated (2024-04-22 13:38:04 GMT)
+    subnet_id: subnet-027acf5d16a587ab0
+    tags:
+        Name: snow-demo-vm
+        aws:ec2launchtemplate:id: lt-09741d50375d798d9
+        aws:ec2launchtemplate:version: '4'
+    usage_operation: RunInstances:0010
+    usage_operation_update_time: '2024-04-18T18:26:59+00:00'
+    virtualization_type: hvm
+    vpc_id: vpc-02911aa095225f958
+security_groups:
+-   description: default VPC security group
+    group_id: sg-03b24a1859213b54f
+    group_name: default
+    ip_permissions:
+    -   ip_protocol: '-1'
+        ip_ranges: []
+        ipv6_ranges: []
+        prefix_list_ids: []
+        user_id_group_pairs:
+        -   group_id: sg-03b24a1859213b54f
+            user_id: 067187224584
+    -   from_port: 22
+        ip_protocol: tcp
+        ip_ranges:
+        -   cidr_ip: 0.0.0.0/0
+            description: SSH
+        ipv6_ranges: []
+        prefix_list_ids: []
+        to_port: 22
+        user_id_group_pairs: []
+    -   from_port: 5986
+        ip_protocol: tcp
+        ip_ranges:
+        -   cidr_ip: 0.0.0.0/0
+            description: WinRM-HTTPS
+        ipv6_ranges: []
+        prefix_list_ids: []
+        to_port: 5986
+        user_id_group_pairs: []
+    -   from_port: 5985
+        ip_protocol: tcp
+        ip_ranges:
+        -   cidr_ip: 0.0.0.0/0
+            description: WinRM-HTTP
+        ipv6_ranges: []
+        prefix_list_ids: []
+        to_port: 5985
+        user_id_group_pairs: []
+    ip_permissions_egress:
+    -   ip_protocol: '-1'
+        ip_ranges:
+        -   cidr_ip: 0.0.0.0/0
+        ipv6_ranges: []
+        prefix_list_ids: []
+        user_id_group_pairs: []
+    owner_id: 067187224584
+    tags: {}
+    vpc_id: vpc-02911aa095225f958
+subnets:
+-   assign_ipv6_address_on_creation: false
+    availability_zone: us-east-2a
+    availability_zone_id: use2-az1
+    available_ip_address_count: 4091
+    cidr_block: 10.0.128.0/20
+    default_for_az: false
+    enable_dns64: false
+    id: subnet-0ef9dcbfb7cab908e
+    ipv6_cidr_block_association_set: []
+    ipv6_native: false
+    map_customer_owned_ip_on_launch: false
+    map_public_ip_on_launch: false
+    owner_id: 067187224584
+    private_dns_name_options_on_launch:
+        enable_resource_name_dns_a_record: false
+        enable_resource_name_dns_aaaa_record: false
+        hostname_type: ip-name
+    state: available
+    subnet_arn: arn:aws:ec2:us-east-2:067187224584:subnet/subnet-0ef9dcbfb7cab908e
+    subnet_id: subnet-0ef9dcbfb7cab908e
+    tags:
+        Name: project-subnet-private1-us-east-2a
+    vpc_id: vpc-02911aa095225f958
+-   assign_ipv6_address_on_creation: false
+    availability_zone: us-east-2a
+    availability_zone_id: use2-az1
+    available_ip_address_count: 4089
+    cidr_block: 10.0.0.0/20
+    default_for_az: false
+    enable_dns64: false
+    id: subnet-027acf5d16a587ab0
+    ipv6_cidr_block_association_set: []
+    ipv6_native: false
+    map_customer_owned_ip_on_launch: false
+    map_public_ip_on_launch: false
+    owner_id: 067187224584
+    private_dns_name_options_on_launch:
+        enable_resource_name_dns_a_record: false
+        enable_resource_name_dns_aaaa_record: false
+        hostname_type: ip-name
+    state: available
+    subnet_arn: arn:aws:ec2:us-east-2:067187224584:subnet/subnet-027acf5d16a587ab0
+    subnet_id: subnet-027acf5d16a587ab0
+    tags:
+        Name: project-subnet-public1-us-east-2a
+    vpc_id: vpc-02911aa095225f958
+vpcs:
+-   cidr_block: 10.0.0.0/16
+    cidr_block_association_set:
+    -   association_id: vpc-cidr-assoc-0381339a7cbfaf7e1
+        cidr_block: 10.0.0.0/16
+        cidr_block_state:
+            state: associated
+    dhcp_options_id: dopt-02fc3a71187a793c8
+    enable_dns_hostnames: true
+    enable_dns_support: true
+    id: vpc-02911aa095225f958
+    instance_tenancy: default
+    is_default: false
+    owner_id: 067187224584
+    state: available
+    tags:
+        Name: project-vpc
+    vpc_id: vpc-02911aa095225f958

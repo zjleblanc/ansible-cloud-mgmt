@@ -4,7 +4,7 @@
   register: r_table_check
   servicenow.itsm.api_info:
     resource: sys_db_object
-    sysparm_query: "u_name={{ table.name }}"
+    sysparm_query: "name={{ table.name }}"
 
 - name: Create the table in Service Now
   when: not r_table_check.record | length

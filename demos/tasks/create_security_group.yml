@@ -1,0 +1,14 @@
+---
+- name: Check if record exists
+  register: r_sg_vpc
+  servicenow.itsm.api_info:
+    resource: "u_aws_vpc"
+    sysparm_query: "u_id={{ sg.vpc_id }}"
+
+- name: Add Security Group to CMDB
+  vars:
+    __resource: u_aws_security_group
+    __query: "u_id={{ sg.group_id }}"
+    __data: "{{ sg | to_sn_security_group(r_sg_vpc.record[0].sys_id) }}"
+  ansible.builtin.include_tasks:
+    file: create_record.yml

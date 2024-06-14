@@ -1,0 +1,20 @@
+---
+- name: Check if VPC record exists
+  register: r_ec2_vpc
+  servicenow.itsm.api_info:
+    resource: "u_aws_vpc"
+    sysparm_query: "u_id={{ ec2.vpc_id }}"
+
+- name: Check if Subnet record exists
+  register: r_ec2_subnet
+  servicenow.itsm.api_info:
+    resource: "u_aws_subnet"
+    sysparm_query: "u_id={{ ec2.subnet_id }}"
+
+- name: Add EC2 Instance to CMDB
+  vars:
+    __resource: u_aws_ec2_instance
+    __query: "u_instance_id={{ ec2.instance_id }}"
+    __data: "{{ ec2 | to_sn_ec2(r_ec2_vpc.record[0].sys_id, r_ec2_subnet.record[0].sys_id) }}"
+  ansible.builtin.include_tasks:
+    file: create_record.yml

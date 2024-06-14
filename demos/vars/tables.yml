@@ -3,6 +3,7 @@ sn_field_defaults:
   active: true
   unique: false
   mandatory: true
+  max_length: 80
 
 sn_tables:
   - label: AWS Virtual Private Cloud
@@ -105,6 +106,151 @@ sn_tables:
       - element: u_vpc_id
         internal_type: string
         sys_name: Vpc Id
+      - element: u_vpc
+        internal_type: reference
+        sys_name: Virtual Private Cloud
+        reference: u_aws_vpc
+  - label: AWS Security Group
+    name: u_aws_security_group
+    alter_access: true
+    update_access: true
+    fields:
+      - element: u_name
+        internal_type: string
+        sys_name: Name
+      - element: u_id
+        internal_type: string
+        sys_name: Id
+      - element: u_owner_id
+        internal_type: string
+        sys_name: Owner Id
+      - element: u_description
+        internal_type: string
+        sys_name: Description
+      - element: u_vpc
+        internal_type: reference
+        sys_name: Virtual Private Cloud
+        reference: u_aws_vpc
+  - label: AWS EC2 Instance
+    name: u_aws_ec2_instance
+    alter_access: true
+    update_access: true
+    fields:
+      - element: u_ami_launch_index
+        internal_type: integer
+        sys_name: Ami Launch Index
+      - element: u_architecture
+        internal_type: string
+        sys_name: Architecture
+      - element: u_boot_mode
+        internal_type: string
+        sys_name: Boot Mode
+      - element: u_capacity_reservation_preference
+        internal_type: string
+        sys_name: Capacity Reservation Preference
+      - element: u_core_count
+        internal_type: integer
+        sys_name: Core Count
+      - element: u_threads_per_core
+        internal_type: integer
+        sys_name: Threads Per Core
+      - element: u_current_instance_boot_mode
+        internal_type: string
+        sys_name: Current Instance Boot Mode
+      - element: u_ebs_optimized
+        internal_type: boolean
+        sys_name: Ebs Optimized
+      - element: u_ena_support
+        internal_type: boolean
+        sys_name: Ena Support
+      - element: u_enabled
+        internal_type: boolean
+        sys_name: Enabled
+      - element: u_configured
+        internal_type: boolean
+        sys_name: Configured
+      - element: u_hypervisor
+        internal_type: string
+        sys_name: Hypervisor
+      - element: u_image_id
+        internal_type: string
+        sys_name: Image Id
+      - element: u_instance_id
+        internal_type: string
+        sys_name: Instance Id
+      - element: u_instance_type
+        internal_type: string
+        sys_name: Instance Type
+      - element: u_key_name
+        internal_type: string
+        sys_name: Key Name
+      - element: u_launch_time
+        internal_type: string
+        sys_name: Launch Time
+      - element: u_auto_recovery
+        internal_type: string
+        sys_name: Auto Recovery
+      - element: u_availability_zone
+        internal_type: string
+        sys_name: Availability Zone
+      - element: u_group_name
+        internal_type: string
+        sys_name: Group Name
+      - element: u_tenancy
+        internal_type: string
+        sys_name: Tenancy
+      - element: u_platform_details
+        internal_type: string
+        sys_name: Platform Details
+      - element: u_private_dns_name
+        internal_type: string
+        sys_name: Private Dns Name
+      - element: u_enable_resource_name_dns_a_record
+        internal_type: boolean
+        sys_name: Enable Resource Name Dns A Record
+      - element: u_enable_resource_name_dns_aaaa_record
+        internal_type: boolean
+        sys_name: Enable Resource Name Dns Aaaa Record
+      - element: u_hostname_type
+        internal_type: string
+        sys_name: Hostname Type
+      - element: u_private_ip_address
+        internal_type: string
+        sys_name: Private Ip Address
+      - element: u_public_dns_name
+        internal_type: string
+        sys_name: Public Dns Name
+      - element: u_root_device_name
+        internal_type: string
+        sys_name: Root Device Name
+      - element: u_root_device_type
+        internal_type: string
+        sys_name: Root Device Type
+      - element: u_source_dest_check
+        internal_type: boolean
+        sys_name: Source Dest Check
+      - element: u_subnet
+        internal_type: reference
+        sys_name: Subnet
+        reference: u_aws_subnet
+      - element: u_name
+        internal_type: string
+        sys_name: Name
+      - element: u_aws_ec2launchtemplate_id
+        internal_type: string
+        sys_name: Aws Ec2Launchtemplate Id
+      - element: u_aws_ec2launchtemplate_version
+        internal_type: string
+        sys_name: Aws Ec2Launchtemplate Version
+      - element: u_usage_operation
+        internal_type: string
+        sys_name: Usage Operation
+      - element: u_usage_operation_update_time
+        internal_type: string
+        sys_name: Usage Operation Update Time
+      - element: u_virtualization_type
+        internal_type: string
+        sys_name: Virtualization Type
       - element: u_vpc
         internal_type: reference
         sys_name: Virtual Private Cloud

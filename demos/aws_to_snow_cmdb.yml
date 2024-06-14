@@ -36,20 +36,36 @@
       register: r_ec2_sg_info
       amazon.aws.ec2_security_group_info:
 
+    - name: Add Security Groups to CMDB
+      loop: "{{ r_ec2_sg_info.security_groups }}"
+      loop_control:
+        label: "{{ sg.group_name }}"
+        loop_var: sg
+      ansible.builtin.include_tasks:
+        file: tasks/create_security_group.yml
+
     - name: Gather EC2 Instances
       register: r_ec2_instance_info
       amazon.aws.ec2_instance_info:
 
-    - name: Combine data
-      ansible.builtin.set_fact:
-        aws_data:
-          vpcs: "{{ r_vpc_info.vpcs }}"
-          subnets: "{{ r_vpc_subnet_info.subnets }}"
-          security_groups: "{{ r_ec2_sg_info.security_groups }}"
-          instances: "{{ r_ec2_instance_info.instances }}"
+    - name: Add EC2 Instance to CMDB
+      loop: "{{ r_ec2_instance_info.instances }}"
+      loop_control:
+        label: "{{ ec2.instance_id }}"
+        loop_var: ec2
+      ansible.builtin.include_tasks:
+        file: tasks/create_instance.yml
 
-    - name: Write to file
-      ansible.builtin.copy:
-        content: "{{ aws_data | to_nice_yaml }}"
-        dest: "{{ playbook_dir }}/aws_data.yml"
-        mode: 0755
+    # - name: Combine data
+    #   ansible.builtin.set_fact:
+    #     aws_data:
+    #       vpcs: "{{ r_vpc_info.vpcs }}"
+    #       subnets: "{{ r_vpc_subnet_info.subnets }}"
+    #       security_groups: "{{ r_ec2_sg_info.security_groups }}"
+    #       instances: "{{ r_ec2_instance_info.instances }}"
+
+    # - name: Write to file
+    #   ansible.builtin.copy:
+    #     content: "{{ aws_data | to_nice_yaml }}"
+    #     dest: "{{ playbook_dir }}/aws_data.yml"
+    #     mode: 0755

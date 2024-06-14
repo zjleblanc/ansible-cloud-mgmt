@@ -11,3 +11,16 @@
     resource: "{{ __resource }}"
     action: post
     data: "{{ __data }}"
+
+- name: Update the record in Service Now
+  when: r_record_check.record | length == 1
+  servicenow.itsm.api:
+    resource: "{{ __resource }}"
+    action: patch
+    sys_id: "{{ r_record_check.record[0].sys_id }}"
+    data: "{{ __data }}"
+
+- name: Warn - more than one record returned
+  when: r_record_check.record | length > 1
+  ansible.builtin.debug:
+    msg: "Querying against {{ __resource }} with '{{ __query }}' matched more than one record, skipping..."
