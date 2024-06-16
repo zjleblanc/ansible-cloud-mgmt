@@ -1,5 +1,5 @@
 #cloud-config
-{% if vmware_public_key | default('') | length) %}
+{% if (vmware_public_key | default('') | length) %}
 ssh_authorized_keys:
   - {{ vmware_public_key }}
 {% endif %}
