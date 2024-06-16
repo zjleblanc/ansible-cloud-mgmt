@@ -19,10 +19,14 @@
         datacenter: "{{ vmware_datacenter }}"
         folder: "{{ vmware_folder }}"
         name: "{{ vmware_guest_name }}"
-        state: poweredon
-        template: "{{ vmware_templates['rhel8'] }}"
+        template: "{{ vmware_templates[vmware_template] }}"
         advanced_settings:
           - key: guestinfo.userdata
             value: "{{ lookup('ansible.builtin.template', 'templates/userdata.j2') | ansible.builtin.b64encode }}"
           - key: guestinfo.userdata.encoding
             value: base64
+
+    - name: Power the guest on
+      community.vmware.vmware_guest_powerstate:
+        name: "{{ vmware_guest_name }}"
+        state: powered-on
