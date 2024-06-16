@@ -1,0 +1,6 @@
+#cloud-config
+ssh_authorized_keys:
+  - {{ vmware_public_key }}
+disable_ec2_metadata: 'true'
+fqdn: '{{ vmware_guest_name }}'
+hostname: '{{ vmware_guest_name }}'

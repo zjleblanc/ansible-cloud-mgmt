@@ -1,4 +1,5 @@
 ansible.cfg
+archive/
 vaulted/
 .vscode/
 **/assets.json
