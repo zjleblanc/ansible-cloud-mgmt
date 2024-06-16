@@ -24,3 +24,5 @@
         advanced_settings:
           - key: guestinfo.userdata
             value: "{{ lookup('ansible.builtin.template', 'templates/userdata.j2') | ansible.builtin.b64encode }}"
+          - key: guestinfo.userdata.encoding
+            value: base64
