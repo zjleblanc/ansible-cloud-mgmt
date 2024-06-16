@@ -1,5 +1,6 @@
 - name: Provision a VMWare Guest
   hosts: localhost
+  connection: local
   gather_facts: false
   become: false
 
@@ -8,6 +9,7 @@
     vmware_datacenter: "SDDC-Datacenter"
     vmware_folder: "/Workloads/sandbox-w7gqh"
     vmware_cluster_name: Cluster-1
+    vmware_template: rhel8
     vmware_templates:
       rhel8: zleblanc-rhel8-tmpl
     # vmware_public_key: ssh-rsa AAAA ...
