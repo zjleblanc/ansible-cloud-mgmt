@@ -26,7 +26,8 @@
           memory_mb: "{{ vmware_mem_gb|default(2) * 1024 }}"
           num_cpus: "{{ vmware_cpu_count|default(2) }}"
         disk:
-          - size_gb: "{{ vmware_disk_gb|default(20) }}"
+          - autoselect_datastore: true
+            size_gb: "{{ vmware_disk_gb|default(20) }}"
         advanced_settings:
           - key: guestinfo.userdata
             value: "{{ lookup('ansible.builtin.template', 'templates/userdata.j2') | ansible.builtin.b64encode }}"
