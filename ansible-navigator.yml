@@ -1,0 +1,16 @@
+---
+ansible-navigator:
+  execution-environment:
+    container-engine: docker
+    image: automation-hub.autodotes.com/ee-default:d7393656
+    environment-variables:
+      pass:
+        - VMWARE_HOST
+        - VMWARE_USER
+        - VMWARE_PASSWORD
+  playbook-artifact:
+    enable: false
+  logging:
+    append: true
+    file: ./ansible-navigator.log
+    level: warning

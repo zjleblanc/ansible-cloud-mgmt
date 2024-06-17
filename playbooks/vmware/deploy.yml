@@ -1,15 +1,14 @@
 - name: Provision a VMWare Guest
   hosts: localhost
-  connection: local
   gather_facts: false
   become: false
 
   vars:
-    vmware_guest_name: rhel8-demo-2
+    vmware_guest_name: rhel8-demo-3
     vmware_datacenter: "SDDC-Datacenter"
     vmware_folder: "/Workloads/sandbox-w7gqh"
     vmware_cluster_name: Cluster-1
-    vmware_template: rhel8
+    vmware_os: rhel8
     vmware_templates:
       rhel8: zleblanc-rhel8-tmpl
     # vmware_public_key: ssh-rsa AAAA ...
@@ -21,14 +20,16 @@
         datacenter: "{{ vmware_datacenter }}"
         folder: "{{ vmware_folder }}"
         name: "{{ vmware_guest_name }}"
-        template: "{{ vmware_templates[vmware_template] }}"
+        template: "{{ vmware_templates[vmware_os] }}"
+        validate_certs: false
+        hardware:
+          memory_mb: "{{ vmware_mem_gb|default(2) * 1024 }}"
+          num_cpus: "{{ vmware_cpu_count|default(2) }}"
+        disk:
+          - size_gb: "{{ vmware_disk_gb|default(20) }}"
         advanced_settings:
           - key: guestinfo.userdata
             value: "{{ lookup('ansible.builtin.template', 'templates/userdata.j2') | ansible.builtin.b64encode }}"
           - key: guestinfo.userdata.encoding
             value: base64
-
-    - name: Power the guest on
-      community.vmware.vmware_guest_powerstate:
-        name: "{{ vmware_guest_name }}"
-        state: powered-on
+        state: poweredon
