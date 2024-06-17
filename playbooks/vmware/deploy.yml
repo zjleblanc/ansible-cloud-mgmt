@@ -10,7 +10,9 @@
     vmware_cluster_name: Cluster-1
     vmware_os: rhel8
     vmware_templates:
-      rhel8: zleblanc-rhel8-tmpl
+      rhel8: 
+        name: zleblanc-rhel8-tmpl
+        userdata: userdata.rhel8.j2
     # vmware_public_key: ssh-rsa AAAA ...
 
   tasks:
@@ -20,14 +22,14 @@
         datacenter: "{{ vmware_datacenter }}"
         folder: "{{ vmware_folder }}"
         name: "{{ vmware_guest_name }}"
-        template: "{{ vmware_templates[vmware_os] }}"
+        template: "{{ vmware_templates[vmware_os]['name'] }}"
         validate_certs: false
         hardware:
           memory_mb: "{{ vmware_mem_gb|default(2) * 1024 }}"
           num_cpus: "{{ vmware_cpu_count|default(2) }}"
         advanced_settings:
           - key: guestinfo.userdata
-            value: "{{ lookup('ansible.builtin.template', 'templates/userdata.j2') | ansible.builtin.b64encode }}"
+            value: "{{ lookup('ansible.builtin.template', 'templates/' + vmware_templates[vmware_os]['userdata']) | ansible.builtin.b64encode }}"
           - key: guestinfo.userdata.encoding
             value: base64
         state: poweredon
