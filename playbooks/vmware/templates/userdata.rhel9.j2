@@ -6,8 +6,9 @@ hostname: '{{ vmware_guest_name }}'
 
 users:
 - name: 'ansible'
-  groups: wheel,ansible
+  groups: [wheel, ansible]
   shell: /bin/bash
+  sudo: ALL=(ALL) NOPASSWD:ALL
 {% if (vmware_public_key | default('') | length) %}
   ssh_authorized_keys:
     - {{ vmware_public_key }}
