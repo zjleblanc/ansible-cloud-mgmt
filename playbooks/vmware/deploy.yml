@@ -5,12 +5,13 @@
 
   vars:
     vmware_guest_name: rhel8-demo-3
+    vmware_guest_subdomain: xhrkb.dynamic.redhatworkshops.io
     vmware_datacenter: "SDDC-Datacenter"
     vmware_folder: "/Workloads/sandbox-w7gqh"
     vmware_cluster_name: Cluster-1
-    vmware_os: rhel8
+    vmware_os: rhel9
     vmware_templates:
-      rhel8: 
+      rhel9: 
         name: zleblanc-rhel8-tmpl
         userdata: userdata.rhel8.j2
     # vmware_public_key: ssh-rsa AAAA ...
@@ -33,3 +34,18 @@
           - key: guestinfo.userdata.encoding
             value: base64
         state: poweredon
+
+    - name: Add to in-memory inventory
+      ansible.builtin.add_host:
+        name: "{{ vmware_guest_name }}.{{ vmware_guest_subdomain }}"
+        groups: new_guest
+
+- name: Connect to guest
+  hosts: new_guest
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Debug facts
+      ansible.builtin.debug:
+        var: ansible_facts
