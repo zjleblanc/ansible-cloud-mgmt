@@ -12,8 +12,8 @@
     vmware_os: rhel9
     vmware_templates:
       rhel9: 
-        name: zleblanc-rhel8-tmpl
-        userdata: userdata.rhel8.j2
+        name: zleblanc-rhel9-tmpl
+        userdata: userdata.rhel9.j2
     # vmware_public_key: ssh-rsa AAAA ...
 
   tasks:
