@@ -45,6 +45,9 @@
   become: true
   gather_facts: true
 
+  # vars:
+  #   ansible_user: ansible # Use Machine Credential with private key for ansible user
+
   tasks:
     - name: Debug facts
       ansible.builtin.debug:
