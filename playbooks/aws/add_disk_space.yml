@@ -91,10 +91,24 @@
           - devices
           - mounts
 
+    - name: Run df
+      when: ansible_distribution | lower == 'redhat'
+      register: r_df_cmd
+      ansible.builtin.command: df
+
     - name: Add facts to incident
       when: incident_sys_id is defined
       tags: snow
       block:
+        - name: Add df results post remediation
+          when: ansible_distribution | lower == 'redhat'
+          servicenow.itsm.incident:
+            sys_id: "{{ incident_sys_id }}"
+            other:
+              comments: >-
+                <p>Structured output from <b>df</b> on {{ inventory_hostname }}</p>
+                {{ r_df_cmd.stdout | community.general.jc('df') | to_nice_json(indent=2) | codify }}
+
         - name: Setup attachment files
           delegate_to: localhost
           ansible.builtin.set_fact:
