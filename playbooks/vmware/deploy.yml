@@ -41,6 +41,9 @@
         name: "{{ vmware_guest_name }}.{{ vmware_guest_subdomain }}"
         groups: new_guest
         ansible_host: "{{ r_vmware_guest['instance']['ipv4'] }}"
+        ansible_ssh_common_args: >-
+          -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null 
+          -o ProxyCommand="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i {{ lookup('env', 'SSH_PROXY_KEY') }} -W %h:%p -q {{ ssh_proxy_username }}@{{ ssh_proxy_password }}"
 
 - name: Bonus play --> Connect to the newly provisioned guest
   hosts: new_guest
