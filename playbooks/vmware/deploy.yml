@@ -64,13 +64,13 @@
       servicenow.itsm.configuration_item:
         name: "{{ inventory_hostname }}"
         sys_class_name: cmdb_ci_vmware_instance
-        ip_address: "{{ public_ip_address }}"
+        ip_address: "{{ ansible_default_ipv4['address'] }}"
         mac_address: "{{ ansible_default_ipv4['macaddress'] | default(ansible_interfaces[0]['macaddress']) }}"
         other:
           vm_inst_id: "{{ instance_id }}"
           fqdn: "{{ inventory_hostname }}"
-          dns_domain: "{{ ansible_domain }}"
-          guest_os_fullname: "{{ ansible_distribution }}{{ ansible_distribution_version }}"
+          dns_domain: "{{ vmware_guest_subdomain }}"
+          guest_os_fullname: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
           cpus: "{{ processor_vcpus | default(ansible_processor_vcpus) }}"
           memory: "{{ ansible_memtotal_mb }}"
           classification: "{{ instance_type }}"
