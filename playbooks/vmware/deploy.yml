@@ -63,6 +63,7 @@
 
     - name: Register the newly-created guest
       delegate_to: localhost
+      register: r_ci
       servicenow.itsm.configuration_item:
         name: "{{ inventory_hostname }}"
         sys_class_name: cmdb_ci_vmware_instance
@@ -75,7 +76,15 @@
           guest_os_fullname: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
           cpus: "{{ processor_vcpus | default(ansible_processor_vcpus) }}"
           memory: "{{ ansible_memtotal_mb }}"
-          classification: "{{ instance_type }}"
-          location: "{{ placement['availability_zone'] }}"
-          justification: "{{ tags['purpose'] }}"
-          short_description: "{{ tags['info'] }}"
+          classification: "{{ ansible_product_name }}"
+          justification: "Review RITM {{ snow_sys_id }}"
+          short_description: "Request fulfilled by Ansible, deployed to {{ virtualization_type | default('unknown') }}"
+
+    - name: Update requested item with vm
+      delegate_to: localhost
+      servicenow.itsm.api:
+        resource: sc_req_item
+        action: patch
+        sys_id: "{{ snow_sys_id }}"
+        data:
+          configuration_item: "{{ r_ci.record.sys_id }}"
