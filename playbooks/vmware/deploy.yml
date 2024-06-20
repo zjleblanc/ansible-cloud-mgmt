@@ -40,6 +40,7 @@
       ansible.builtin.add_host:
         name: "{{ vmware_guest_name }}.{{ vmware_guest_subdomain }}"
         groups: new_guest
+        vmware_guest_uuid: "{{ r_vmware_guest['instance']['instance_uuid'] }}"
         ansible_host: "{{ r_vmware_guest['instance']['ipv4'] }}"
         ansible_ssh_common_args: >-
           -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null 
@@ -67,7 +68,7 @@
         ip_address: "{{ ansible_default_ipv4['address'] }}"
         mac_address: "{{ ansible_default_ipv4['macaddress'] | default(ansible_interfaces[0]['macaddress']) }}"
         other:
-          vm_inst_id: "{{ instance_id }}"
+          vm_inst_id: "{{ vmware_guest_uuid }}"
           fqdn: "{{ inventory_hostname }}"
           dns_domain: "{{ vmware_guest_subdomain }}"
           guest_os_fullname: "{{ ansible_distribution }} {{ ansible_distribution_version }}"
