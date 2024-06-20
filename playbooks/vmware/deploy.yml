@@ -1,13 +1,14 @@
 - name: Provision a VMWare Guest
   hosts: localhost
+  tags: deploy
   gather_facts: false
   become: false
 
   vars:
-    vmware_guest_name: rhel8-demo-3
-    vmware_guest_subdomain: xhrkb.dynamic.redhatworkshops.io
+    vmware_guest_name: ansible-demo-vm
+    vmware_guest_subdomain: gf7fr.dynamic.redhatworkshops.io
     vmware_datacenter: "SDDC-Datacenter"
-    vmware_folder: "/Workloads/sandbox-w7gqh"
+    vmware_folder: "/Workloads/sandbox-gf7fr"
     vmware_cluster_name: Cluster-1
     vmware_os: rhel9
     vmware_templates:
@@ -40,15 +41,35 @@
         name: "{{ vmware_guest_name }}.{{ vmware_guest_subdomain }}"
         groups: new_guest
 
-- name: Connect to guest
+- name: Bonus play --> Work in progress :)
   hosts: new_guest
+  tags: connect
   become: true
   gather_facts: true
 
-  # vars:
-  #   ansible_user: ansible # Use Machine Credential with private key for ansible user
+  vars:
+    ansible_user: ansible # Use Machine Credential with private key for ansible user
 
   tasks:
     - name: Debug facts
       ansible.builtin.debug:
         var: ansible_facts
+
+    - name: Register the newly-created guest
+      delegate_to: localhost
+      servicenow.itsm.configuration_item:
+        name: "{{ inventory_hostname }}"
+        sys_class_name: cmdb_ci_vmware_instance
+        ip_address: "{{ public_ip_address }}"
+        mac_address: "{{ ansible_default_ipv4['macaddress'] | default(ansible_interfaces[0]['macaddress']) }}"
+        other:
+          vm_inst_id: "{{ instance_id }}"
+          fqdn: "{{ inventory_hostname }}"
+          dns_domain: "{{ ansible_domain }}"
+          guest_os_fullname: "{{ ansible_distribution }}{{ ansible_distribution_version }}"
+          cpus: "{{ processor_vcpus | default(ansible_processor_vcpus) }}"
+          memory: "{{ ansible_memtotal_mb }}"
+          classification: "{{ instance_type }}"
+          location: "{{ placement['availability_zone'] }}"
+          justification: "{{ tags['purpose'] }}"
+          short_description: "{{ tags['info'] }}"
