@@ -40,15 +40,16 @@
       ansible.builtin.add_host:
         name: "{{ vmware_guest_name }}.{{ vmware_guest_subdomain }}"
         groups: new_guest
+        ansible_host: "{{ r_vmware_guest['instance']['ipv4'] }}"
 
-- name: Bonus play --> Work in progress :)
+- name: Bonus play --> Connect to the newly provisioned guest
   hosts: new_guest
   tags: connect
   become: true
   gather_facts: true
 
-  vars:
-    ansible_user: ansible # Use Machine Credential with private key for ansible user
+  # vars:
+  #   ansible_user: ansible # Use Machine Credential with private key for ansible user
 
   tasks:
     - name: Debug facts
