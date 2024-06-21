@@ -61,7 +61,7 @@
       ansible.builtin.debug:
         var: ansible_facts
 
-    - name: Register the newly-created guest
+    - name: Create a Configuration Item to represent the new guest
       delegate_to: localhost
       register: r_ci
       servicenow.itsm.configuration_item:
@@ -80,7 +80,7 @@
           justification: "Review request -> {{ snow_sys_id }}"
           short_description: "Request {{ snow_ritm }} fulfilled by Ansible, deployed to {{ virtualization_type | default('unknown') }}"
 
-    - name: Update requested item with vm
+    - name: Link the Requested Item with the Configuration Item
       delegate_to: localhost
       servicenow.itsm.api:
         resource: sc_req_item
