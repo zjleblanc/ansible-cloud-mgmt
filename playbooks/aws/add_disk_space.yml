@@ -25,6 +25,19 @@
           tag:Name: "{{ _host }}"
           instance-state-name: ["running"]
 
+    - name: Add df results post remediation
+      when: 
+        - ansible_distribution | lower == 'redhat'
+        - incident_sys_id is defined
+      delegate_to: "{{ _host }}"
+      servicenow.itsm.incident:
+        sys_id: "{{ incident_sys_id }}"
+        other:
+          comments: >-
+            <h3>Before Remediation<h3>
+            <p>Structured output from <b>df</b> on {{ _host }}</p>
+            {{ r_df_cmd.stdout | community.general.jc('df') | to_nice_json(indent=2) | codify }}
+
     - name: Get volume info
       register: r_vol_info
       amazon.aws.ec2_vol_info:
@@ -106,6 +119,7 @@
             sys_id: "{{ incident_sys_id }}"
             other:
               comments: >-
+                <h3>After Remediation<h3>
                 <p>Structured output from <b>df</b> on {{ inventory_hostname }}</p>
                 {{ r_df_cmd.stdout | community.general.jc('df') | to_nice_json(indent=2) | codify }}
 
