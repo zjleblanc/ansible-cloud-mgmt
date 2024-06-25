@@ -25,18 +25,25 @@
           tag:Name: "{{ _host }}"
           instance-state-name: ["running"]
 
-    - name: Add df results post remediation
+    - name: Add df results pre remediation
       when: 
         - hostvars[_host]['platform_details'] | default('unknown') | lower is search('red hat')
         - incident_sys_id is defined
-      delegate_to: "{{ _host }}"
-      servicenow.itsm.incident:
-        sys_id: "{{ incident_sys_id }}"
-        other:
-          comments: >-
-            <h3>Before Remediation<h3>
-            <p>Structured output from <b>df</b> on {{ _host }}</p>
-            {{ r_df_cmd.stdout | community.general.jc('df') | to_nice_json(indent=2) | codify }}
+      block:
+        - name: Run df pre remediation
+          delegate_to: "{{ _host }}"
+          register: r_pre_df_cmd
+          ansible.builtin.command: df
+
+        - name: Add df results to incident
+          delegate_to: "{{ _host }}"
+          servicenow.itsm.incident:
+            sys_id: "{{ incident_sys_id }}"
+            other:
+              comments: >-
+                <h3>Before Remediation<h3>
+                <p>Structured output from <b>df</b> on {{ _host }}</p>
+                {{ r_pre_df_cmd.stdout | community.general.jc('df') | to_nice_json(indent=2) | codify }}
 
     - name: Get volume info
       register: r_vol_info
@@ -109,6 +116,11 @@
       when: incident_sys_id is defined
       tags: snow
       block:
+        - name: Run df post remediation
+          when: platform_details | default('unknown') | lower is search('red hat')
+          register: r_post_df_cmd
+          ansible.builtin.command: df
+
         - name: Add df results post remediation
           when: platform_details | default('unknown') | lower is search('red hat')
           servicenow.itsm.incident:
@@ -117,7 +129,7 @@
               comments: >-
                 <h3>After Remediation<h3>
                 <p>Structured output from <b>df</b> on {{ inventory_hostname }}</p>
-                {{ r_df_cmd.stdout | community.general.jc('df') | to_nice_json(indent=2) | codify }}
+                {{ r_post_df_cmd.stdout | community.general.jc('df') | to_nice_json(indent=2) | codify }}
 
         - name: Setup attachment files
           delegate_to: localhost
