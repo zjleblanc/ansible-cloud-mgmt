@@ -35,14 +35,20 @@
           register: r_pre_df_cmd
           ansible.builtin.command: df
 
+        - name: Get root stat pre remediation
+          ansible.builtin.set_fact:
+            df_pre_root_stat: "{{ r_pre_df_cmd.stdout | community.general.jc('df') | selectattr('mounted_on', 'equalto', '/') }}"
+
         - name: Add df results to incident
           servicenow.itsm.incident:
             sys_id: "{{ incident_sys_id }}"
             other:
               comments: >-
-                <h3>Before Remediation<h3>
-                <p>Structured output from <b>df</b> on {{ _host }}</p>
-                {{ r_pre_df_cmd.stdout | community.general.jc('df') | to_nice_json(indent=2) | codify }}
+                [code]
+                  <h3>Before Remediation<h3>
+                  <p>Structured output from <b>df</b> on {{ _host }}</p>
+                [/code]
+                {{ df_pre_root_stat | to_nice_json(indent=2) | codify }}
 
     - name: Get volume info
       register: r_vol_info
@@ -120,16 +126,24 @@
           register: r_post_df_cmd
           ansible.builtin.command: df
 
+        - name: Get root stat pre remediation
+          when: platform_details | default('unknown') | lower is search('red hat')
+          ansible.builtin.set_fact:
+            df_post_root_stat: "{{ r_post_df_cmd.stdout | community.general.jc('df') | selectattr('mounted_on', 'equalto', '/') }}"
+
         - name: Add df results post remediation
           when: platform_details | default('unknown') | lower is search('red hat')
           delegate_to: localhost
+          vars:
           servicenow.itsm.incident:
             sys_id: "{{ incident_sys_id }}"
             other:
               comments: >-
-                <h3>After Remediation<h3>
-                <p>Structured output from <b>df</b> on {{ inventory_hostname }}</p>
-                {{ r_post_df_cmd.stdout | community.general.jc('df') | to_nice_json(indent=2) | codify }}
+                [code]
+                  <h3>After Remediation<h3>
+                  <p>Structured output from <b>df</b> on {{ inventory_hostname }}</p>
+                [/code]
+                {{ df_post_root_stat | to_nice_json(indent=2) | codify }}
 
         - name: Setup attachment files
           delegate_to: localhost
