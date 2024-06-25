@@ -36,7 +36,6 @@
           ansible.builtin.command: df
 
         - name: Add df results to incident
-          delegate_to: "{{ _host }}"
           servicenow.itsm.incident:
             sys_id: "{{ incident_sys_id }}"
             other:
@@ -123,6 +122,7 @@
 
         - name: Add df results post remediation
           when: platform_details | default('unknown') | lower is search('red hat')
+          delegate_to: localhost
           servicenow.itsm.incident:
             sys_id: "{{ incident_sys_id }}"
             other:
