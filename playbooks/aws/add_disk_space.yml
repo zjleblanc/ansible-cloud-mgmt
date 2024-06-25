@@ -27,7 +27,7 @@
 
     - name: Add df results post remediation
       when: 
-        - ansible_distribution | lower == 'redhat'
+        - platform_details | default('unknown') | lower is search('red hat')
         - incident_sys_id is defined
       delegate_to: "{{ _host }}"
       servicenow.itsm.incident:
@@ -104,17 +104,12 @@
           - devices
           - mounts
 
-    - name: Run df
-      when: ansible_distribution | lower == 'redhat'
-      register: r_df_cmd
-      ansible.builtin.command: df
-
     - name: Add facts to incident
       when: incident_sys_id is defined
       tags: snow
       block:
         - name: Add df results post remediation
-          when: ansible_distribution | lower == 'redhat'
+          when: platform_details | default('unknown') | lower is search('red hat')
           servicenow.itsm.incident:
             sys_id: "{{ incident_sys_id }}"
             other:
