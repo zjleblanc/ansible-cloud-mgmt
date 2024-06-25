@@ -27,7 +27,7 @@
 
     - name: Add df results post remediation
       when: 
-        - platform_details | default('unknown') | lower is search('red hat')
+        - hostvars[_host]['platform_details'] | default('unknown') | lower is search('red hat')
         - incident_sys_id is defined
       delegate_to: "{{ _host }}"
       servicenow.itsm.incident:
@@ -74,6 +74,7 @@
       ansible.builtin.add_host:
         name: ec2_post_reboot
         ansible_host: "{{ (r_post_reboot_info | default(r_instance_info))['instances'][0]['public_ip_address'] }}"
+        platform_details: "{{ hostvars[_host]['platform_details'] }}"
 
 - name: Expand the filesystem
   hosts: ec2_post_reboot
