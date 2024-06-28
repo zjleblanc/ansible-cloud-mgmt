@@ -1,6 +1,6 @@
 ---
 - name: Gather facts about vmware guest
-  hosts: "{{ _hosts }}"
+  hosts: "{{ ansible_limit | default(omit) }}"
   gather_facts: true
 
   tasks:
