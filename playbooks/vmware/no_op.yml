@@ -1,0 +1,9 @@
+---
+- name: Gather facts about vmware guest
+  hosts: "{{ _hosts }}"
+  gather_facts: true
+
+  tasks:
+    - name: Debug facts
+      ansible.builtin.debug:
+        msg: "{{ ansible_facts }}"
