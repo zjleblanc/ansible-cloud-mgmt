@@ -1,5 +1,5 @@
 import os
-from typing import List, Dict, Any
+from typing import Any
 from ansible.errors import AnsibleParserError
 from ansible.plugins.inventory import BaseInventoryPlugin, Constructable, Cacheable
 
@@ -8,14 +8,14 @@ INV = {
         "hosts": ["host001", "host002"],
         "vars": {
                 "testvar": "testvalue",
-                "testenv": os.getenv("MICROSOFT_AD_LDAP_SERVER")
+                "testenv": os.getenv("ENV_VAR_FROM_CREDENTIAL")
         },
         "children": ["group002"]
     },
     "group002": {
         "hosts": ["host003", "host004"],
         "vars": {
-          "var2": 500
+            "var2": 500
         },
         "children":[]
     }
