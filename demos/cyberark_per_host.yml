@@ -19,7 +19,8 @@
     - name: Copy key to tempfile
       delegate_to: localhost
       ansible.builtin.copy:
-        content: "{{ lookup('cyberark.conjur.conjur_variable', 'BotApp/' + inventory_hostname) }}\n"
+        content: |
+          {{ lookup('cyberark.conjur.conjur_variable', 'BotApp/' + inventory_hostname) }}
         dest: "{{ r_tmp_key.path }}"
 
     - name: Set ansible credentials for each host
