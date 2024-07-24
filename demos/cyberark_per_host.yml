@@ -9,6 +9,9 @@
         ansible_user: "ec2-user"
         ansible_ssh_private_key_file: "{{ lookup('cyberark.conjur.conjur_variable', 'BotApp/' + inventory_hostname, as_file=True) }}"
 
+    - debug:
+        msg: "{{ lookup('file', ansible_ssh_private_key_file) }}"
+
   tasks:
     - name: Gather facts using per-host secret
       ansible.builtin.setup:
