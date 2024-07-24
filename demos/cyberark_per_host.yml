@@ -4,10 +4,28 @@
   gather_facts: false
 
   pre_tasks:
+    # - name: Set ansible credentials for each host
+    #   ansible.builtin.set_fact:
+    #     ansible_user: "ec2-user"
+    #     ansible_ssh_private_key_file: "{{ lookup('cyberark.conjur.conjur_variable', 'BotApp/' + inventory_hostname, as_file=True) }}"
+
+    - name: Create tempfile
+      delegate_to: localhost
+      register: r_tmp_key
+      ansible.builtin.tempfile:
+        state: file
+        prefix: "{{ inventory_hostname }}." # the prefix will prevent collisions for multiple hosts in a play
+
+    - name: Copy key to tempfile
+      delegate_to: localhost
+      ansible.builtin.copy:
+        content: "{{ lookup('cyberark.conjur.conjur_variable', 'BotApp/' + inventory_hostname) }}\n"
+        dest: "{{ r_tmp_key.path }}"
+
     - name: Set ansible credentials for each host
       ansible.builtin.set_fact:
         ansible_user: "ec2-user"
-        ansible_ssh_private_key_file: "{{ lookup('cyberark.conjur.conjur_variable', 'BotApp/' + inventory_hostname, as_file=True) }}"
+        ansible_ssh_private_key_file: "{{ r_tmp_key.path }}"
 
     - debug:
         msg: "{{ lookup('file', ansible_ssh_private_key_file) }}"
