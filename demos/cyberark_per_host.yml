@@ -8,6 +8,7 @@
       ansible.builtin.set_fact:
         ansible_user: "ec2-user"
         ansible_password: "{{ lookup('cyberark.conjur.conjur_variable', 'BotApp/' + inventory_hostname) }}"
+        ansible_python_interpreter: "{{ ansible_playbook_python }}"
 
   tasks:
     - name: Gather facts using per-host secret
