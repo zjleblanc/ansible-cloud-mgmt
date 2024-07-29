@@ -9,7 +9,7 @@ disable_cache = true
 disable_mlock = true
 
 storage "file" {
-  path = "/opt/vault/data"
+  path = "{{ vault_storage_path }}"
 }
 
 # HTTP listener
@@ -20,8 +20,8 @@ storage "file" {
 
 # HTTPS listener
 listener "tcp" {
-  address       = "0.0.0.0:2083"
-  tls_disable = 0
-  tls_cert_file = "/opt/vault/tls/fullchain_vault.autodotes.com.pem"
-  tls_key_file  = "/opt/vault/tls/vault.autodotes.com.key"
+  address       = "0.0.0.0:{{ vault_port | default('8200') }}"
+  tls_disable   = 0
+  tls_cert_file = "{{ vault_tls_cert_dest }}"
+  tls_key_file  = "{{ vault_tls_key_dest }}"
 }

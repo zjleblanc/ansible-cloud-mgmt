@@ -4,14 +4,22 @@
 - name: Install Community Vault
   hosts: vault # used a RHEL 9.2 vm
 
+  vars:
+    # Ensure SSL files are copied to expected dest
+    # You can do this with Ansible or manually copy to host
+    # I use Let's Encrypt as my free Certificate Authority
+    vault_fqdn: "vault.autodotes.com"
+    vault_port: "2083"
+    vault_storage_path: /opt/vault/data
+    vault_tls_cert_dest: "/opt/vault/tls/fullchain_{{ vault_fqdn }}.pem"
+    vault_tls_key_dest: "/opt/vault/tls/{{ vault_fqdn }}.key"
+    vault_no_log: false
+
   tasks:
     - name: Install yum-utils
       become: true
       ansible.builtin.yum:
         name: yum-utils
-
-    # - name: Add repository
-    #   ansible.builtin.shell: sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
 
     - name: Add repository
       become: true
@@ -28,13 +36,13 @@
       ansible.builtin.dnf:
         name: vault
 
-    - name: Create directory structure
-      loop:
-        - ~/hashi
-        - ~/hashi/.vault
-        - ~/hashi/.vault/data
+    - name: Create storage
+      become: true
       ansible.builtin.file:
-        name: "{{ item }}"
+        name: "{{ vault_storage_path }}"
+        owner: vault
+        group: vault 
+        mode: "0755"
         state: directory
 
     - name: Template vault config
@@ -49,3 +57,42 @@
         name: vault
         enabled: true
         state: restarted
+
+    - name: Vault init
+      register: r_vault_init
+      no_log: "{{ vault_no_log | default(true) }}"
+      environment:
+        VAULT_ADDR: "https://{{ vault_fqdn }}:{{ vault_port }}"
+      ansible.builtin.command:
+        cmd: vault operator init -format json
+
+    - name: Vault init data
+      no_log: "{{ vault_no_log | default(true) }}"
+      ansible.builtin.set_fact:
+        vault_init_data: "{{ r_vault_init.stdout | from_json }}"
+
+    - name: Save vault data
+      become: true
+      ansible.builtin.copy:
+        content: "{{ vault_init_data | to_nice_json(indent=2) }}"
+        dest: "{{ vault_storage_path }}/init_data.json"
+
+    - name: Vault unseal
+      loop: "{{ vault_init_data.unseal_keys_b64[:3] }}"
+      no_log: "{{ vault_no_log | default(true) }}"
+      environment:
+        VAULT_ADDR: "https://{{ vault_fqdn }}:{{ vault_port }}"
+      ansible.builtin.command:
+        cmd: "vault operator unseal -format json {{ item }}"
+
+    - name: Vault status
+      register: r_vault_status
+      no_log: "{{ vault_no_log | default(true) }}"
+      environment:
+        VAULT_ADDR: "https://{{ vault_fqdn }}:{{ vault_port }}"
+      ansible.builtin.command:
+        cmd: "vault status -format json"
+
+    - name: Vault status report
+      ansible.builtin.debug:
+        msg: "{{ r_vault_status.stdout | from_json }}"
