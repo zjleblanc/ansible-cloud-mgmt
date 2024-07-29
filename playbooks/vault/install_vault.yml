@@ -1,3 +1,5 @@
+# Developed following this guide:
+# https://developer.hashicorp.com/vault/tutorials/day-one-raft/raft-deployment-guide
 ---
 - name: Install Community Vault
   hosts: vault
