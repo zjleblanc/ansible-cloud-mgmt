@@ -1,0 +1,49 @@
+---
+- name: Install Community Vault
+  hosts: vault
+
+  tasks:
+    - name: Install yum-utils
+      become: true
+      ansible.builtin.yum:
+        name: yum-utils
+
+    # - name: Add repository
+    #   ansible.builtin.shell: sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/RHEL/hashicorp.repo
+
+    - name: Add repository
+      become: true
+      ansible.builtin.yum_repository:
+        name: Hashicorp
+        description: Hashicorp Stable - $basearch
+        baseurl: https://rpm.releases.hashicorp.com/RHEL/$releasever/$basearch/stable
+        enabled: true
+        gpgcheck: true
+        gpgkey: https://rpm.releases.hashicorp.com/gpg
+
+    - name: Install vault
+      become: true
+      ansible.builtin.dnf:
+        name: vault
+
+    - name: Create directory structure
+      loop:
+        - ~/hashi
+        - ~/hashi/.vault
+        - ~/hashi/.vault/data
+      ansible.builtin.file:
+        name: "{{ item }}"
+        state: directory
+
+    - name: Template vault config
+      become: true
+      ansible.builtin.template:
+        src: templates/vault.hcl.j2
+        dest: /etc/vault.d/vault.hcl
+      
+    - name: Start vault service
+      become: true
+      ansible.builtin.service:
+        name: vault
+        enabled: true
+        state: restarted

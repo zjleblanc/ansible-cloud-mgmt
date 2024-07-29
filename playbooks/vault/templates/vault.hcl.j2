@@ -1,0 +1,27 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: BUSL-1.1
+
+# Full configuration options can be found at https://developer.hashicorp.com/vault/docs/configuration
+
+ui = true
+
+disable_cache = true
+disable_mlock = true
+
+storage "file" {
+  path = "/opt/vault/data"
+}
+
+# HTTP listener
+#listener "tcp" {
+#  address = "127.0.0.1:8200"
+#  tls_disable = 1
+#}
+
+# HTTPS listener
+listener "tcp" {
+  address       = "0.0.0.0:2083"
+  tls_disable = 0
+  tls_cert_file = "/opt/vault/tls/fullchain_vault.autodotes.com.pem"
+  tls_key_file  = "/opt/vault/tls/vault.autodotes.com.key"
+}
