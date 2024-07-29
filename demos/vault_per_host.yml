@@ -12,6 +12,8 @@
         state: file
         prefix: "{{ inventory_hostname }}_"
 
+    ### IMPORTANT ###
+    # Ensure the secret value (a private key file) ends with a newline
     - name: Populate with per-host SSH key
       delegate_to: localhost
       no_log: "{{ vault_no_log | default(true) }}"
