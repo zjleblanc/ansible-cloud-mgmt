@@ -6,6 +6,7 @@
   pre_tasks:
     - name: Create a temporary file with a specific prefix
       delegate_to: localhost
+      no_log: "{{ vault_no_log | default(true) }}"
       register: r_tmp
       ansible.builtin.tempfile:
         state: file
@@ -13,13 +14,15 @@
 
     - name: Populate with per-host SSH key
       delegate_to: localhost
+      no_log: "{{ vault_no_log | default(true) }}"
       register: r_tmp
       ansible.builtin.copy:
         content: "{{ lookup('community.hashi_vault.hashi_vault', 'cubbyhole/hosts/' + inventory_hostname + ':ssh') }}"
         dest: "{{ r_tmp.path }}"
 
     - name: Set ansible credentials for each host
-      no_log: true
+      delegate_to: localhost
+      no_log: "{{ vault_no_log | default(true) }}"
       ansible.builtin.set_fact:
         ansible_user: "ec2-user"
         ansible_ssh_private_key_file: "{{ r_tmp.path }}"
