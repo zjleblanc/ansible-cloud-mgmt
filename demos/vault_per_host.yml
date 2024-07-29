@@ -15,7 +15,6 @@
     - name: Populate with per-host SSH key
       delegate_to: localhost
       no_log: "{{ vault_no_log | default(true) }}"
-      register: r_tmp
       ansible.builtin.copy:
         content: "{{ lookup('community.hashi_vault.hashi_vault', 'cubbyhole/hosts/' + inventory_hostname + ':ssh') }}"
         dest: "{{ r_tmp.path }}"
