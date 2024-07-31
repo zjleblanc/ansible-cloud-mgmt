@@ -28,7 +28,8 @@
       delegate_to: localhost
       no_log: "{{ cyberark_no_log | default(true) }}"
       ansible.builtin.copy:
-        content: "{{ lookup('cyberark.conjur.conjur_variable', 'BotApp/' + inventory_hostname) }}"
+        content: |
+          {{ lookup('cyberark.conjur.conjur_variable', 'BotApp/' + inventory_hostname) }}
         dest: "{{ r_tmp.path }}"
 
     - name: ssh key | Set ansible credentials for each host
