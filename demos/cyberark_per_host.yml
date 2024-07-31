@@ -40,6 +40,12 @@
         ansible_ssh_private_key_file: "{{ r_tmp.path }}"
         ansible_python_interpreter: "{{ ansible_playbook_python }}"
 
+    - name: ssh key | Debug secret value 
+      when: not cyberark_no_log
+      delegate_to: localhost
+      ansible.builtin.debug:
+        msg: "{{ lookup('file', r_tmp.path) }}"
+
   tasks:
     - name: Gather facts using per-host secret
       ansible.builtin.setup:
