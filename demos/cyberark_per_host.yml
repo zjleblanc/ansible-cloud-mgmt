@@ -40,6 +40,8 @@
         ansible_ssh_private_key_file: "{{ r_tmp.path }}"
         ansible_python_interpreter: "{{ ansible_playbook_python }}"
 
+    ### WARNING ###
+    # This will print your key, delete the job record after inspecting
     - name: ssh key | Debug secret value 
       when: not cyberark_no_log
       delegate_to: localhost
