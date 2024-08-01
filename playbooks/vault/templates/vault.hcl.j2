@@ -13,11 +13,12 @@ storage "file" {
 }
 
 # HTTP listener
-#listener "tcp" {
-#  address = "127.0.0.1:8200"
-#  tls_disable = 1
-#}
-
+{% if vault_tls_disabled %}
+listener "tcp" {
+  address       = "0.0.0.0:{{ vault_port | default('8200') }}"
+  tls_disable   = 1
+}
+{% else %}
 # HTTPS listener
 listener "tcp" {
   address       = "0.0.0.0:{{ vault_port | default('8200') }}"
@@ -25,3 +26,4 @@ listener "tcp" {
   tls_cert_file = "{{ vault_tls_cert_dest }}"
   tls_key_file  = "{{ vault_tls_key_dest }}"
 }
+{% endif %}
