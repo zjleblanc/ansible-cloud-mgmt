@@ -15,7 +15,7 @@
     vault_tls_cert_dest: "/opt/vault/tls/fullchain_{{ vault_fqdn }}.pem"
     vault_tls_key_dest: "/opt/vault/tls/{{ vault_fqdn }}.key"
     vault_no_log: false
-    vault_addr: "{{ vault_tls_disabled | ternary('http', 'https') }}://{{ vault_fqdn }}:{{ vault_port }}"
+    vault_addr: "{{ vault_tls_enabled | ternary('https', 'http') }}://{{ vault_fqdn }}:{{ vault_port }}"
 
   tasks:
     - name: Install yum-utils
