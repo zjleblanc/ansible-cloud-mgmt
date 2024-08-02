@@ -14,7 +14,7 @@
     vault_tls_enabled: "{{ vault_tls | bool | default(true) }}"
     vault_tls_cert_dest: "/opt/vault/tls/fullchain_{{ vault_fqdn }}.pem"
     vault_tls_key_dest: "/opt/vault/tls/{{ vault_fqdn }}.key"
-    vault_no_log: true
+    vault_no_log: "{{ vault_secure_log | bool | default(true) }}"
     vault_addr: "{{ vault_tls_enabled | ternary('https', 'http') }}://{{ vault_fqdn }}:{{ vault_port }}"
 
   tasks:
