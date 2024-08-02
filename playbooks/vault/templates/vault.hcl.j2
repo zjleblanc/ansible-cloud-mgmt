@@ -13,7 +13,7 @@ storage "file" {
 }
 
 # HTTP listener
-{% if vault_tls_disabled %}
+{% if not vault_tls_enabled %}
 listener "tcp" {
   address       = "0.0.0.0:{{ vault_port | default('8200') }}"
   tls_disable   = 1

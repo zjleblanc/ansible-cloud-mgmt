@@ -11,7 +11,7 @@
     vault_fqdn: "vault.autodotes.com"
     vault_port: "2083"
     vault_storage_path: /opt/vault/data
-    vault_tls_disabled: false
+    vault_tls_enabled: "{{ vault_tls | bool | default(true) }}"
     vault_tls_cert_dest: "/opt/vault/tls/fullchain_{{ vault_fqdn }}.pem"
     vault_tls_key_dest: "/opt/vault/tls/{{ vault_fqdn }}.key"
     vault_no_log: false
