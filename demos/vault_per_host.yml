@@ -5,6 +5,7 @@
 
   vars:
     secret_container: "cubbyhole/ansible"
+    vault_no_log: "{{ vault_secure_logging | bool | default(true) }}"
 
   pre_tasks:
     - name: Lookup per-host credentials | password
