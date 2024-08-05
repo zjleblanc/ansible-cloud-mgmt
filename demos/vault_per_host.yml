@@ -3,13 +3,16 @@
   hosts: "{{ _hosts | default(omit) }}"
   gather_facts: false
 
+  vars:
+    secret_container: "cubbyhole/ansible"
+
   pre_tasks:
     - name: Lookup per-host credentials | password
       when: method == 'password'
       no_log: "{{ vault_no_log | default(true) }}"
       ansible.builtin.set_fact:
         ansible_user: "ec2-user"
-        ansible_password: "{{ lookup('community.hashi_vault.hashi_vault', 'cubbyhole/hosts/' + inventory_hostname + ':ssh') }}"
+        ansible_password: "{{ lookup('community.hashi_vault.hashi_vault', secret_container + '/' + inventory_hostname + ':ssh') }}"
 
     - name: Lookup per-host credentials | sshkey
       when: method == 'sshkey'
@@ -28,7 +31,7 @@
           delegate_to: localhost
           no_log: "{{ vault_no_log | default(true) }}"
           ansible.builtin.copy:
-            content: "{{ lookup('community.hashi_vault.hashi_vault', 'cubbyhole/hosts/' + inventory_hostname + ':ssh') }}"
+            content: "{{ lookup('community.hashi_vault.hashi_vault', secret_container + '/' + inventory_hostname + ':ssh') }}"
             dest: "{{ r_tmp.path }}"
 
         - name: Set ansible credentials for each host
