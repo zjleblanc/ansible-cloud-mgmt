@@ -1,11 +1,16 @@
 # Minimal example using environment vars or instance role credentials
 # Fetch all hosts in us-east-1, the hostname is the public DNS if it exists, otherwise the private IP address
 plugin: amazon.aws.aws_ec2
-regions:
-  - us-east-2
-
+aws_region: us-east-2
+hostnames:
+  - tag:Name
 keyed_groups:
-  - prefix: os
+  - prefix: platform
     key: platform
-  - prefix: tag
-    key: tags
+groups:
+  windows: "'windows' in platform_details.lower()"
+  linux: "'windows' not in platform_details.lower()"
+compose:
+  ansible_host: public_ip_address
+  ansible_platform: platform
+  distro: ansible_distribution

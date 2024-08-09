@@ -1,10 +1,18 @@
 ---
 ansible-navigator:
+  ansible:
+    inventory:
+      help: False
+      # entries:
+      #   - inventories/aws/amazon.aws.aws_ec2.yaml
   execution-environment:
     container-engine: docker
     image: automation-hub.autodotes.com/ee-default:d7393656
     environment-variables:
       pass:
+        - AWS_ACCESS_KEY
+        - AWS_SECRET_KEY
+        - AWS_REGION
         - VMWARE_HOST
         - VMWARE_USER
         - VMWARE_PASSWORD
