@@ -1,0 +1,22 @@
+---
+- name: Read a secret from Azure Key Vault
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  vars:
+    az_rg_name: openenv-jmdmt
+    az_vm_name: windows-demo-1
+
+  tasks:
+    - name: Run CustomScript extension on Azure VM
+      azure.azcollection.azure_rm_virtualmachineextension:
+        resource_group: "{{ az_rg_name }}"
+        virtual_machine_name: "{{ az_vm_name }}"
+        name: customScriptExtension
+        publisher: Microsoft.Compute  #Microsoft.Compute
+        virtual_machine_extension_type: CustomScriptExtension  #CustomScriptExtension
+        type_handler_version: "1.10"
+        settings:
+          commandToExecute: powershell.exe Get-Process
+        state: present
