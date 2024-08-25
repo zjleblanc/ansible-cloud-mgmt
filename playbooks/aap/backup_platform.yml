@@ -3,18 +3,18 @@
   hosts: "{{ _host }}"
   gather_facts: false
 
-  vars:
+  # vars:
     # ansible_installation_dir: "/path/to/installation/dir"
     # ansible_backups_dir: "/path/to/backup/dir"
-    aws_region: "us-east-2"
-    aws_s3_bucket: "autodotes-app-backups"
-    cleanup_backups_dir: true
-    skip_backup: false
-    upload_backup_to_s3: true
+    # cleanup_backups_dir: true
+    # skip_backup: false
+    # upload_backup_to_s3: true
+    # aws_region: "us-east-2"
+    # aws_s3_bucket: "autodotes-app-backups"
 
   tasks:
-    - name: Create backup directory
-      when: cleanup_backups_dir
+    - name: Cleanup backup directory
+      when: cleanup_backups_dir | bool
       ansible.builtin.file: 
         name: "{{ ansible_backups_dir  }}"
         state: absent
@@ -27,12 +27,12 @@
         state: directory
 
     - name: Run the setup script to perform Backup
-      when: not skip_backup
+      when: not (skip_backup | bool)
       ansible.builtin.command: 
         cmd: "{{ ansible_installation_dir }}/setup.sh -e 'backup_dest={{ ansible_backups_dir  }}' -b"
 
     - name: Upload backup to S3
-      when: upload_backup_to_s3
+      when: upload_backup_to_s3 | bool
       block:
         - name: Get latest symlink stat to determine backup location
           register: r_latest_symlink
