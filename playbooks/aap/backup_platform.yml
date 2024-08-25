@@ -8,9 +8,17 @@
     # ansible_backups_dir: "/path/to/backup/dir"
     aws_region: "us-east-2"
     aws_s3_bucket: "autodotes-app-backups"
+    cleanup_backups_dir: true
     skip_backup: false
+    upload_backup_to_s3: true
 
   tasks:
+    - name: Create backup directory
+      when: cleanup_backups_dir
+      ansible.builtin.file: 
+        name: "{{ ansible_backups_dir  }}"
+        state: absent
+
     - name: Create backup directory
       ansible.builtin.file: 
         name: "{{ ansible_backups_dir  }}"
@@ -23,38 +31,41 @@
       ansible.builtin.command: 
         cmd: "{{ ansible_installation_dir }}/setup.sh -e 'backup_dest={{ ansible_backups_dir  }}' -b"
 
-    - name: Get latest symlink stat to determine backup location
-      register: r_latest_symlink
-      ansible.builtin.stat:
-        path: "{{ ansible_backups_dir }}/automation-platform-backup-latest.tar.gz"
+    - name: Upload backup to S3
+      when: upload_backup_to_s3
+      block:
+        - name: Get latest symlink stat to determine backup location
+          register: r_latest_symlink
+          ansible.builtin.stat:
+            path: "{{ ansible_backups_dir }}/automation-platform-backup-latest.tar.gz"
 
-    - name: Ensure pip installed
-      become: true
-      ansible.builtin.package:
-        name: python3-pip
+        - name: Ensure pip installed
+          become: true
+          ansible.builtin.package:
+            name: python3-pip
 
-    - name: Ensure python packages installed
-      ansible.builtin.pip:
-        name:
-          - botocore
-          - boto3
-        state: present
+        - name: Ensure python packages installed
+          ansible.builtin.pip:
+            name:
+              - botocore
+              - boto3
+            state: present
 
-    - name: Extract date | YYYY-MM-DD
-      ansible.builtin.set_fact:
-        file_date: "{{ (r_latest_symlink.stat.lnk_target | split('-'))[4:7] | join('-') }}"
+        - name: Extract date | YYYY-MM-DD
+          ansible.builtin.set_fact:
+            file_date: "{{ (r_latest_symlink.stat.lnk_target | split('-'))[4:7] | join('-') }}"
 
-    - name: Upload backup to S3 bucket
-      register: r_backup_upload
-      community.aws.s3_sync:
-        region: "{{ aws_region }}"
-        bucket: "{{ aws_s3_bucket }}"
-        key_prefix: "{{ file_date }}"
-        file_root: "{{ r_latest_symlink.stat.lnk_target }}"
-        access_key: "{{ lookup('env', 'AWS_ACCESS_KEY') }}"
-        secret_key: "{{ lookup('env', 'AWS_SECRET_KEY') }}"
+        - name: Sync backup to S3 bucket
+          register: r_backup_upload
+          community.aws.s3_sync:
+            region: "{{ aws_region }}"
+            bucket: "{{ aws_s3_bucket }}"
+            key_prefix: "{{ file_date }}"
+            file_root: "{{ r_latest_symlink.stat.lnk_target }}"
+            access_key: "{{ lookup('env', 'AWS_ACCESS_KEY') }}"
+            secret_key: "{{ lookup('env', 'AWS_SECRET_KEY') }}"
 
-    - name: Publish backup result as artifact
-      ansible.builtin.set_stats:
-        data:
-          s3_upload_results: "{{ r_backup_upload.uploads }}"
+        - name: Publish backup result as artifact
+          ansible.builtin.set_stats:
+            data:
+              s3_upload_results: "{{ r_backup_upload.uploads }}"
