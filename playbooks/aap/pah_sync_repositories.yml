@@ -5,16 +5,15 @@
 
   vars:
     # Alow override in Job Template
-    ah_repositories:
-      - rh-certified
-      - validated
-      - community
+    ah_collection_repositories:
+      - name: rh-certified
+        wait: false
+      - name: validated
+        wait: false
+      - name: community
+        wait: false
 
   tasks:
     - name: Sync rh-certified repo without waiting
-      loop: "{{ ah_repositories }}"
-      loop_control:
-        loop_var: repository
-      infra.ah_configuration.ah_repository_sync:
-        name: "{{ repository }}"
-        wait: false
+      ansible.builtin.include_role:
+        name: infra.ah_configuration.collection_repository_sync:
