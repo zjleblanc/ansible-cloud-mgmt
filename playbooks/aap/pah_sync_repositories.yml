@@ -16,4 +16,4 @@
   tasks:
     - name: Sync rh-certified repo without waiting
       ansible.builtin.include_role:
-        name: infra.ah_configuration.collection_repository_syncs
+        name: infra.ah_configuration.collection_repository_sync
