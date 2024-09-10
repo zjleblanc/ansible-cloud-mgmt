@@ -4,6 +4,10 @@
   gather_facts: false
 
   vars:
+    ah_host: "{{ lookup('ansible.builtin.env', 'AH_HOST') }}"
+    ah_username: "{{ lookup('ansible.builtin.env', 'AH_USERNAME') }}"
+    ah_password: "{{ lookup('ansible.builtin.env', 'AH_PASSWORD') }}"
+    
     # Alow override in Job Template
     ah_collection_repositories:
       - name: rh-certified
