@@ -1,0 +1,59 @@
+---
+- name: Process EC2 report
+  hosts: aws_ec2
+  gather_facts: false
+
+  vars_files:
+    - /Users/zach/repos/ansible-cloud-mgmt/vaulted/ec2_cross_platform_secrets.yml
+
+  tasks:
+    - name: Get windows process data
+      when: "'windows' in group_names"
+      block:
+        - name: Get windows processes
+          register: r_windows_procs
+          ansible.windows.win_powershell: 
+            script: $Ansible.Result = $( Get-Process * | Select-Object -Property ProcessName,Id,Path,StartTime,CPU,PagedMemorySize64,NonpagedSystemMemorySize64,VirtualMemorySize64) 
+
+        - name: Set table facts
+          ansible.builtin.set_fact:
+            process_report_data: "{{ r_windows_procs.result }}"
+            process_report_headers:
+              - ProcessName
+              - Id
+              - Path
+              - StartTime
+              - CPU
+              - PagedMemorySize64
+              - VirtualMemorySize64
+
+    - name: Get linux process data
+      when: "'linux' in group_names"
+      block:
+        - name: Get linux processes
+          register: r_linux_procs
+          ansible.builtin.command: ps axu
+
+        - name: Set table data fact
+          ansible.builtin.set_fact:
+            process_report_data: "{{ r_linux_procs.stdout | community.general.jc('ps') }}"
+
+    - name: Add report server to in-memory inventory
+      run_once: true
+      ansible.builtin.add_host:
+        name: "{{ autodotes_report_server }}"
+        ansible_user: "{{ autodotes_report_server_user }}"
+        ansible_become: true
+
+    - name: Generate report
+      run_once: true
+      ansible.builtin.include_role:
+        name: zjleblanc.reporting.table_per_host
+      vars:
+        table_title: Cross-Platform Process Report
+        table_desc: Report based on proccess data from Windows and Linux hosts
+        table_hosts: "{{ ansible_play_hosts | difference([autodotes_report_server]) }}" # don't report on the report server itself
+        table_data_fact: process_report_data # fact populated with the data to report on
+        table_headers_fact: process_report_headers # fact populated with the headers for the table
+        table_output_remote_host: "{{ autodotes_report_server }}" # must match an inventory_hostname in your inventory
+        table_output_dest: /var/www/reports.autodotes.com/roles/table_per_host.cross_platform_processes.html

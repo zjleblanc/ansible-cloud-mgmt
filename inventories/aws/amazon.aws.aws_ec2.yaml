@@ -14,3 +14,4 @@ compose:
   ansible_host: public_ip_address
   ansible_platform: platform
   distro: ansible_distribution
+  ansible_user: ec2-user
