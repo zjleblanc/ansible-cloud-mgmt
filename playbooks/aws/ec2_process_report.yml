@@ -3,9 +3,6 @@
   hosts: aws_ec2
   gather_facts: false
 
-  vars_files:
-    - /Users/zach/repos/ansible-cloud-mgmt/vaulted/ec2_cross_platform_secrets.yml
-
   tasks:
     - name: Get windows process data
       when: "'windows' in group_names"
@@ -39,9 +36,11 @@
             process_report_data: "{{ r_linux_procs.stdout | community.general.jc('ps') }}"
 
     - name: Add report server to in-memory inventory
+      when: autodotes_report_server not in hostvars
       run_once: true
       ansible.builtin.add_host:
         name: "{{ autodotes_report_server }}"
+        host: "{{ autodotes_report_server_host | default(omit) }}"
         ansible_user: "{{ autodotes_report_server_user }}"
         ansible_become: true
 
