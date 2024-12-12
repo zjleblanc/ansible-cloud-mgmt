@@ -6,7 +6,7 @@
   vars:
     aws_vm_owner: zach
     aws_vpc_name: aws-test-vpc
-    aws_keypair_name: autodotes-key
+    aws_keypair_name: zleblanc-redhat-mac
     aws_instance_size: t3.micro
     aws_sg_name: aws-test-sg
     aws_subnet_name: aws-test-subnet
