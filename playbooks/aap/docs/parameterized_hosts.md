@@ -23,6 +23,6 @@ Below is a basic survey question I put together to inject the hosts value into t
 <br><br>
 ![Select Hosts Survey Edit](../../../.attachments/selected_hosts_survey_edit.png)
 
-Keep in mind, for this to work as expected the associated inventory would need to be comprised of the relevants host/group combinations. Below is a screenshot of the end user experience:
+Keep in mind, for this to work as expected the associated inventory would need to be comprised of the relevant host/group combinations. Below is a screenshot of the end user experience:
 <br><br>
 ![Select Hosts Survey Use](../../../.attachments/selected_hosts_survey_use.png)
