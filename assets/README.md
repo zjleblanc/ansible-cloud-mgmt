@@ -6,6 +6,6 @@ Shared assets for Ansible Cloud Management (and general Ansible usage)
 
 | API | AAP Version | File |
 | --- | :---: | :---: |
-| Controller | 2.5 | [🗂️](AAP%202.5%20-%20Controller%20API.postman_collection.json)
-| Event-Driven Ansible | 2.5 | [🗂️](AAP%202.5%20-%20EDA%20API.postman_collection.json)
-| Gateway | 2.5 | [🗂️](AAP%202.5%20-%20Gateway%20API.postman_collection.json)
+| Controller | 2.5 | [🗂️](controller_api_aap25.postman_collection.json)
+| Event-Driven Ansible | 2.5 | [🗂️](eda_api_aap25.postman_collection.json)
+| Gateway | 2.5 | [🗂️](gateway_api_aap25.postman_collection.json)
