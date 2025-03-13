@@ -1,0 +1,16 @@
+---
+- name: Export Dynamic Inventory (without Hosts and Groups)
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+    # See source at library/inventory_dynamic.py
+    - name: Use custom module
+      register: r_get_all_inventories
+      inventory_dynamic:
+
+    - name: Write out structure for eventual config-as-code
+      ansible.builtin.copy:
+        content: "{{ r_get_all_inventories.inventories | to_nice_yaml }}"
+        dest: "{{ playbook_dir }}/export_dynamic.result.yml"
