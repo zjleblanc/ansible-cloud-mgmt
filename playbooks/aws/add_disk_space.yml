@@ -87,6 +87,7 @@
         name: ec2_post_reboot
         ansible_host: "{{ (r_post_reboot_info | default(r_instance_info))['instances'][0]['public_ip_address'] }}"
         platform_details: "{{ hostvars[_host]['platform_details'] }}"
+        ansible_connection: "{{ hostvars[_host]['platform_details'] == 'windows' | ternary('winrm', omit) }}"
 
 - name: Expand the filesystem
   hosts: ec2_post_reboot
