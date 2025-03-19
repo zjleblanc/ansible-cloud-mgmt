@@ -25,9 +25,13 @@
           tag:Name: "{{ _host }}"
           instance-state-name: ["running"]
 
+    - name: Determine platform
+      ansible.builtin.set_fact:
+        host_platform: "{{ hostvars[_host]['platform_details'] | default('unknown') | lower }}"
+
     - name: Add df results pre remediation
       when: 
-        - hostvars[_host]['platform_details'] | default('unknown') | lower is search('red hat')
+        - host_platform is search('red hat')
         - incident_sys_id is defined
       block:
         - name: Run df pre remediation
@@ -59,6 +63,8 @@
     - name: Resize volume
       tags: resize
       register: r_vol
+      retries: 3
+      delay: 60
       amazon.aws.ec2_vol:
         instance: "{{ r_instance_info['instances'][0]['instance_id'] }}"
         id: "{{ r_instance_info['instances'][0]['block_device_mappings'][0]['ebs']['volume_id'] }}"
@@ -86,8 +92,8 @@
       ansible.builtin.add_host:
         name: ec2_post_reboot
         ansible_host: "{{ (r_post_reboot_info | default(r_instance_info))['instances'][0]['public_ip_address'] }}"
-        platform_details: "{{ hostvars[_host]['platform_details'] }}"
-        ansible_connection: "{{ hostvars[_host]['platform_details'] == 'windows' | ternary('winrm', omit) }}"
+        platform_details: "{{ host_platform }}"
+        ansible_connection: "{{ host_platform == 'windows' | ternary('winrm', 'ssh') }}"
 
 - name: Expand the filesystem
   hosts: ec2_post_reboot
@@ -99,15 +105,8 @@
       ansible.builtin.wait_for_connection:
         timeout: "{{ reboot_timeout | default(300) }}"
 
-    - name: Gather facts
-      ansible.builtin.setup:
-        gather_subset:
-          - "!all"
-          - "!min"
-          - distribution
-
     - name: Resize drive to max available size
-      when: ansible_distribution | lower == 'windows'
+      when: platform_details == 'windows'
       community.windows.win_partition:
         drive_letter: C
         partition_size: -1
@@ -123,17 +122,17 @@
       tags: snow
       block:
         - name: Run df post remediation
-          when: platform_details | default('unknown') | lower is search('red hat')
+          when: platform_details is search('red hat')
           register: r_post_df_cmd
           ansible.builtin.command: df
 
         - name: Get root stat pre remediation
-          when: platform_details | default('unknown') | lower is search('red hat')
+          when: platform_details is search('red hat')
           ansible.builtin.set_fact:
             df_post_root_stat: "{{ r_post_df_cmd.stdout | community.general.jc('df') | selectattr('mounted_on', 'equalto', '/') }}"
 
         - name: Add df results post remediation
-          when: platform_details | default('unknown') | lower is search('red hat')
+          when: platform_details is search('red hat')
           delegate_to: localhost
           vars:
           servicenow.itsm.incident:
