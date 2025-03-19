@@ -63,8 +63,8 @@
     - name: Resize volume
       tags: resize
       register: r_vol
-      retries: 3
-      delay: 60
+      retries: "{{ resize_retries | default(3) }}"
+      delay: "{{ resize_delay | default(60) }}"
       amazon.aws.ec2_vol:
         instance: "{{ r_instance_info['instances'][0]['instance_id'] }}"
         id: "{{ r_instance_info['instances'][0]['block_device_mappings'][0]['ebs']['volume_id'] }}"
