@@ -64,9 +64,10 @@
       tags: snow
       block:
         - name: Add df results post remediation
+          when: host_platform is search('red hat')
           vars:
             df_comment_header: After Remediation
-          ansible.builtin.include_tasks: capture_df_results.yml
+          ansible.builtin.include_tasks: tasks/capture_df_results.yml
 
         - name: Setup attachment files
           delegate_to: localhost
