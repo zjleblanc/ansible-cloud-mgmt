@@ -48,7 +48,7 @@
         timeout: "{{ reboot_timeout | default(300) }}"
 
     - name: Resize drive to max available size
-      when: platform_details == 'windows'
+      when: host_platform is search('windows')
       community.windows.win_partition:
         drive_letter: C
         partition_size: -1

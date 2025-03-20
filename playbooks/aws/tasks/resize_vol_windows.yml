@@ -36,7 +36,7 @@
   ansible.builtin.add_host:
     name: ec2_post_reboot
     ansible_host: "{{ (r_post_reboot_info | default(r_instance_info))['instances'][0]['public_ip_address'] }}"
-    platform_details: "{{ host_platform }}"
+    host_platform: "{{ host_platform }}"
     ansible_connection: winrm
     ansible_port: 5986
     ansible_winrm_transport: credssp
