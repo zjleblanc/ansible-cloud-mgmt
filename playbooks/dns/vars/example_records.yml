@@ -1,0 +1,10 @@
+cloudflare_domain: example.com
+records_under_mgmt:
+  - name: router
+    type: A
+    value: "{{ ext_wan_ip }}"
+    proxied: true
+  - name: app
+    type: A
+    value: "{{ ext_wan_ip }}"
+    proxied: true

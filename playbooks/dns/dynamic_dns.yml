@@ -1,0 +1,48 @@
+---
+- name: Dynamic DNS for Home Network
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  vars_files:
+    - vars/example_records.yml
+
+  vars:
+    inventory_router: "{{ hostname_router | default('router') }}"
+
+  tasks:
+    - name: Get WAN IP
+      delegate_to: "{{ inventory_router }}"
+      register: r_wan_ip
+      ansible.builtin.raw: nvram show | grep wan0_realip_ip
+
+    - name: Extract IP
+      ansible.builtin.set_fact:
+        ext_wan_ip: "{{ r_wan_ip.stdout_lines[-1].split('=')[-1] }}"
+
+    - name: Perform Dynamic DNS
+      when: ext_wan_ip != hostvars[inventory_router]['wan_ip']
+      block:
+        - name: Update router host variable for WAN IP
+          ansible.controller.host:
+            name: "{{ inventory_router }}"
+            inventory: Autodotes Lab
+            variables:
+              ansible_host: "{{ hostvars[inventory_router]['ansible_host'] }}"
+              ansible_port: "{{ hostvars[inventory_router]['ansible_port'] }}"
+              wan_ip: "{{ ext_wan_ip }}"
+
+        - name: Manage DNS records
+          loop: "{{ records_under_mgmt }}"
+          loop_control:
+            loop_var: record
+            label: "{{ record.name }}"
+          community.general.cloudflare_dns:
+            zone: "{{ cloudflare_domain }}"
+            api_token: "{{ lookup('env', 'CLOUDFLARE_TOKEN') }}"
+            record: "{{ record.name }}"
+            type: "{{ record.type }}"
+            value: "{{ record.value }}"
+            proxied: "{{ record.proxied }}"
+            solo: true
+            state: present
