@@ -99,7 +99,7 @@ def main():
 
     # Run the export process
     try:
-        module.exit_json(changed=True, inventories=inventories)
+        module.exit_json(changed=True, cac={"controller_inventories": inventories})
     except Exception as e:
         module.fail_json(msg="Failed to export inventories {0}".format(e))
 

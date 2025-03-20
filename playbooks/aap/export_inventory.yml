@@ -1,0 +1,19 @@
+---
+- name: Export Dynamic Inventory
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: Get Inventories
+      register: r_get_inventory
+      awx.awx.export:
+        inventory:
+          - Service Now Inventory
+        inventory_sources:
+          - servicenow.itsm.now
+
+    - name: Debug
+      ansible.builtin.copy:
+        content: "{{ r_get_inventory | to_nice_yaml }}"
+        dest: "{{ playbook_dir }}/export.yml"

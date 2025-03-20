@@ -1,3 +1,4 @@
+controller_inventories:
 -   kind: ''
     name: Cloud Inventory
     organization: Autodotes

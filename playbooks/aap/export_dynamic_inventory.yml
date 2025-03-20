@@ -14,11 +14,12 @@
     - name: Use custom module
       register: r_get_all_inventories
       inventory_dynamic:
+        ge_25: true # flag for AAP 2.5+
         names:
           - Service Now Inventory
           - Cloud Inventory
 
     - name: Write out structure for eventual config-as-code
       ansible.builtin.copy:
-        content: "{{ r_get_all_inventories.inventories | to_nice_yaml }}"
+        content: "{{ r_get_all_inventories.cac | to_nice_yaml }}"
         dest: "{{ playbook_dir }}/export_dynamic.result.yml"
