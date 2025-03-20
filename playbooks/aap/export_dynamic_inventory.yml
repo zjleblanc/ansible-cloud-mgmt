@@ -4,11 +4,19 @@
   gather_facts: false
   become: false
 
+  ### Required environment variables ###
+  # CONTROLLER_HOST
+  # CONTROLLER_OAUTH_TOKEN
+  # modify custom module to leverage other variables (i.e. username/password)
+
   tasks:
     # See source at library/inventory_dynamic.py
     - name: Use custom module
       register: r_get_all_inventories
       inventory_dynamic:
+        names:
+          - Service Now Inventory
+          - Cloud Inventory
 
     - name: Write out structure for eventual config-as-code
       ansible.builtin.copy:

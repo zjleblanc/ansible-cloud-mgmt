@@ -1,37 +1,11 @@
--   input_inventories:
-    - Azure Inventory
-    - Service Now Inventory
-    instance_groups:
-    - controlplane
-    kind: constructed
-    name: Example Constructed Inventory
+-   kind: ''
+    name: Cloud Inventory
     organization: Autodotes
     prevent_instance_group_fallback: false
-    variables: ''
+    variables: '{"ansible_ssh_common_args": "-o StrictHostKeyChecking=no", "autodotes_report_server":
+        "raspi", "autodotes_report_server_user": "zach"}'
 -   kind: ''
-    name: Example Inventory
-    organization: Example Org
-    prevent_instance_group_fallback: false
-    variables: '---'
--   instance_groups:
-    - controlplane
-    kind: ''
     name: Service Now Inventory
     organization: Autodotes
     prevent_instance_group_fallback: false
-    variables: '---'
--   kind: ''
-    name: Windows Inventory
-    organization: Autodotes
-    prevent_instance_group_fallback: false
-    variables: '---
-
-        ansible_connection: winrm
-
-        ansible_winrm_port: 5986
-
-        ansible_winrm_server_cert_validation: ignore
-
-        ansible_winrm_kerberos_delegation: true
-
-        aws_region: east-us-2'
+    variables: ''
