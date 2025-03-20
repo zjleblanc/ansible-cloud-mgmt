@@ -38,5 +38,5 @@
     ansible_host: "{{ (r_post_reboot_info | default(r_instance_info))['instances'][0]['public_ip_address'] }}"
     platform_details: "{{ host_platform }}"
     ansible_connection: winrm
-    ansible_port: 5895
+    ansible_port: 5896
     ansible_winrm_server_cert_validation: ignore
