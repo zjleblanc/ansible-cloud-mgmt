@@ -1,0 +1,17 @@
+- name: Run df pre remediation
+  delegate_to: "{{ _host }}"
+  register: r_pre_df_cmd
+  ansible.builtin.command: df
+
+- name: Add df results to incident
+  vars:
+    df_root_stat: "{{ r_pre_df_cmd.stdout | community.general.jc('df') | selectattr('mounted_on', 'equalto', '/') }}"
+  servicenow.itsm.incident:
+    sys_id: "{{ incident_sys_id }}"
+    other:
+      comments: >-
+        [code]
+          <h3>{{ df_comment_header | default('df results') }}<h3>
+          <p>Structured output from <b>df</b> on {{ _host }}</p>
+        [/code]
+        {{ df_root_stat | to_nice_json(indent=2) | codify }}

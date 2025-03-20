@@ -1,0 +1,42 @@
+- name: Get volume info
+  register: r_vol_info
+  amazon.aws.ec2_vol_info:
+    filters:
+      volume-id: "{{ r_instance_info['instances'][0]['block_device_mappings'][0]['ebs']['volume_id'] }}"
+
+- name: Resize volume
+  tags: resize
+  register: r_vol
+  retries: "{{ resize_retries | default(3) }}"
+  delay: "{{ resize_delay | default(60) }}"
+  amazon.aws.ec2_vol:
+    instance: "{{ r_instance_info['instances'][0]['instance_id'] }}"
+    id: "{{ r_instance_info['instances'][0]['block_device_mappings'][0]['ebs']['volume_id'] }}"
+    modify_volume: true
+    volume_size: "{{ (r_vol_info['volumes'][0].size * 1.2) | round(0, 'ceil') | int }}"
+
+- name: Restart ec2
+  tags: resize
+  amazon.aws.ec2_instance:
+    instance_ids:
+      - "{{ r_instance_info['instances'][0]['instance_id'] }}"
+    state: restarted
+    wait: true
+    wait_timeout: 500
+
+- name: Get ec2 instance info after reboot
+  tags: resize
+  register: r_post_reboot_info
+  amazon.aws.ec2_instance_info:
+    filters:
+      tag:Name: "{{ _host }}"
+      instance-state-name: ["running"]
+
+- name: Add host with updated IP
+  ansible.builtin.add_host:
+    name: ec2_post_reboot
+    ansible_host: "{{ (r_post_reboot_info | default(r_instance_info))['instances'][0]['public_ip_address'] }}"
+    platform_details: "{{ host_platform }}"
+    ansible_connection: winrm
+    ansible_port: 5895
+    ansible_winrm_server_cert_validation: ignore
