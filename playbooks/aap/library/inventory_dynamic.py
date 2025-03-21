@@ -16,22 +16,24 @@ ANSIBLE_METADATA = {'metadata_version': '1.1', 'status': ['preview'], 'supported
 DOCUMENTATION = '''
 ---
 module: export
-author: "John Westcott IV (@john-westcott-iv)"
-version_added: "3.7.0"
-short_description: export resources from Automation Platform Controller.
+author: "Zachary LeBlanc (@zjleblanc)"
+short_description: export dynamic inventories from Automation Platform Controller without dependent hosts/group configs.
 description:
-    - Export assets from Automation Platform Controller.
+    - Export dynamic inventories from Automation Platform Controller.
 options:
-requirements:
-  - "awxkit >= 9.3.0"
 notes:
-  - Specifying a name of "all" for any asset type will export all items of that asset type.
-extends_documentation_fragment: awx.awx.auth
+  - Specify list of names to isolate dynamic inventories from static inventories in your Ansible Automation Platform
+  - Use the "ge_25" parameter when exporting from Ansible Automation Platform >=2.5
 '''
 
 EXAMPLES = '''
-- name: Export all assets
+- name: Export dynamic inventory configurations
+  register: r_get_all_inventories
   inventory_dynamic:
+    ge_25: true # flag for AAP 2.5+
+    names:
+      - Service Now Inventory
+      - Cloud Inventory
 '''
 
 import logging
