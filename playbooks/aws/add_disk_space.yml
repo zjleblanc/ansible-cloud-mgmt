@@ -8,7 +8,7 @@
     ansible_python_interpreter: /usr/bin/python3
 
   environment:
-    AWS_REGION: "{{ _aws_region | default('us-east-1') }}"
+    AWS_REGION: "{{ _aws_region | default('us-east-2') }}"
 
   tasks:
     - name: Update state of incident
@@ -66,6 +66,7 @@
         - name: Add df results post remediation
           when: host_platform is search('red hat')
           vars:
+            df_stage: post_remediation
             df_comment_header: After Remediation
           ansible.builtin.include_tasks: tasks/capture_df_results.yml
 

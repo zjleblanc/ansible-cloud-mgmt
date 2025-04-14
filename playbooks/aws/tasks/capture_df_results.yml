@@ -1,11 +1,18 @@
-- name: Run df pre remediation
-  delegate_to: "{{ _host }}"
-  register: r_pre_df_cmd
+- name: Execute df remote | {{ df_stage }}
+  when: df_host is defined
+  delegate_to: "{{ df_host }}"
+  register: r_df_cmd
   ansible.builtin.command: df
 
-- name: Add df results to incident
+- name: Execute df | {{ df_stage }}
+  when: df_host is not defined
+  register: r_df_cmd
+  ansible.builtin.command: df
+
+- name: Add df results to incident | {{ df_stage }}
+  delegate_to: localhost
   vars:
-    df_root_stat: "{{ r_pre_df_cmd.stdout | community.general.jc('df') | selectattr('mounted_on', 'equalto', '/') }}"
+    df_root_stat: "{{ r_df_cmd.stdout | community.general.jc('df') | selectattr('mounted_on', 'equalto', '/') }}"
   servicenow.itsm.incident:
     sys_id: "{{ incident_sys_id }}"
     other:

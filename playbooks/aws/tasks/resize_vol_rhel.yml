@@ -1,6 +1,8 @@
 - name: Add df results pre remediation
   when: incident_sys_id is defined
   vars:
+    df_host: "{{ _host }}"
+    df_stage: pre_remediation
     df_comment_header: Before Remediation
   ansible.builtin.include_tasks: capture_df_results.yml
 
