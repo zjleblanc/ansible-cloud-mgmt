@@ -25,7 +25,7 @@
       delegate_to: localhost
       run_once: true
       servicenow.itsm.change_request:
-        number: "{{ r_chg_req.number }}"
+        number: "{{ r_chg_req.record.number }}"
         state: implement
 
     - name: Create a change task
@@ -34,7 +34,7 @@
       register: r_chg_task
       servicenow.itsm.change_request_task:
         configuration_item: "{{ inventory_hostname }}"
-        change_request_number: "{{ r_chg_req.number }}"
+        change_request_number: "{{ r_chg_req.record.number }}"
         type: implementation
         state: open
         assigned_to: zleblanc
@@ -68,7 +68,7 @@
       tags: snow
       delegate_to: localhost
       servicenow.itsm.change_request_task:
-        number: "{{ r_chg_task.number }}"
+        number: "{{ r_chg_task.record.number }}"
         state: closed
         close_code: successful
         close_notes: Closed
@@ -78,7 +78,7 @@
       delegate_to: localhost
       run_once: true
       servicenow.itsm.change_request:
-        number: "{{ r_chg_req.number }}"
+        number: "{{ r_chg_req.record.number }}"
         state: closed
         close_code: successful
         close_notes: Closed
