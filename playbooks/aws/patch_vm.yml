@@ -16,6 +16,7 @@
         requested_by: zleblanc
         short_description: Patch EC2s
         description: "Affected hosts: {{ ','.join(ansible_play_hosts) }}"
+        category: system_software
         priority: moderate
         risk: low
         impact: low
