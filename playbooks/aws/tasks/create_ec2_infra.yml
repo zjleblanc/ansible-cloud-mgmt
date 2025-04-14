@@ -100,6 +100,7 @@
 - name: Create ec2 instances
   tags: compute
   loop: "{{ aws_ec2_names }}"
+  register: r_ec2_instances
   amazon.aws.ec2_instance:
     name: "{{ item }}"
     region: "{{ aws_region }}"
@@ -108,3 +109,8 @@
     vpc_subnet_id: "{{ r_aws_subnet.subnet.id }}"
     tags: "{{ aws_base_tags }}"
     state: present
+
+- name: Store EC2 information
+  ansible.builtin.set_stats:
+    data:
+      ec2_instances: "{{ r_ec2_instances.instances }}"
