@@ -10,7 +10,7 @@ aws_subnet_name: aws-demo-subnet
 aws_rt_name: aws-demo-rt
 aws_region: us-east-2
 aws_key_name: demo-keypair
-aws_public_key_src: "{{ aws_ssh_pubkey | ternary(aws_ssh_pubkey,'undef') }}"
+aws_public_key_src: "{{ aws_ssh_pubkey | default('') }}"
 
 aws_base_tags:
   owner: "{{ aws_owner_tag }}"

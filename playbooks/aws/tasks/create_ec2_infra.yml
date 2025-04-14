@@ -63,12 +63,14 @@
     tags: "{{ aws_base_tags | combine({'Name': aws_rt_name}) }}"
 
 - name: Create AWS keypair
-  when: aws_public_key_src != 'undef'
+  when:
+    - aws_public_key_src is defined
+    - aws_public_key_src != ''
   tags: security
   amazon.aws.ec2_key:
     name: "{{ aws_key_name }}"
     region: "{{ aws_region }}"
-    key_material: "{{ lookup('file', aws_public_key_src) }}"
+    key_material: "{{ aws_public_key_src }}"
     state: present
     tags: "{{ aws_base_tags }}"
 
