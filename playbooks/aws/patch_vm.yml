@@ -5,6 +5,45 @@
   become: true
 
   tasks:
+    - name: Create change request
+      tags: snow
+      register: r_chg_req
+      delegate_to: localhost
+      run_once: true
+      servicenow.itsm.change_request:
+        type: standard
+        state: new
+        requested_by: zleblanc
+        short_description: Patch EC2s
+        description: "Affected hosts: {{ ','.join(ansible_play_hosts) }}"
+        priority: moderate
+        risk: low
+        impact: low
+
+    - name: Update change request status
+      tags: snow
+      delegate_to: localhost
+      run_once: true
+      servicenow.itsm.change_request:
+        number: "{{ r_chg_req.number }}"
+        state: implement
+
+    - name: Create a change task
+      tags: snow
+      delegate_to: localhost
+      register: r_chg_task
+      servicenow.itsm.change_request_task:
+        configuration_item: "{{ inventory_hostname }}"
+        change_request_number: "{{ r_chg_req.number }}"
+        type: implementation
+        state: open
+        assigned_to: zleblanc
+        short_description: "patching {{ inventory_hostname }}"
+        planned_start_date: "{{ lookup('pipe', 'date +\"%Y%m%d %H:%M:%S\"') }}"
+        planned_end_date: "{{ lookup('pipe', 'date -d \"+30 minutes\" +\"%Y%m%d %H:%M:%S\"') }}"
+        other:
+          approval: approved
+      
     - name: Patch host with dnf
       when: ansible_pkg_mgr == 'dnf'
       ansible.builtin.dnf:
@@ -24,3 +63,22 @@
       ansible.windows.win_updates:
         category_names: "*"
         reboot: true
+
+    - name: Close a change task
+      tags: snow
+      delegate_to: localhost
+      servicenow.itsm.change_request_task:
+        number: "{{ r_chg_task.number }}"
+        state: closed
+        close_code: successful
+        close_notes: Closed
+
+    - name: Close change request
+      tags: snow
+      delegate_to: localhost
+      run_once: true
+      servicenow.itsm.change_request:
+        number: "{{ r_chg_req.number }}"
+        state: closed
+        close_code: successful
+        close_notes: Closed

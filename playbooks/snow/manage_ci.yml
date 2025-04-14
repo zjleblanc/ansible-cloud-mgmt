@@ -1,24 +1,10 @@
 ---
-- name: Create Configuration Items
+- name: Manage Configuration Items
   hosts: "{{ _cmdb_hosts }}"
   gather_facts: true
 
   tasks:
-    - name: Register the newly-created VM instance
-      delegate_to: localhost
-      servicenow.itsm.configuration_item:
-        name: "{{ inventory_hostname }}"
-        sys_class_name: cmdb_ci_server
-        ip_address: "{{ public_ip_address }}"
-        mac_address: "{{ ansible_default_ipv4['macaddress'] | default(ansible_interfaces[0]['macaddress']) }}"
-        other:
-          vm_inst_id: "{{ instance_id }}"
-          fqdn: "{{ public_dns_name }}"
-          guest_os_fullname: "{{ ansible_distribution }}{{ ansible_distribution_version }}"
-          cpus: "{{ processor_vcpus | default(ansible_processor_vcpus) }}"
-          memory: "{{ ansible_memtotal_mb }}"
-          classification: "{{ instance_type }}"
-          location: "{{ placement['availability_zone'] }}"
-          justification: "{{ tags['purpose'] }}"
-          short_description: "{{ tags['info'] | default('CI created by Ansible vm lifecycle management process') }}"
+    - name: Complete CI Management
+      ansible.builtin.include_tasks:
+        file: "{{ action }}_ci.yml"
 ...

@@ -1,0 +1,10 @@
+---
+- name: Manage Change Requests
+  hosts: "{{ _cmdb_hosts }}"
+  gather_facts: true
+
+  tasks:
+    - name: Complete CR Management
+      ansible.builtin.include_tasks:
+        file: "{{ action }}_cr.yml"
+...

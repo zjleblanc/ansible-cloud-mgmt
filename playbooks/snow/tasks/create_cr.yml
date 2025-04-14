@@ -1,0 +1,10 @@
+- name: Create change request
+  servicenow.itsm.change_request:
+    type: "{{ cr_type }}"
+    state: "{{ cr_state }}"
+    requested_by: "{{ cr_requested_by }}"
+    short_description: "{{ cr_short_description }}"
+    description: "{{ cr_description }}"
+    priority: "{{ cr_priority | default('low') }}"
+    risk: "{{ cr_risk | default('low') }}"
+    impact: "{{ cr_impact | default('low') }}"
