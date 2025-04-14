@@ -11,12 +11,12 @@
 
 - name: Save df results
   ansible.builtin.set_fact:
-    df_stdout: "{{ (df_host is defined) | ternary(r_df_cmd_remote, r_df_cmd) }}"
+    df_result: "{{ (df_host is defined) | ternary(r_df_cmd_remote, r_df_cmd) }}"
 
 - name: Add df results to incident | {{ df_stage }}
   delegate_to: localhost
   vars:
-    df_root_stat: "{{ r_df_cmd.stdout | community.general.jc('df') | selectattr('mounted_on', 'equalto', '/') }}"
+    df_root_stat: "{{ df_result.stdout | community.general.jc('df') | selectattr('mounted_on', 'equalto', '/') }}"
   servicenow.itsm.incident:
     sys_id: "{{ incident_sys_id }}"
     other:
