@@ -57,6 +57,7 @@
       
     - name: Patch host with dnf
       when: ansible_pkg_mgr == 'dnf'
+      register: r_patch_results
       ansible.builtin.dnf:
         name: "*"
         state: latest
@@ -64,6 +65,7 @@
 
     - name: Patch host with yum
       when: ansible_pkg_mgr == 'yum'
+      register: r_patch_results
       ansible.builtin.yum:
         name: "*"
         state: latest
@@ -71,6 +73,7 @@
 
     - name: Patch windows host
       when: ansible_os_family|lower == 'windows'
+      register: r_patch_results
       ansible.windows.win_updates:
         category_names: "*"
         reboot: true
@@ -82,7 +85,7 @@
         number: "{{ r_chg_task.record.number }}"
         state: closed
         close_code: successful
-        close_notes: Closed
+        close_notes: "{{ r_patch_results }}"
 
     - name: Update change request status
       tags: snow
