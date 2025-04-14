@@ -8,7 +8,7 @@
       delegate_to: localhost
       servicenow.itsm.configuration_item:
         name: "{{ inventory_hostname }}"
-        sys_class_name: cmdb_ci_vm_instance
+        sys_class_name: cmdb_ci_server
         ip_address: "{{ public_ip_address }}"
         mac_address: "{{ ansible_default_ipv4['macaddress'] | default(ansible_interfaces[0]['macaddress']) }}"
         other:
