@@ -1,0 +1,108 @@
+---
+- name: Include platform variables
+  ansible.builtin.include_vars:
+    file: "vars/{{ target_platform }}_launch_template.yml"
+
+- name: Create VPC
+  tags: network
+  register: r_aws_vpc
+  amazon.aws.ec2_vpc_net:
+    state: present
+    name: "{{ aws_vpc_name }}"
+    cidr_block: "{{ aws_vpc_cidr_block }}"
+    tenancy: "{{ aws_tenancy }}"
+    region: "{{ aws_region }}"
+    tags:
+      owner: "{{ aws_owner_tag }}"
+      purpose: "{{ aws_purpose_tag }}"
+
+- name: Create internet gateway
+  tags: network
+  register: r_aws_gw
+  amazon.aws.ec2_vpc_igw:
+    state: present
+    vpc_id: "{{ r_aws_vpc.vpc.id }}"
+    region: "{{ aws_region }}"
+    tags: "{{ aws_base_tags | combine({'Name': aws_vpc_name}) }}"
+
+- name: Create security group internal
+  tags: network
+  register: r_aws_sg
+  amazon.aws.ec2_security_group:
+    state: present
+    name: "{{ aws_sg_name }}"
+    region: "{{ aws_region }}"
+    description: Inbound WinRM and RDP, http for demo servers and internal AD ports
+    rules: "{{ aws_sg_rules }}"
+    rules_egress: "{{ aws_sg_rules_egress }}"
+    vpc_id: "{{ r_aws_vpc.vpc.id }}"
+    tags: "{{ aws_base_tags | combine({'Name': aws_sg_name}) }}"
+
+- name: Create a subnet on the VPC
+  tags: network
+  register: r_aws_subnet
+  amazon.aws.ec2_vpc_subnet:
+    state: present
+    vpc_id: "{{ r_aws_vpc.vpc.id }}"
+    cidr: "{{ aws_subnet_cidr }}"
+    region: "{{ aws_region }}"
+    map_public: true
+    tags: "{{ aws_base_tags | combine({'Name': aws_subnet_name}) }}"
+
+- name: Create a subnet route table
+  tags: network
+  amazon.aws.ec2_vpc_route_table:
+    state: present
+    vpc_id: "{{ r_aws_vpc.vpc.id }}"
+    region: "{{ aws_region }}"
+    subnets:
+      - "{{ r_aws_subnet.subnet.id }}"
+    routes:
+      - dest: 0.0.0.0/0
+        gateway_id: "{{ r_aws_gw.gateway_id }}"
+    tags: "{{ aws_base_tags | combine({'Name': aws_rt_name}) }}"
+
+- name: Create AWS keypair
+  when: aws_public_key_src != 'undef'
+  tags: security
+  amazon.aws.ec2_key:
+    name: "{{ aws_key_name }}"
+    region: "{{ aws_region }}"
+    key_material: "{{ lookup('file', aws_public_key_src) }}"
+    state: present
+    tags: "{{ aws_base_tags }}"
+
+- name: Create launch template
+  tags: template
+  vars:
+    dt_api_token: "{{ lookup('env', 'DT_API_TOKEN') }}"
+  community.aws.ec2_launch_template:
+    name: "{{ lt_name }}"
+    region: "{{ aws_region }}"
+    image_id: "{{ lt_image_id }}"
+    instance_type: "{{ lt_instance_type }}"
+    key_name: "{{ aws_key_name }}"
+    metadata_options:
+      instance_metadata_tags: enabled
+      http_put_response_hop_limit: 2
+    network_interfaces:
+      - device_index: 0
+        associate_public_ip_address: true
+        delete_on_termination: true
+        subnet_id: "{{ r_aws_subnet.subnet.id }}"
+        groups:
+          - "{{ r_aws_sg.group_id }}"
+    user_data: "{{ lookup('template', target_platform + '.userdata.j2') | ansible.builtin.b64encode }}"
+    tags: "{{ aws_base_tags }}"
+
+- name: Create ec2 instances
+  tags: compute
+  loop: "{{ aws_ec2_names }}"
+  amazon.aws.ec2_instance:
+    name: "{{ item }}"
+    region: "{{ aws_region }}"
+    launch_template:
+      name: "{{ lt_name }}"
+    vpc_subnet_id: "{{ r_aws_subnet.subnet.id }}"
+    tags: "{{ aws_base_tags }}"
+    state: present

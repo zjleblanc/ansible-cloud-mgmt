@@ -1,0 +1,25 @@
+---
+- name: Create EC2 instances
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  ## Required vars ##
+  # aws_ec2_names_list: vm1,vm2
+  # target_platform: rhel
+
+  ## Required ENV vars ##
+  # DT_API_TOKEN
+
+  vars:
+    aws_ec2_names: "{{ aws_ec2_names_list.split(',') }}"
+
+  vars_files:
+    - vars/create_ec2_infra.yml
+
+  tasks:
+    - name: Setup AWS environment
+      when: aws_ec2_names | length
+      ansible.builtin.include_tasks:
+        file: tasks/create_ec2_infra.yml
+...

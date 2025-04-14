@@ -1,0 +1,66 @@
+---
+aws_vpc_name: aws-demo-vpc
+aws_owner_tag: default
+aws_purpose_tag: ansible_eda_demo
+aws_tenancy: default
+aws_vpc_cidr_block: 10.0.0.0/16
+aws_subnet_cidr: 10.0.1.0/24
+aws_sg_name: aws-demo-sg
+aws_subnet_name: aws-demo-subnet
+aws_rt_name: aws-demo-rt
+aws_region: us-east-2
+aws_key_name: demo-keypair
+aws_public_key_src: "{{ aws_ssh_pubkey | default('undef') }}"
+
+aws_base_tags:
+  owner: "{{ aws_owner_tag }}"
+  purpose: "{{ aws_purpose_tag }}"
+
+aws_sg_rules:
+  - proto: tcp
+    ports:
+      - 80  # HTTP
+      - 443  # HTTPS
+      - 22  # SSH
+      - 5986  # WinRM
+      - 3389  # RDP
+      - 9090  # Cockpit
+    cidr_ip: 0.0.0.0/0
+  - proto: icmp
+    to_port: -1
+    from_port: -1
+    cidr_ip: 0.0.0.0/0
+  - proto: tcp
+    ports:
+      - 80  # HTTP
+      - 5986  # WinRM
+      - 3389  # RDP
+      - 53  # DNS
+      - 88  # Kerberos Authentication
+      - 135  # RPC
+      - 139  # Netlogon
+      - 389  # LDAP
+      - 445  # SMB
+      - 464  # Kerberos Authentication
+      - 5432  # PostgreSQL
+      - 636  # LDAPS (LDAP over TLS)
+      - 873  # Rsync
+      - 3268-3269  # Global Catalog
+      - 1024-65535  # Ephemeral RPC ports
+    cidr_ip: "{{ aws_vpc_cidr_block }}"
+  - proto: udp
+    ports:
+      - 53  # DNS
+      - 88  # Kerberos Authentication
+      - 123  # NTP
+      - 137-138  # Netlogon
+      - 389  # LDAP
+      - 445  # SMB
+      - 464  # Kerberos Authentication
+      - 1024-65535  # Ephemeral RPC ports
+    cidr_ip: "{{ aws_vpc_cidr_block }}"
+
+aws_sg_rules_egress:
+  - proto: -1
+    cidr_ip: 0.0.0.0/0
+...

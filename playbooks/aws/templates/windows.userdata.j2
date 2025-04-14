@@ -1,0 +1,52 @@
+<powershell>
+# AWS Windows AMI - Retrieve Instance Metadata
+# https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/instancedata-data-retrieval.html#instance-metadata-ex-7
+
+# Disable .Net Optimization Service
+Get-ScheduledTask *ngen* | Disable-ScheduledTask
+
+# Disable Windows Auto Updates
+# https://docs.aws.amazon.com/AWSEC2/latest/WindowsGuide/troubleshooting-windows-instances.html#high-cpu-issue
+reg add "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update" /v AUOptions /t REG_DWORD /d 1 /f
+net stop wuauserv
+net start wuauserv
+
+# Remove policies stopping us from enabling WinRM
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service" /v AllowBasic /f
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service" /v AllowUnencryptedTraffic /f
+reg delete "HKLM\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service" /v DisableRunAs /f
+
+# Disable Windows Defender Monitoring
+Set-MpPreference -DisableRealtimeMonitoring $true
+
+# Enable WinRM
+Invoke-WebRequest -Uri https://raw.githubusercontent.com/ansible/ansible-documentation/devel/examples/scripts/ConfigureRemotingForAnsible.ps1 -OutFile C:\ConfigureRemotingForAnsible.ps1
+C:\ConfigureRemotingForAnsible.ps1 -ForceNewSSLCert -EnableCredSSP
+
+# add ec2-user
+$Password = ConvertTo-SecureString "{{ ansible_password }}" -AsPlainText -Force
+New-LocalUser -Name "ec2-user" -Description "Ansible Service Account" -Password $Password
+Add-LocalGroupMember -Group "Administrators" -Member "ec2-user"
+
+# install Dynatrace
+$ProgressPreference = 'SilentlyContinue'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+Invoke-WebRequest -Uri 'https://ozi92582.live.dynatrace.com/api/v1/deployment/installer/agent/windows/default/latest?arch=x86' -Headers @{ 'Authorization' = 'Api-Token {{ dt_api_token }}' } -OutFile 'Dynatrace-OneAgent-Windows-1.307.61.20250226-155505.exe'
+.\Dynatrace-OneAgent-Windows-1.307.61.20250226-155505.exe --set-monitoring-mode=fullstack --set-app-log-content-access=true
+
+# change Windows computer name to Name tag
+$instanceName = (Get-EC2InstanceMetadata -Path /tags/instance/Name)
+$pattern = "^(?![0-9]{1,15}$)[a-zA-Z0-9-]{1,15}$"
+If ($instanceName -match $pattern) {
+	Try {
+		& 'C:\Program Files\dynatrace\oneagent\agent\tools\oneagentctl.exe' --set-host-name $instanceName --restart-service
+		Rename-Computer -NewName $instanceName -Force -Restart -ErrorAction Stop
+	} Catch {
+		$ErrorMessage = $_.Exception.Message
+    Write-Output "Rename failed: $ErrorMessage"
+  }
+}
+Else {
+	Throw "Provided name not a valid hostname. Please ensure Name value is between 1 and 15 characters in length and contains only alphanumeric or hyphen characters"
+}
+</powershell>
