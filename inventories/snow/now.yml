@@ -19,6 +19,9 @@ columns:
   - os
   - os_version
 
+query_additional_columns:
+  - sys_created_by
+
 keyed_groups:
     # example: sn_class_windows_server
   - key: sys_class_name.replace(" ", "_").lower()
