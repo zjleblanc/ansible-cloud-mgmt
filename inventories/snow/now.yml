@@ -5,6 +5,8 @@ plugin: servicenow.itsm.now
 # SN_USERNAME="admin"
 # SN_PASSWORD="password"
 
+table: cmdb_ci_vm_instance
+
 # No expressions here, 1:1 mapping between
 # column value and hostvar
 columns: 
