@@ -27,6 +27,14 @@
       run_once: true
       servicenow.itsm.change_request:
         number: "{{ r_chg_req.record.number }}"
+        state: scheduled
+
+    - name: Update change request status
+      tags: snow
+      delegate_to: localhost
+      run_once: true
+      servicenow.itsm.change_request:
+        number: "{{ r_chg_req.record.number }}"
         state: implement
 
     - name: Create a change task
@@ -73,6 +81,14 @@
         state: closed
         close_code: successful
         close_notes: Closed
+
+    - name: Update change request status
+      tags: snow
+      delegate_to: localhost
+      run_once: true
+      servicenow.itsm.change_request:
+        number: "{{ r_chg_req.record.number }}"
+        state: review
 
     - name: Close change request
       tags: snow
