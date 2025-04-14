@@ -28,6 +28,7 @@
       servicenow.itsm.change_request:
         number: "{{ r_chg_req.record.number }}"
         state: scheduled
+        assignment_group: Ansible West Tigers
 
     - name: Update change request status
       tags: snow
