@@ -49,6 +49,7 @@
         state: open
         assigned_to: zleblanc
         short_description: "patching {{ inventory_hostname }}"
+        description: "starting patch @ {{ ansible_date_time.iso8601 }}"
         planned_start_date: "{{ lookup('pipe', 'date +\"%Y%m%d %H:%M:%S\"') }}"
         planned_end_date: "{{ lookup('pipe', 'date -d \"+30 minutes\" +\"%Y%m%d %H:%M:%S\"') }}"
         other:
