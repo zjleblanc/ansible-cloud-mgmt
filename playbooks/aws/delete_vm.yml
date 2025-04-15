@@ -4,6 +4,7 @@
   gather_facts: false
 
   vars:
+    aws_region: us-east-2
     aws_ec2_names: "{{ aws_ec2_names_list.split(',') }}"
 
   vars_files:
