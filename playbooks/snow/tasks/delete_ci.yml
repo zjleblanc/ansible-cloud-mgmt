@@ -1,0 +1,6 @@
+- name: Register the newly-created VM instance
+  delegate_to: localhost
+  servicenow.itsm.configuration_item:
+    name: "{{ inventory_hostname }}"
+    sys_class_name: cmdb_ci_server
+    state: absent
