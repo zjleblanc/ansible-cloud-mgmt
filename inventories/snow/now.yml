@@ -18,7 +18,6 @@ columns:
   - vendor
   - os
   - os_version
-  - vm_inst_id
 
 query_additional_columns:
   - sys_created_by
