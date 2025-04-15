@@ -4,4 +4,5 @@
   register: r_delete_vm
   amazon.aws.ec2_instance:
     name: "{{ item }}"
+    region: "{{ aws_region }}"
     state: absent
