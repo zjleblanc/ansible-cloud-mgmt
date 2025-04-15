@@ -6,5 +6,5 @@
   tasks:
     - name: Complete CI Management
       ansible.builtin.include_tasks:
-        file: "{{ action }}_ci.yml"
+        file: "tasks/{{ action }}_ci.yml"
 ...
