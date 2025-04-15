@@ -1,6 +1,10 @@
 - name: Gather facts
   ansible.builtin.setup:
 
+- name: Determine OS
+  ansible.builtin.set_fact:
+    sn_os_name: "{{ (ansible_distribution_version is search('RedHat')) | ternary('Linux Red Hat', 'Windows') }}"
+
 - name: Create VM in CMDB
   delegate_to: localhost
   servicenow.itsm.configuration_item:
@@ -8,7 +12,13 @@
     sys_class_name: cmdb_ci_server
     ip_address: "{{ public_ip_address }}"
     mac_address: "{{ ansible_default_ipv4['macaddress'] | default(ansible_interfaces[0]['macaddress']) }}"
+    serial_number: "{{ instance_id }}"
     other:
+      os: "{{ sn_os_name }}"
+      os_version: "{{ ansible_distribution_version }}"
+      ram: "{{ ansible_memtotal_mb }}"
+      cpu_count: "{{ ansible_processor_count }}"
+      cpu_core_count: "{{ ansible_processor_cores }}"
       vm_inst_id: "{{ instance_id }}"
       fqdn: "{{ public_dns_name }}"
       guest_os_fullname: "{{ ansible_distribution }}{{ ansible_distribution_version }}"
@@ -18,3 +28,4 @@
       location: "{{ placement['availability_zone'] }}"
       justification: "{{ tags['purpose'] }}"
       short_description: "{{ tags['info'] | default('CI created by Ansible vm lifecycle management process') }}"
+      assigned_to: zleblanc

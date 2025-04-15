@@ -18,6 +18,7 @@ columns:
   - vendor
   - os
   - os_version
+  - serial_number
 
 query_additional_columns:
   - sys_created_by
