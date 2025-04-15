@@ -1,8 +1,18 @@
 ---
-- name: Create ec2 instances
-  loop: "{{ aws_ec2_names }}"
+- name: Gather information about any instance with a tag key Name and value Example
+  register: r_vm_info
+  amazon.aws.ec2_instance_info:
+    filters:
+      "tag:Name": "{{ aws_ec2_name }}"
+
+- name: Terminate ec2 instances
   register: r_delete_vm
   amazon.aws.ec2_instance:
-    name: "{{ item }}"
+    instance_ids:
+      - "{{ r_vm_info.instances[0].instance_id }}"
     region: "{{ aws_region }}"
     state: absent
+
+- name: Add to list of deleted vms
+  ansible.builtin.set_fact:
+    deleted_vms: "{{ deleted_vms | default([]) + r_delete_vm.instances }}"

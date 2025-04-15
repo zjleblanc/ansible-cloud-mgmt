@@ -12,11 +12,14 @@
 
   tasks:
     - name: Delete EC2
+      loop: "{{ aws_ec2_names }}"
+      loop_control:
+        loop_var: aws_ec2_name
       ansible.builtin.include_tasks:
         file: tasks/delete_ec2.yml
 
     - name: Record actions
       ansible.builtin.set_stats:
         data:
-          deleted_vms: "{{ r_delete_vm.results }}"
+          deleted_vms: "{{ deleted_vms | default([]) }}"
 ...
