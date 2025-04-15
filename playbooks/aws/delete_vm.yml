@@ -22,4 +22,5 @@
       ansible.builtin.set_stats:
         data:
           deleted_vms: "{{ deleted_vms | default([]) }}"
+          _hosts: "{{ aws_ec2_names_list }}"
 ...
