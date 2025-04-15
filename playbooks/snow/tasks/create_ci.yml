@@ -1,7 +1,7 @@
 - name: Gather facts
   ansible.builtin.setup:
 
-- name: Register the newly-created VM instance
+- name: Create VM in CMDB
   delegate_to: localhost
   servicenow.itsm.configuration_item:
     name: "{{ inventory_hostname }}"

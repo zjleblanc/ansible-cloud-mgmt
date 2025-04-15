@@ -1,4 +1,4 @@
-- name: Register the newly-created VM instance
+- name: Remove VM from CMDB
   delegate_to: localhost
   servicenow.itsm.configuration_item:
     name: "{{ inventory_hostname }}"
