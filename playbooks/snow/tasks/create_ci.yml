@@ -1,3 +1,6 @@
+- name: Gather facts
+  ansible.builtin.setup:
+
 - name: Register the newly-created VM instance
   delegate_to: localhost
   servicenow.itsm.configuration_item:

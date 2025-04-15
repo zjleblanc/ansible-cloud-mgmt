@@ -1,7 +1,7 @@
 ---
 - name: Manage Configuration Items
   hosts: "{{ _cmdb_hosts }}"
-  gather_facts: true
+  gather_facts: false
 
   tasks:
     - name: Complete CI Management
