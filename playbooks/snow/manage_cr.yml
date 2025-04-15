@@ -1,6 +1,6 @@
 ---
 - name: Manage Change Requests
-  hosts: "{{ _cmdb_hosts }}"
+  hosts: "{{ _hosts }}"
   gather_facts: true
 
   tasks:

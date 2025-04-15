@@ -27,5 +27,5 @@
       ansible.builtin.set_stats:
         data:
           created_vms: "{{ r_create_vm.results }}"
-          _cmdb_hosts: "{{ aws_ec2_names_list }}"
+          _hosts: "{{ aws_ec2_names_list }}"
 ...
