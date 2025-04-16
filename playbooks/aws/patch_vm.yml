@@ -72,7 +72,7 @@
             number: "{{ r_chg_task.record.number }}"
             state: closed
             close_code: unsuccessful
-            close_notes: "{{ patch_results | to_nice_yaml }}"
+            close_notes: "Automated patching failed: {{ awx_job_template_name }} (id: {{ awx_job_id }})"
 
         - name: Update change request status | on hold
           tags: snow
