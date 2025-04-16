@@ -7,7 +7,7 @@
 
 - name: Determine OS
   ansible.builtin.set_fact:
-    sn_os_name: "{{ (ansible_distribution_version is search('RedHat')) | ternary('Linux Red Hat', 'Windows') }}"
+    sn_os_name: "{{ (ansible_distribution is search('RedHat')) | ternary('Linux Red Hat', 'Windows') }}"
 
 - name: Create VM in CMDB
   delegate_to: localhost

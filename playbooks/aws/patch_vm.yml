@@ -55,67 +55,65 @@
         other:
           approval: approved
       
-    - name: Patch host with dnf
-      when: ansible_pkg_mgr == 'dnf'
-      register: r_patch_dnf
-      ansible.builtin.dnf:
-        name: "*"
-        state: latest
-        update_cache: true
+    - name: Patch VM
+      block:
+        - name: Apply patches based on platform
+          ansible.builtin.include_tasks:
+            file: tasks/patch_ec2.yml
+      rescue:
+        - name: Handle patch failure
+          ansible.builtin.set_fact:
+            patch_failed: true
 
-    - name: Set patch results | dnf
-      when: r_patch_dnf is not skipped
-      ansible.builtin.set_fact:
-        patch_results: "{{ r_patch_dnf }}"
+        - name: Close a change task | unsuccessful
+          tags: snow
+          delegate_to: localhost
+          servicenow.itsm.change_request_task:
+            number: "{{ r_chg_task.record.number }}"
+            state: closed
+            close_code: unsuccessful
+            close_notes: "{{ patch_results | to_nice_yaml }}"
 
-    - name: Patch host with yum
-      when: ansible_pkg_mgr == 'yum'
-      register: r_patch_yum
-      ansible.builtin.yum:
-        name: "*"
-        state: latest
-        update_cache: true
+        - name: Update change request status | on hold
+          tags: snow
+          delegate_to: localhost
+          run_once: true
+          servicenow.itsm.change_request:
+            number: "{{ r_chg_req.record.number }}"
+            on_hold: true
+            hold_reason: "Patch failed, see {{ r_chg_task.record.number }}"
 
-    - name: Set patch results | yum
-      when: r_patch_yum is not skipped
-      ansible.builtin.set_fact:
-        patch_results: "{{ r_patch_yum }}"
-
-    - name: Patch windows host
-      when: ansible_os_family|lower == 'windows'
-      register: r_patch_win
-      ansible.windows.win_updates:
-        category_names: "*"
-        reboot: true
-
-    - name: Set patch results | windows
-      when: r_patch_win is not skipped
-      ansible.builtin.set_fact:
-        patch_results: "{{ r_patch_win }}"
+        - name: Fail playbook
+          ansible.builtin.assert:
+            that: false
+            fail_msg: "Patch failed, see {{ r_chg_task.record.number }}"
     
-    - name: Close a change task
-      tags: snow
-      delegate_to: localhost
-      servicenow.itsm.change_request_task:
-        number: "{{ r_chg_task.record.number }}"
-        state: closed
-        close_code: successful
-        close_notes: "{{ patch_results | to_nice_yaml }}"
+    - name: Patch succeeded
+      when: not (patch_failed | default(false))
+      block:
+        - name: Close a change task | successful
+          tags: snow
+          delegate_to: localhost
+          servicenow.itsm.change_request_task:
+            number: "{{ r_chg_task.record.number }}"
+            state: closed
+            close_code: successful
+            close_notes: "{{ patch_results | to_nice_yaml }}"
 
-    - name: Update change request status
-      tags: snow
-      delegate_to: localhost
-      run_once: true
-      servicenow.itsm.change_request:
-        number: "{{ r_chg_req.record.number }}"
-        state: review
+        - name: Update change request status | review
+          tags: snow
+          delegate_to: localhost
+          run_once: true
+          servicenow.itsm.change_request:
+            number: "{{ r_chg_req.record.number }}"
+            state: review
 
-    - name: Close change request
-      tags: snow
-      delegate_to: localhost
-      run_once: true
-      servicenow.itsm.change_request:
-        number: "{{ r_chg_req.record.number }}"
-        state: closed
-        close_code: successful
-        close_notes: Closed
+        - name: Close change request | successful
+          tags: snow
+          delegate_to: localhost
+          run_once: true
+          servicenow.itsm.change_request:
+            number: "{{ r_chg_req.record.number }}"
+            state: closed
+            close_code: successful
+            close_notes: Closed

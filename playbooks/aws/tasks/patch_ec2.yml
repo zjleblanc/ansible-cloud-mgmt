@@ -1,0 +1,38 @@
+---
+- name: Patch host with dnf
+  when: ansible_pkg_mgr == 'dnf'
+  register: r_patch_dnf
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+    update_cache: true
+
+- name: Set patch results | dnf
+  when: r_patch_dnf is not skipped
+  ansible.builtin.set_fact:
+    patch_results: "{{ r_patch_dnf }}"
+
+- name: Patch host with yum
+  when: ansible_pkg_mgr == 'yum'
+  register: r_patch_yum
+  ansible.builtin.yum:
+    name: "*"
+    state: latest
+    update_cache: true
+
+- name: Set patch results | yum
+  when: r_patch_yum is not skipped
+  ansible.builtin.set_fact:
+    patch_results: "{{ r_patch_yum }}"
+
+- name: Patch windows host
+  when: ansible_os_family|lower == 'windows'
+  register: r_patch_win
+  ansible.windows.win_updates:
+    category_names: "*"
+    reboot: true
+
+- name: Set patch results | windows
+  when: r_patch_win is not skipped
+  ansible.builtin.set_fact:
+    patch_results: "{{ r_patch_win }}"
