@@ -1,5 +1,0 @@
----
-lt_name: ansible-windows-oneagent
-lt_image_id: ami-0b041308c8b9767f3 # Microsoft Windows Server 2022 Base
-lt_instance_type: t2.medium
-...

@@ -1,4 +1,31 @@
 ---
+launch_templates:
+  rhel_dev:
+    lt_name: ansible-rhel-dev
+    lt_image_id: ami-0d77c9d87c7e619f9 # RHEL Latest (no agent/updates)
+    lt_instance_type: t2.medium
+    lt_jinja: rhel_dev
+  rhel8:
+    lt_name: ansible-rhel-8
+    lt_image_id: ami-0d77c9d87c7e619f9 # RHEL8 (no agent/updates)
+    lt_instance_type: t2.medium
+    lt_jinja: rhel_dev
+  rhel9:
+    lt_name: ansible-rhel-9
+    lt_image_id: ami-0d77c9d87c7e619f9 # RHEL9 (no agent/updates)
+    lt_instance_type: t2.medium
+    lt_jinja: rhel_dev
+  rhel:
+    lt_name: ansible-rhel-oneagent
+    lt_image_id: ami-0d77c9d87c7e619f9 # RHEL9
+    lt_instance_type: t2.medium
+    lt_jinja: rhel
+  windows:
+    lt_name: ansible-windows-oneagent
+    lt_image_id: ami-0b041308c8b9767f3 # Microsoft Windows Server 2022 Base
+    lt_instance_type: t2.medium
+    lt_jinja: windows
+
 aws_vpc_name: aws-demo-vpc
 aws_owner_tag: default
 aws_purpose_tag: ansible_eda_demo

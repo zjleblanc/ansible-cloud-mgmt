@@ -1,5 +1,0 @@
----
-lt_name: ansible-rhel-dev
-lt_image_id: ami-0d77c9d87c7e619f9 # RHEL9
-lt_instance_type: t2.medium
-...

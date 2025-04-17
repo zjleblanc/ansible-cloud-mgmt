@@ -1,8 +1,4 @@
 ---
-- name: Include platform variables
-  ansible.builtin.include_vars:
-    file: "vars/{{ target_platform }}_launch_template.yml"
-
 - name: Create VPC
   tags: network
   register: r_aws_vpc
@@ -77,7 +73,11 @@
 - name: Create launch template
   tags: template
   vars:
-    dt_api_token: "{{ lookup('env', 'DT_API_TOKEN') }}"
+    dt_api_token: "{{ lookup('env', 'DT_API_TOKEN') | default('UNDEF') }}"
+    lt_name: "{{ launch_templates[target_platform]['lt_name'] }}"
+    lt_image_id: "{{ launch_templates[target_platform]['lt_name'] }}"
+    lt_instance_type: "{{ launch_templates[target_platform]['lt_instance_type'] }}"
+    lt_jinja: "{{ launch_templates[target_platform]['lt_jinja'] }}"
   community.aws.ec2_launch_template:
     name: "{{ lt_name }}"
     region: "{{ aws_region }}"
@@ -94,7 +94,7 @@
         subnet_id: "{{ r_aws_subnet.subnet.id }}"
         groups:
           - "{{ r_aws_sg.group_id }}"
-    user_data: "{{ lookup('template', target_platform + '.userdata.j2') | ansible.builtin.b64encode }}"
+    user_data: "{{ lookup('template', lt_jinja + '.userdata.j2') | ansible.builtin.b64encode }}"
     tags: "{{ aws_base_tags }}"
 
 - name: Create ec2 instances
