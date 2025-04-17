@@ -14,7 +14,7 @@ launch_templates:
     lt_jinja: rhel_dev
   rhel8:
     lt_name: ansible-rhel-8
-    lt_image_id: ami-0d77c9d87c7e619f9 # RHEL8 (no agent/updates)
+    lt_image_id: ami-06e39adb06f761f2e # RHEL8 (no agent/updates)
     lt_instance_type: t2.medium
     lt_jinja: rhel_dev
   rhel9:
