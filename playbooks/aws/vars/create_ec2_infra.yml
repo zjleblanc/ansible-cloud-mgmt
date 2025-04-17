@@ -1,4 +1,11 @@
 ---
+dt_api_token: "{{ lookup('env', 'DT_API_TOKEN') | default('UNDEF') }}"
+
+lt_name: "{{ launch_templates[target_platform]['lt_name'] }}"
+lt_image_id: "{{ launch_templates[target_platform]['lt_image_id'] }}"
+lt_instance_type: "{{ launch_templates[target_platform]['lt_instance_type'] }}"
+lt_jinja: "{{ launch_templates[target_platform]['lt_jinja'] }}"
+
 launch_templates:
   rhel_dev:
     lt_name: ansible-rhel-dev
