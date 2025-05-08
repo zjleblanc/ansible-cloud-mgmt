@@ -3,11 +3,7 @@
   when: ansible_pkg_mgr == 'dnf'
   register: r_patch_dnf
   ansible.builtin.dnf:
-    name:
-      - kernel
-      - kernel-core
-      - kernel-modules
-      - kernel-modules-core
+    name: "{{ dnf_packages | default('*') }}" 
     state: latest
     update_cache: true
 
