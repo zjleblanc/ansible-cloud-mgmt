@@ -3,7 +3,11 @@
   when: ansible_pkg_mgr == 'dnf'
   register: r_patch_dnf
   ansible.builtin.dnf:
-    name: "*"
+    name:
+      - kernel
+      - kernel-core
+      - kernel-modules
+      - kernel-modules-core
     state: latest
     update_cache: true
 
