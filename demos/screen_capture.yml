@@ -1,0 +1,28 @@
+---
+- name: Run selenium script
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Create temporary build directory
+      register: r_screenshots_dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: screenshots
+
+    - name: Run python script
+      environment:
+        SCREENSHOTS_DIR: "{{ r_screenshots_dir.path }}"
+      ansible.builtin.script:
+        cmd: scripts/selenium_screen_capture.py
+        executable: python3.11 # quay.io/zleblanc/ee-selenium:v2
+
+    - name: Copy to artifacts server
+      become: true
+      delegate_to: "{{ artifacts_server }}"
+      ansible.builtin.copy:
+        src: "{{ r_screenshots_dir.path }}" # add trailing slash for contents only
+        dest: /var/www/artifacts.autodotes.com/selenium/
+        owner: root
+        group: www-data
+        mode: "0755"
