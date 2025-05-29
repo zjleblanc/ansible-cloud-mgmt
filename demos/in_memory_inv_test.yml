@@ -1,0 +1,19 @@
+---
+- name: Create in-memory host
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: add host
+      ansible.builtin.add_host:
+        name: demo_host
+        ansible_host: "192.168.0.80"
+        ansible_user: zach
+
+- name: Automate host
+  hosts: demo_host
+  gather_facts: true
+
+  tasks:
+    - debug:
+        var: ansible_facts
