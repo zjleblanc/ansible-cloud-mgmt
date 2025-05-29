@@ -7,7 +7,7 @@
     - name: add host
       ansible.builtin.add_host:
         name: demo_host
-        ansible_host: "192.168.0.80"
+        ansible_host: "192.168.0.120"
         ansible_user: zach
 
 - name: Automate host
