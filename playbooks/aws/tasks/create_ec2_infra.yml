@@ -81,6 +81,12 @@
     metadata_options:
       instance_metadata_tags: enabled
       http_put_response_hop_limit: 2
+    block_device_mappings:
+      - device_name: /dev/sda1
+        ebs:
+          volume_size: 40
+          delete_on_termination: true
+          volume_type: standard
     network_interfaces:
       - device_index: 0
         associate_public_ip_address: true
