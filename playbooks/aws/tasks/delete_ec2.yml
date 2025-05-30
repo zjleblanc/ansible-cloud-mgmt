@@ -20,6 +20,7 @@
 
 - name: Soft-delete host
   when: not _host_metric_record.deleted
+  no_log: true
   ansible.builtin.uri:
     url: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') }}{{ _host_metric_record.url }}"
     method: DELETE
