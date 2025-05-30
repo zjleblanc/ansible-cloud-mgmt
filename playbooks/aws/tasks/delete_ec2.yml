@@ -14,6 +14,12 @@
     region: "{{ aws_region }}"
     state: absent
 
+- name: Soft-delete host in Controller
+  ansible.controller.host:
+    name: "{{ aws_ec2_name }}"
+    inventory: "{{ awx_inventory_id | default('Cloud Inventory') }}" # workflow variable
+    state: absent   
+
 - name: Add to list of deleted vms
   ansible.builtin.set_fact:
     deleted_vms: "{{ deleted_vms | default([]) + r_delete_vm.instances }}"
