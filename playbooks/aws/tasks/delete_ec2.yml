@@ -16,7 +16,16 @@
 
 - name: Get host metric
   ansible.builtin.set_fact:
-    _host_metric_record: "{{ lookup('ansible.controller.controller_api', 'host_metrics', query_params={'hostname__icontains': aws_ec2_name}) }}"
+    _host_metric_record: "{{ lookup('ansible.controller.controller_api', 'host_metrics', query_params={'hostname__icontains': aws_ec2_name}, expect_one=true) }}"
+
+- name: Soft-delete host
+  when: not _host_metric_record.deleted
+  ansible.builtin.uri:
+    url: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') }}{{ _host_metric_record.url }}"
+    method: DELETE
+    status_code: [200,204]
+    headers:
+      Authorization: "Bearer {{ lookup('ansible.builtin.env', 'CONTROLLER_OAUTH_TOKEN') }}"
 
 - name: Add to list of deleted vms
   ansible.builtin.set_fact:
