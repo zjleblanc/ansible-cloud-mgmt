@@ -3,6 +3,9 @@
   hosts: localhost
   gather_facts: false
 
+  vars_files:
+    - vars/secrets.yml
+
   tasks:
     - name: Simulate Automation Dashboard down
       delegate_to: "{{ automation_dashboard_server }}"
@@ -37,6 +40,7 @@
 
     - name: Run python script
       environment:
+        ADMIN_PWD: "{{ automation_dashboard_admin_password }}"
         SCREENSHOTS_DIR: "{{ r_screenshots_dir.path }}"
       ansible.builtin.script:
         cmd: scripts/selenium_automation_dashboard.py
