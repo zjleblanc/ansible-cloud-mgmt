@@ -1,5 +1,6 @@
 import os
 import sys
+from urllib.parse import urlencode
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -20,8 +21,8 @@ driver = webdriver.Chrome(options=options)
 driver.set_window_size(1500, 1000)
 
 try:
-  admin_password = os.environ.get('ADMIN_PWD')
-  driver.get(f"https://admin:{admin_password}@192.168.0.120:8447/")
+  admin_password = urlencode(os.environ.get('ADMIN_PWD'))
+  driver.get(f"https://admin:{admin_password}@ldap:8447/")
   driver.implicitly_wait(2)
   WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.ID, "app")))
   app = driver.find_element(By.ID, "app")
