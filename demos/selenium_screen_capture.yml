@@ -1,5 +1,5 @@
 ---
-- name: Run selenium script
+- name: Take a screenshot with Selenium
   hosts: localhost
   gather_facts: false
 

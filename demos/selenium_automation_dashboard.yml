@@ -1,0 +1,56 @@
+---
+- name: Confirm status of Automation Dashboard with Selenium screenshot
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Simulate Automation Dashboard down
+      delegate_to: "{{ automation_dashboard_server }}"
+      ansible.builtin.systemd_service:
+        name: automation-reporter-web
+        state: stopped
+        scope: user
+
+    - name: Create incident
+      register: r_incident
+      servicenow.itsm.incident:
+        state: new
+        caller: zleblanc
+        short_description: Automation Dashboard is down
+        description: The Automation Dashboard service is not running at the site is inaccessible
+        impact: low
+        urgency: low
+        other: "{{ inc_other | default(omit) }}"
+
+    - name: Simulate Automation Dashboard remediation
+      delegate_to: "{{ automation_dashboard_server }}"
+      ansible.builtin.systemd_service:
+        name: automation-reporter-web
+        state: started
+        scope: user
+
+    - name: Create temporary build directory
+      register: r_screenshots_dir
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: screenshots
+
+    - name: Run python script
+      environment:
+        SCREENSHOTS_DIR: "{{ r_screenshots_dir.path }}"
+      ansible.builtin.script:
+        cmd: scripts/selenium_automation_dashboard.py
+        executable: python3.11 # quay.io/zleblanc/ee-selenium:v4
+
+    - name: Add attachment
+      servicenow.itsm.incident:
+        sys_id: "{{ r_incident.record.sys_id }}"
+        attachments:
+          - "{{ r_screenshots_dir.path }}/automation_dashboard.png"
+
+    - name: Move incident to closed state
+      servicenow.itsm.incident:
+        sys_id: "{{ r_incident.record.sys_id }}"
+        state: closed
+        close_code: Solved (Permanently)
+        close_notes: Automation Dashboard successfully restarted 
