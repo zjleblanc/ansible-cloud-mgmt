@@ -4,8 +4,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions
-from selenium.common.exceptions import ElementNotVisibleException
+from selenium.webdriver.support import expected_conditions as EC
 
 # run Chrome in headless mode
 options = Options()
@@ -23,7 +22,7 @@ driver.set_window_size(1500, 1000)
 try:
   driver.get("https://192.168.0.120:8447/")
   driver.implicitly_wait(2)
-  WebDriverWait(driver, 5).until(expected_conditions.visibility_of_element_located(By.ID, "app"))
+  WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.ID, "app")))
   app = driver.find_element(By.ID, "app")
   app.screenshot(os.environ.get('SCREENSHOTS_DIR') + '/automation_dashboard.png')
 except Exception:
