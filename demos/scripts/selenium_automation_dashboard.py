@@ -1,6 +1,6 @@
 import os
 import sys
-from urllib.parse import urlencode
+from urllib.parse import quote
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
@@ -21,14 +21,13 @@ driver = webdriver.Chrome(options=options)
 driver.set_window_size(1500, 1000)
 
 try:
-  admin_password = urlencode(os.environ.get('ADMIN_PWD'))
+  admin_password = quote(os.environ.get('ADMIN_PWD'))
   driver.get(f"https://admin:{admin_password}@ldap:8447/")
   driver.implicitly_wait(2)
   WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.ID, "app")))
   app = driver.find_element(By.ID, "app")
   app.screenshot(os.environ.get('SCREENSHOTS_DIR') + '/automation_dashboard.png')
-except Exception as ex:
-  sys.stderr.write(ex)
+except Exception:
   sys.stderr.write("Automation dashboard failed to load")
   sys.exit(1)
 finally:
