@@ -50,7 +50,7 @@
       servicenow.itsm.incident:
         sys_id: "{{ r_incident.record.sys_id }}"
         attachments:
-          - "{{ r_screenshots_dir.path }}/automation_dashboard.png"
+          - path: "{{ r_screenshots_dir.path }}/automation_dashboard.png"
 
     - name: Move incident to closed state
       servicenow.itsm.incident:
