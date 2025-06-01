@@ -1,5 +1,6 @@
 import os
 import sys
+import traceback
 from urllib.parse import quote
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -27,8 +28,8 @@ try:
   WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.ID, "app")))
   app = driver.find_element(By.ID, "app")
   app.screenshot(os.environ.get('SCREENSHOTS_DIR') + '/automation_dashboard.png')
-except Exception as ex:
-  sys.stderr.write(repr(ex))
+except Exception:
+  sys.stderr.write(traceback.format_exc())
   sys.stderr.write("Automation dashboard failed to load")
   sys.exit(1)
 finally:
