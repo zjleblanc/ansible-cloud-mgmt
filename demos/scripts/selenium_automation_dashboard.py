@@ -26,6 +26,7 @@ try:
   driver.get(f"https://admin:{admin_password}@ldap:8447/")
   driver.implicitly_wait(2)
   WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.ID, "app")))
+  WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.XPATH, "//div[@class='page-header']//span[contains(text(), 'Share as PDF')]")))
   app = driver.find_element(By.ID, "app")
   app.screenshot(os.environ.get('SCREENSHOTS_DIR') + '/automation_dashboard.png')
 except Exception:
