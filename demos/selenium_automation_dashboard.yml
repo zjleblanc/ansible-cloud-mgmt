@@ -32,6 +32,10 @@
         state: started
         scope: user
 
+    - name: Wait for Automation Dashboard to start up
+      ansible.builtin.pause:
+        seconds: 10
+
     - name: Create temporary build directory
       register: r_screenshots_dir
       ansible.builtin.tempfile:
