@@ -29,7 +29,7 @@ search_button = driver.find_element(By.ID, "submit")
 search_button.click()
 
 # Print the current URL
-full_body_element = driver.find_element(By.TAG_NAME, "body")
+full_body_element = driver.find_element(By.ID, "touchnav-wrapper")
 full_body_element.screenshot(os.environ.get('SCREENSHOTS_DIR') + '/python_org_search.png')
 
 # Close the browser window
