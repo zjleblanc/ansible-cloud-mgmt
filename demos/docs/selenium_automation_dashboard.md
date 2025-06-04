@@ -11,6 +11,10 @@ Many IT organizations are required to provide screen captures to satisfy audit a
 
 ## Execution Environment
 
+The image I use in this demonstration is publicly available:<br>
+`podman pull quay.io/zleblanc/ee-selenium:v4`
+
+
 ### Definition
 
 ```yaml
