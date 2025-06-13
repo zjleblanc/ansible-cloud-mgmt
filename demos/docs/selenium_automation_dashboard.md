@@ -14,6 +14,9 @@ Many IT organizations are required to provide screen captures to satisfy audit a
 The image I use in this demonstration is publicly available:<br>
 `podman pull quay.io/zleblanc/ee-selenium:v4`
 
+The build command:<br>
+`ansible-builder build -t ee-selenium:v4 .`<br>
+_where . refers to the directory containing the definition file below_
 
 ### Definition
 
@@ -90,14 +93,14 @@ additional_build_steps:
 
 ```
 [galaxy]
-server_list = certified, release_galaxy
+server_list = certified, galaxy
 
 [galaxy_server.certified]
 url=https://console.redhat.com/api/automation-hub/content/published/
 auth_url=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
 token=REPLACE_WITH_YOUR_TOKEN
 
-[galaxy_server.release_galaxy]
+[galaxy_server.galaxy]
 url=https://galaxy.ansible.com/
 ```
 

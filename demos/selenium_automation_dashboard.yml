@@ -7,14 +7,14 @@
     - vars/secrets.yml
 
   tasks:
-    - name: Simulate Automation Dashboard down
+    - name: Simulate Application down
       delegate_to: "{{ automation_dashboard_server }}"
       ansible.builtin.systemd_service:
         name: automation-reporter-web
         state: stopped
         scope: user
 
-    - name: Create incident
+    - name: Create a Service Now incident
       register: r_incident
       servicenow.itsm.incident:
         state: new
@@ -25,24 +25,24 @@
         urgency: low
         other: "{{ inc_other | default(omit) }}"
 
-    - name: Simulate Automation Dashboard remediation
+    - name: Simulate incident remediation
       delegate_to: "{{ automation_dashboard_server }}"
       ansible.builtin.systemd_service:
         name: automation-reporter-web
         state: started
         scope: user
 
-    - name: Wait for Automation Dashboard to start up
+    - name: Wait for Application to start up
       ansible.builtin.pause:
         seconds: 10
 
-    - name: Create temporary build directory
+    - name: Create temporary directory for screen captures
       register: r_screenshots_dir
       ansible.builtin.tempfile:
         state: directory
         suffix: screenshots
 
-    - name: Run python script
+    - name: Run Selenium script to create evidence of application health
       environment:
         ADMIN_PWD: "{{ automation_dashboard_admin_password }}"
         SCREENSHOTS_DIR: "{{ r_screenshots_dir.path }}"
@@ -50,7 +50,7 @@
         cmd: scripts/selenium_automation_dashboard.py
         executable: python3.11 # quay.io/zleblanc/ee-selenium:v4
 
-    - name: Add attachment
+    - name: Add evidence to Service Now incident
       servicenow.itsm.incident:
         sys_id: "{{ r_incident.record.sys_id }}"
         attachments:
