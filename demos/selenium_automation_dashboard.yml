@@ -20,7 +20,7 @@
         state: new
         caller: zleblanc
         short_description: Automation Dashboard is down
-        description: The Automation Dashboard service is not running at the site is inaccessible
+        description: The Automation Dashboard service is not running and the site is inaccessible
         impact: low
         urgency: low
         other: "{{ inc_other | default(omit) }}"
