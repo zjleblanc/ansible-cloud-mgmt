@@ -44,6 +44,9 @@
 
     - name: Run Selenium script to create evidence of application health
       environment:
+        # access in python script via
+        # os.environ.get('ADMIN_PWD') or
+        # os.environ.get('SCREENSHOTS_DIR')
         ADMIN_PWD: "{{ automation_dashboard_admin_password }}"
         SCREENSHOTS_DIR: "{{ r_screenshots_dir.path }}"
       ansible.builtin.script:
