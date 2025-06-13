@@ -12,6 +12,8 @@
 
     - name: Run python script
       environment:
+        # access in python script via
+        # os.environ.get('SCREENSHOTS_DIR')
         SCREENSHOTS_DIR: "{{ r_screenshots_dir.path }}"
       ansible.builtin.script:
         cmd: scripts/selenium_screen_capture.py
