@@ -1,0 +1,29 @@
+---
+- hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: Create in-memory test inventory
+      loop: ['host_one','host_two','host_three']
+      ansible.builtin.add_host:
+        hostname: "{{ item }}"
+        groups: local_three
+        ansible_connection: local
+
+- hosts: local_three
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: task one
+      ansible.builtin.assert:
+        that: inventory_hostname != 'host_one'
+
+    - name: task two
+      ansible.builtin.assert:
+        that: inventory_hostname != 'host_two'
+
+    - name: task three
+      ansible.builtin.assert:
+        that: inventory_hostname != 'host_three'
