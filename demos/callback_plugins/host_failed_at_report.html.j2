@@ -1,0 +1,48 @@
+<html>
+    <head>
+        <style>
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 50%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #dddddd;
+        }
+
+        caption {
+          caption-side: bottom;
+          margin-top: 8px;
+          color: gray;
+          font-style: italic;
+        }
+        </style>
+    </head>
+  <body>
+    <p>Playbook <strong>{{ playbook_name }}</strong> failed</p>
+    <table>
+      <caption>For each host that reported a failure, the table outlines what task failed and the reason.</caption>
+      <tr>
+        <th>Host</th>
+        <th>Timestamp</th>
+        <th>Task</th>
+        <th>Reason</th>
+      </tr>
+      {% for host in failed_tasks %}
+      <tr>
+        <td>{{ host }}</td>
+        <td>{{ failed_tasks[host]['timestamp'][:-7] }}</td>
+        <td>{{ failed_tasks[host]['task'] }}</td>
+        <td>{{ failed_tasks[host]['reason'] }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+  </body>
+</html>
