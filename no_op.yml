@@ -1,12 +1,12 @@
 ---
 - name: Hello World
-	hosts: localhost
+  hosts: localhost
 
-	tasks:
-		- name: Say hello
-			ansible.builtin.debug:
-				msg: "Hello"
+  tasks:
+    - name: Say hello
+      ansible.builtin.debug:
+        msg: "Hello"
 
-		- name: Pause and wait...
-			ansible.builtin.pause:
-				minutes: 5
+    - name: Pause and wait...
+      ansible.builtin.pause:
+        minutes: 5
