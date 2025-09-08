@@ -31,7 +31,7 @@ Add-LocalGroupMember -Group "Administrators" -Member "ec2-user"
 # install Dynatrace
 $ProgressPreference = 'SilentlyContinue'
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-Invoke-WebRequest -Uri 'https://ozi92582.live.dynatrace.com/api/v1/deployment/installer/agent/windows/default/latest?arch=x86' -Headers @{ 'Authorization' = 'Api-Token {{ dt_api_token }}' } -OutFile 'Dynatrace-OneAgent-Windows-1.307.61.20250226-155505.exe'
+Invoke-WebRequest -Uri 'https://ozi92582.live.dynatrace.com/api/v1/deployment/installer/agent/windows/default/latest?arch=x86' -Headers @{ 'Authorization' = 'Api-Token {{ dynatrace_api_token }}' } -OutFile 'Dynatrace-OneAgent-Windows-1.307.61.20250226-155505.exe'
 .\Dynatrace-OneAgent-Windows-1.307.61.20250226-155505.exe --set-monitoring-mode=fullstack --set-app-log-content-access=true
 
 # change Windows computer name to Name tag

@@ -1,0 +1,14 @@
+#!/bin/bash
+dnf update -y
+
+# use tag as hostname
+TOKEN=`curl -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 900"`
+NAME=`curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/tags/instance/Name`
+hostnamectl set-hostname $NAME
+
+# install datadog agent
+DD_API_KEY={{ datadog_api_token }} \
+DD_SITE="us5.datadoghq.com" \
+bash -c "$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)"
+
+reboot

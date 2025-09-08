@@ -8,8 +8,9 @@
   # aws_ec2_names_list: vm1,vm2
   # target_platform: rhel
 
-  ## Required ENV vars ##
-  # DT_API_TOKEN
+  ## Optional ENV vars ##
+  # DT_API_TOKEN # Dynatrace
+  # DD_API_TOKEN # DataDog
 
   vars:
     aws_ec2_names: "{{ aws_ec2_names_list.split(',') }}"

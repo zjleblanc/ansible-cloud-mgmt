@@ -1,5 +1,6 @@
 ---
-dt_api_token: "{{ lookup('env', 'DT_API_TOKEN') | default('UNDEF') }}"
+dynatrace_api_token: "{{ lookup('env', 'DT_API_TOKEN') | default('UNDEF') }}"
+datadog_api_token: "{{ lookup('env', 'DD_API_TOKEN') | default('UNDEF') }}"
 
 lt_name: "{{ launch_templates[target_platform]['lt_name'] }}"
 lt_image_id: "{{ launch_templates[target_platform]['lt_image_id'] }}"
@@ -22,6 +23,16 @@ launch_templates:
     lt_image_id: ami-0d77c9d87c7e619f9 # RHEL9 (no agent/updates)
     lt_instance_type: t2.medium
     lt_jinja: rhel_dev
+  rhel_dynatrace:
+    lt_name: ansible-rhel-oneagent
+    lt_image_id: ami-0d77c9d87c7e619f9 # RHEL9
+    lt_instance_type: t2.medium
+    lt_jinja: rhel
+  rhel_datadog:
+    lt_name: ansible-rhel-datadog
+    lt_image_id: ami-0d77c9d87c7e619f9 # RHEL9
+    lt_instance_type: t2.medium
+    lt_jinja: rhel_datadog
   rhel:
     lt_name: ansible-rhel-oneagent
     lt_image_id: ami-0d77c9d87c7e619f9 # RHEL9
