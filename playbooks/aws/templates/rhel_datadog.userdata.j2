@@ -8,7 +8,7 @@ hostnamectl set-hostname $NAME
 
 # install datadog agent
 DD_API_KEY={{ datadog_api_token }} \
-DD_SITE="us5.datadoghq.com" \
+DD_SITE="{{ datadog_site }}" \
 bash -c "$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)"
 
 reboot
