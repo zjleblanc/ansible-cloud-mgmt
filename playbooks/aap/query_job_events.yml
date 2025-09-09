@@ -1,0 +1,12 @@
+---
+- name: Query Job Events
+  hosts: localhost
+  gather_facts: false
+  
+  tasks:
+    - name: Query job events
+      vars:
+        job_id: "9052"
+      ansible.builtin.copy:
+        content: "{{ lookup('ansible.controller.controller_api', 'jobs/' + job_id + '/job_events', return_objects=False, query_params={'page_size':1}) | to_nice_json(indent=2) }}"
+        dest: "{{ playbook_dir }}/job_events.json"
