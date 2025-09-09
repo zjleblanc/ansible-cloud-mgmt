@@ -57,6 +57,10 @@
       
     - name: Patch VM
       block:
+        - name: Wait for connection (3m)
+          ansible.builtin.wait_for_connection:
+            timeout: 180
+
         - name: Apply patches based on platform
           ansible.builtin.include_tasks:
             file: tasks/patch_ec2.yml
