@@ -1,0 +1,17 @@
+---
+- name: Install Agents
+  hosts: "{{ _hosts | default('omit') }}"
+  gather_facts: false
+  become: true
+
+  pre_tasks:
+    - name: Wait for connection (3m)
+      ansible.builtin.wait_for_connection:
+        timeout: 180
+
+  roles:
+    - name: datadog.dd.agent
+      when: target_platform == 'rhel_datadog'
+      vars:
+        datadog_api_token: "{{ lookup('env', 'DATADOG_API_TOKEN') | default('UNDEF') }}"
+        datadog_site: "{{ lookup('env', 'DATADOG_SITE') | default('UNDEF') }}"
