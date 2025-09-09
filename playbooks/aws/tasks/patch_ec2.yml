@@ -5,6 +5,7 @@
   ansible.builtin.dnf:
     name: "{{ dnf_packages | default('*') }}" 
     state: latest
+    security: true
     update_cache: true
 
 - name: Set patch results | dnf
