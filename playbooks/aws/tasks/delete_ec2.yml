@@ -16,7 +16,6 @@
     state: absent
 
 - name: Get host metric
-  no_log: true
   environment:
     AAP_TOKEN: "{{ lookup('ansible.builtin.env', 'CONTROLLER_OAUTH_TOKEN') }}"
   ansible.builtin.set_fact:
