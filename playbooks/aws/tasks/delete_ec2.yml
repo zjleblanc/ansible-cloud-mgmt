@@ -8,6 +8,7 @@
 
 - name: Terminate ec2 instances
   register: r_delete_vm
+  when: r_vm_info.instances | length
   amazon.aws.ec2_instance:
     instance_ids:
       - "{{ r_vm_info.instances[0].instance_id }}"
