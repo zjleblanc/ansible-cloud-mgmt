@@ -16,8 +16,6 @@
     state: absent
 
 - name: Get host metric
-  environment:
-    AAP_TOKEN: "{{ lookup('ansible.builtin.env', 'CONTROLLER_OAUTH_TOKEN') }}"
   ansible.builtin.set_fact:
     _host_metric_record: "{{ lookup('ansible.controller.controller_api', 'host_metrics', query_params={'hostname__icontains': aws_ec2_name}, expect_one=true) }}"
 
