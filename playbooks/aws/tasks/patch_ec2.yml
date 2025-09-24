@@ -2,6 +2,8 @@
 - name: Patch host with dnf
   when: ansible_pkg_mgr == 'dnf'
   register: r_patch_dnf
+  retries: 1
+  delay: 30
   ansible.builtin.dnf:
     name: "{{ dnf_packages | default('*') }}" 
     state: latest
