@@ -30,5 +30,6 @@
       Authorization: "Bearer {{ lookup('ansible.builtin.env', 'CONTROLLER_OAUTH_TOKEN') }}"
 
 - name: Add to list of deleted vms
+  when: r_delete_vm.instances is defined
   ansible.builtin.set_fact:
     deleted_vms: "{{ deleted_vms | default([]) + r_delete_vm.instances }}"
