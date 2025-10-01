@@ -66,6 +66,7 @@ aws_sg_rules:
       - 5986  # WinRM
       - 3389  # RDP
       - 9090  # Cockpit
+      - 9092 # Kafka
     cidr_ip: 0.0.0.0/0
   - proto: icmp
     to_port: -1
