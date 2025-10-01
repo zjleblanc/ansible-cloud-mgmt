@@ -1,6 +1,6 @@
-- name: Wait 300 seconds for system to be reachable
+- name: Wait for system to be reachable
   ansible.builtin.wait_for_connection:
-    timeout: 300
+    timeout: 600
 
 - name: Gather facts
   ansible.builtin.setup:
