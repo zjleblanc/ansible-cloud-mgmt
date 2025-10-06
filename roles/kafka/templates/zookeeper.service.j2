@@ -1,0 +1,15 @@
+[Unit]
+Description=Apache ZooKeeper Server
+Requires=network.target remote-fs.target
+After=network.target remote-fs.target
+
+[Service]
+Type=simple
+User=root
+Environment="JAVA_HOME={{ java_home }}"
+ExecStart={{ kafka_install_dir }}/bin/zookeeper-server-start.sh {{ kafka_install_dir }}/config/zookeeper.properties
+ExecStop={{ kafka_install_dir }}/bin/zookeeper-server-stop.sh
+Restart=on-abnormal
+
+[Install]
+WantedBy=multi-user.target

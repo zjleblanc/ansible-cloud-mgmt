@@ -1,0 +1,108 @@
+---
+- name: Install packages
+  ansible.builtin.dnf:
+    name: 
+      - java-11-openjdk
+      - firewalld
+      - python3-firewall
+    state: present
+
+- name: Create Kafka user and group
+  ansible.builtin.user:
+    name: kafka
+    state: present
+    system: yes
+    home: "{{ kafka_install_dir }}"
+
+- name: Create Kafka installation directory
+  ansible.builtin.file:
+    path: "{{ kafka_install_dir }}"
+    state: directory
+    owner: kafka
+    group: kafka
+    mode: '0755'
+
+- name: Create Kafka data directory
+  ansible.builtin.file:
+    path: "{{ kafka_data_dir }}"
+    state: directory
+    owner: kafka
+    group: kafka
+    mode: '0755'
+
+- name: Create Zookeeper data directory (for internal Zookeeper or KRaft)
+  ansible.builtin.file:
+    path: "{{ zookeeper_data_dir }}"
+    state: directory
+    owner: kafka
+    group: kafka
+    mode: '0755'
+
+- name: Download Kafka tarball
+  ansible.builtin.get_url:
+    url: "https://archive.apache.org/dist/kafka/{{ kafka_version }}/kafka_{{ scala_version }}-{{ kafka_version }}.tgz"
+    dest: "/tmp/kafka_{{ scala_version }}-{{ kafka_version }}.tgz"
+    mode: '0644'
+
+- name: Extract Kafka tarball
+  ansible.builtin.unarchive:
+    src: "/tmp/kafka_{{ scala_version }}-{{ kafka_version }}.tgz"
+    dest: "{{ kafka_install_dir }}"
+    remote_src: yes
+    owner: kafka
+    group: kafka
+    extra_opts: [--strip-components=1] # Extracts content directly into kafka_install_dir
+
+- name: Configure server.properties (for Zookeeper-based Kafka)
+  when: kafka_mode == 'zookeeper'
+  notify: Start kafka
+  ansible.builtin.template:
+    src: templates/server.properties.j2
+    dest: "{{ kafka_install_dir }}/config/server.properties"
+    owner: kafka
+    group: kafka
+    mode: '0644'
+
+- name: Configure server.properties (for KRaft-based Kafka)
+  when: kafka_mode == 'kraft'
+  notify: Start kafka
+  ansible.builtin.template:
+    src: templates/kraft_server.properties.j2
+    dest: "{{ kafka_install_dir }}/config/kraft/server.properties"
+    owner: kafka
+    group: kafka
+    mode: '0644'
+
+- name: Create Zookeeper systemd service file
+  notify: Start zookeeper
+  ansible.builtin.template:
+    src: templates/zookeeper.service.j2
+    dest: /etc/systemd/system/zookeeper.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create Kafka systemd service file
+  notify: Start kafka
+  ansible.builtin.template:
+    src: templates/kafka.service.j2
+    dest: /etc/systemd/system/kafka.service
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: yes
+
+- name: Manage firewall
+  ansible.builtin.include_tasks:
+    file: tasks/firewall.yml
+
+- name: Ensure services ready
+  meta: flush_handlers
+
+- name: Manage demo topic
+  when: demo_topic is defined
+  ansible.builtin.include_tasks:
+    file: tasks/topic.yml

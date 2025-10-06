@@ -1,0 +1,19 @@
+---
+- name: Install Applications
+  hosts: "{{ _hosts | default('omit') }}"
+  gather_facts: false
+  become: true
+
+  pre_tasks:
+    - name: Wait for connection (3m)
+      ansible.builtin.wait_for_connection:
+        timeout: 180
+
+    - name: Gather facts
+      ansible.builtin.setup:
+
+  roles:
+    - name: kafka
+      when: "'kafka' in install_apps"
+      vars:
+        kafka_mode: "{{ _kafka_mode | default('zookeeper') }}"

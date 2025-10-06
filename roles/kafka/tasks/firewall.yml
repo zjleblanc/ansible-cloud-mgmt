@@ -1,0 +1,21 @@
+---
+- name: Start firewalld
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Permanently enable internal firewall rule
+  ansible.posix.firewalld:
+    port: 9092/tcp
+    zone: internal
+    state: enabled
+    permanent: true
+    immediate: true
+
+- name: Permanently enable public firewall rule
+  ansible.posix.firewalld:
+    port: 9093/tcp
+    state: enabled
+    permanent: true
+    immediate: true

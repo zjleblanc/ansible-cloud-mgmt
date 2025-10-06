@@ -1,0 +1,18 @@
+---
+- name: Create topic
+  register: r_topic_create
+  failed_when:
+    - r_topic_create.rc > 0
+    - r_topic_create.stdout is not search("already exists")
+  ansible.builtin.command:
+    cmd: "{{ kafka_install_dir }}/bin/kafka-topics.sh --create --topic {{ demo_topic }} --bootstrap-server localhost:9092"
+
+- name: Describe topic
+  register: r_topic_desc
+  ansible.builtin.command:
+    cmd: "{{ kafka_install_dir }}/bin/kafka-topics.sh --describe --topic {{ demo_topic }} --bootstrap-server localhost:9092"
+
+- name: Display topic description
+  when: r_topic_desc is success
+  ansible.builtin.debug:
+    var: r_topic_desc.stdout_lines
