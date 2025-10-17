@@ -103,6 +103,6 @@
   meta: flush_handlers
 
 - name: Manage demo topic
-  when: demo_topic is defined
+  when: demo_topic | default('') | length
   ansible.builtin.include_tasks:
     file: tasks/topic.yml
