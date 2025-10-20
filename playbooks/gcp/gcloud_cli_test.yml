@@ -6,5 +6,7 @@
 
   tasks:
     - name: Test credential with gcloud CLI
+      environment:
+        GOOGLE_APPLICATION_CREDENTIALS: "{{ lookup('ansible.builtin.env', 'GCE_CREDENTIALS_FILE_PATH') }}"
       ansible.builtin.command:
         cmd: gcloud projects list
