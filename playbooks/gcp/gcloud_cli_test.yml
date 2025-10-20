@@ -4,9 +4,13 @@
   become: false
   gather_facts: false
 
+  pre_tasks:
+    - name: Test login with cloud CLI
+      no_log: "{{ gcp_secure_logging | default(true) }}"
+      ansible.builtin.command:
+        cmd: gcloud auth login --cred-file="{{ lookup('ansible.builtin.env', 'GCE_CREDENTIALS_FILE_PATH') }}"
+
   tasks:
-    - name: Test credential with gcloud CLI
-      environment:
-        GOOGLE_APPLICATION_CREDENTIALS: "{{ lookup('ansible.builtin.env', 'GCE_CREDENTIALS_FILE_PATH') }}"
+    - name: Test project list
       ansible.builtin.command:
         cmd: gcloud projects list
