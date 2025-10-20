@@ -1,0 +1,10 @@
+---
+- name: Test usage of gcloud CLI using Credential in AAP for auth
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  tasks:
+    - name: Test credential with gcloud CLI
+      ansible.builtin.command:
+        cmd: gcloud projects list
