@@ -16,3 +16,8 @@
   when: r_topic_desc is success
   ansible.builtin.debug:
     var: r_topic_desc.stdout_lines
+
+- name: Display test command
+  when: r_topic_desc is success
+  ansible.builtin.debug:
+    msg: "Test the topic remotely: kafka-console-producer.sh --topic {{ demo_topic }} --bootstrap-server {{ ansible_host }}:9093"
