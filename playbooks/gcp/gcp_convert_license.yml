@@ -1,0 +1,41 @@
+---
+- name: Convert the license of all RHEL VMs in a GCP project
+  hosts: localhost
+  become: false
+  gather_facts: false
+
+  vars:
+    gcp_project: "{{ lookup('ansible.builtin.env','GCE_PROJECT') }}"
+    # options: byos (bring your own subscription), server (paygo), els (extended lifecycle support)
+    instance_target_type: byos
+
+  pre_tasks:
+    - name: Login with cloud CLI
+      no_log: "{{ gcp_secure_logging | default(true) }}"
+      ansible.builtin.command:
+        cmd: gcloud auth login --cred-file="{{ lookup('ansible.builtin.env', 'GCE_CREDENTIALS_FILE_PATH') }}"
+
+  tasks:
+    - name: List RHEL instances in project
+      register: r_list_vms
+      ansible.builtin.command:
+        cmd: >-
+          gcloud compute instances list 
+            --project {{ gcp_project }} 
+            --filter='disks[0].licenses:rhel' 
+            --format='json(name,zone,status,disks[].licenses)'
+
+    - name: Extract instance metadata
+      ansible.builtin.set_fact:
+        gcp_instances: "{{ r_list_vms.stdout | from_json }}"
+
+    - name: Convert instances
+      when: gcp_instances | length
+      loop: "{{ gcp_instances }}"
+      loop_control:
+        loop_var: instance
+        label: "{{ instance.name }}"
+      ansible.builtin.include_tasks:
+        file: tasks/convert_license.yml
+      vars:
+        target_type: "{{ instance_target_type }}"

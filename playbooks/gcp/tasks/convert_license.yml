@@ -1,0 +1,41 @@
+---
+- name: Assert target defined
+  ansible.builtin.assert:
+    that: target_type is defined
+
+# Assumption: first disk with license is sufficient
+- name: Determine existing license
+  loop: "{{ instance.disks }}"
+  loop_control:
+    loop_var: _disk
+  when: _disk.licenses is defined 
+  ansible.builtin.set_fact:
+    _license: "{{ _disk.licenses | first }}"
+
+- name: Extract license metadata
+  ansible.builtin.set_fact:
+    _version: "{{ _license.split('/')[-1].split('-')[1] }}"
+    _type: "{{ _license.split('/')[-1].split('-')[-1] }}"
+
+- name: Perform complete license update
+  when: target_type != _type
+  block:
+    - name: Stop vm
+      ansible.builtin.command:
+        cmd: gcloud compute instances stop {{ instance.name }} --project {{ gcp_project }} --zone={{ instance.zone }}
+
+    # Refer to license reference to understand the constructed path
+    # https://cloud.google.com/compute/docs/images/os-details#red_hat_enterprise_linux_rhel
+    - name: Update license
+      vars:
+        base_license: projects/rhel-cloud/global/licenses
+      ansible.builtin.command:
+        cmd: >-
+          gcloud compute disks update {{ instance.name }}
+            --project {{ gcp_project }}
+            --zone={{ instance.zone }}
+            --replace-license={{ base_license }}/rhel-{{ _version }}-{{ _type }},{{ base_license }}/rhel-{{ _version }}-{{ target_type }}
+
+    - name: Start VM
+      ansible.builtin.command:
+        cmd: gcloud compute instances start {{ instance.name }} --project {{ gcp_project }} --zone={{ instance.zone }}
