@@ -35,7 +35,7 @@
       loop_control:
         loop_var: instance
         label: "{{ instance.name }}"
-      ansible.builtin.include_tasks:
-        file: tasks/convert_license.yml
       vars:
         target_type: "{{ instance_target_type }}"
+      ansible.builtin.include_tasks:
+        file: tasks/convert_license.yml
