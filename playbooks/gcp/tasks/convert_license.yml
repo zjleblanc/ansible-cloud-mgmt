@@ -20,9 +20,9 @@
 - name: Perform complete license update
   when: target_type != _type
   block:
-    # - name: Stop vm
-    #   ansible.builtin.command:
-    #     cmd: gcloud compute instances stop {{ instance.name }} --project {{ gcp_project }} --zone={{ instance.zone }}
+    - name: Stop vm
+      ansible.builtin.command:
+        cmd: gcloud compute instances stop {{ instance.name }} --project {{ gcp_project }} --zone={{ instance.zone }}
 
     # Refer to license reference to understand the constructed path
     # https://cloud.google.com/compute/docs/images/os-details#red_hat_enterprise_linux_rhel
@@ -36,6 +36,6 @@
             --zone={{ instance.zone }}
             --replace-license={{ base_license }}/rhel-{{ _version }}-{{ _type }},{{ base_license }}/rhel-{{ _version }}-{{ target_type }}
 
-    # - name: Start VM
-    #   ansible.builtin.command:
-    #     cmd: gcloud compute instances start {{ instance.name }} --project {{ gcp_project }} --zone={{ instance.zone }}
+    - name: Start VM
+      ansible.builtin.command:
+        cmd: gcloud compute instances start {{ instance.name }} --project {{ gcp_project }} --zone={{ instance.zone }}
