@@ -17,4 +17,4 @@
 - name: Set stats
   ansible.builtin.set_stats:
     data:
-      sc_task_created: "{{ r_sctask_create.record }}"
+      sc_task_created: "{{ r_sc_task_create.record }}"
