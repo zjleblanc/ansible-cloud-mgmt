@@ -1,0 +1,21 @@
+- name: Wait for system to be reachable
+  ansible.builtin.wait_for_connection:
+    timeout: 600
+
+- name: Create VM in CMDB
+  delegate_to: localhost
+  register: r_sctask_update
+  servicenow.itsm.api:
+    resource: sc_task
+    action: patch
+    sys_id: "{{ update_sctask_sys_id }}"
+    data: "{{ update_sctask_data }}"
+      # short_description: "{{ sctask_short_description | default(omit) }}"
+      # description: "{{ sctask_description | default(omit) }}"
+      # assigned_to: "{{ sctask_assigned_to | default(omit) }}"
+      # status: "{{ sctask_status | default(omit) }}"
+
+- name: Set stats
+  ansible.builtin.set_stats:
+    data:
+      sn_sctask_updated: "{{ r_sctask_update.record }}"
