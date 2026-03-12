@@ -4,7 +4,7 @@
 
 - name: Create VM in CMDB
   delegate_to: localhost
-  register: r_sctask_create
+  register: r_sc_task_create
   servicenow.itsm.api:
     resource: sc_task
     action: post
@@ -17,4 +17,4 @@
 - name: Set stats
   ansible.builtin.set_stats:
     data:
-      sn_sctask_created: "{{ r_sctask_create.record }}"
+      sc_task_created: "{{ r_sctask_create.record }}"
