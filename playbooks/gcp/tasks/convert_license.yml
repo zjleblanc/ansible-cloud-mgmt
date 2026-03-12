@@ -20,6 +20,7 @@
 - name: Perform complete license update
   when: target_type != _type
   block:
+    # The disk update command requires stopping the VM first
     - name: Stop vm
       ansible.builtin.command:
         cmd: gcloud compute instances stop {{ instance.name }} --project {{ gcp_project }} --zone={{ instance.zone }}

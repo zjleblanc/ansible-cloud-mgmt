@@ -1,7 +1,7 @@
 ---
 - name: Manage ServiceNow Resources
-  hosts: "{{ _hosts }}"
-  gather_facts: true
+  hosts: localhost
+  gather_facts: false
 
   tasks:
     - name: Complete CR Management
