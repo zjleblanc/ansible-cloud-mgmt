@@ -23,7 +23,7 @@
     aggregate: false
     data: >
       {
-        "{{ inventory_hostname }}": {
-          "sc_task_created": "{{ r_sc_task_create.record }}"
+        "sc_task_created": {
+          "{{ inventory_hostname }}": "{{ r_sc_task_create.record }}"
         }
       }

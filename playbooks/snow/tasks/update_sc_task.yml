@@ -20,7 +20,7 @@
     aggregate: false
     data: >
       {
-        "{{ inventory_hostname }}": {
-          "sc_task_updated": "{{ r_sc_task_update.record }}"
+        "sc_task_updated": {
+          "{{ inventory_hostname }}": "{{ r_sc_task_update.record }}"
         }
       }
