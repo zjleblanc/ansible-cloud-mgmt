@@ -20,7 +20,6 @@
 
 - name: Set stats
   ansible.builtin.set_stats:
-    aggregate: false
     data: >
       {
         "sc_task_created": {
