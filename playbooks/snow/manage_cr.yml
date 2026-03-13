@@ -6,5 +6,5 @@
   tasks:
     - name: Complete CR Management
       ansible.builtin.include_tasks:
-        file: "{{ action }}_cr.yml"
+        file: "{{ manage_cr_action | default(action) }}_cr.yml"
 ...

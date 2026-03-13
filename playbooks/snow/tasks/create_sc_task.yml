@@ -20,5 +20,10 @@
 
 - name: Set stats
   ansible.builtin.set_stats:
-    data:
-      sc_task_created: "{{ r_sc_task_create.record }}"
+    aggregate: false
+    data: >
+      {
+        "{{ inventory_hostname }}": {
+          "sc_task_created": "{{ r_sc_task_create.record }}"
+        }
+      }
