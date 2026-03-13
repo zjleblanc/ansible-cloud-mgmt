@@ -20,6 +20,6 @@
     data: >
       {
         "sc_task_updated": {
-          "{{ inventory_hostname }}": "{{ r_sc_task_update.record }}"
+          "{{ inventory_hostname }}": {{ r_sc_task_update.record }}
         }
       }

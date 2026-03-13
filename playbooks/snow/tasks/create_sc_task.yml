@@ -23,6 +23,6 @@
     data: >
       {
         "sc_task_created": {
-          "{{ inventory_hostname }}": "{{ r_sc_task_create.record }}"
+          "{{ inventory_hostname }}": {{ r_sc_task_create.record }}
         }
       }
