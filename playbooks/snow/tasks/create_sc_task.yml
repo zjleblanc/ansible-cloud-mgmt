@@ -1,6 +1,6 @@
 - name: Merge variables with data
   ansible.builtin.set_fact:
-    _create_sc_task_data: "{{ create_sc_task_data | combine(create_sc_task_data_overrides) }}"
+    _create_sc_task_data: "{{ create_sc_task_data | combine(create_sc_task_data_overrides|default({})) }}"
 
 - name: Wait for system to be reachable
   ansible.builtin.wait_for_connection:
