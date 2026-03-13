@@ -2,14 +2,14 @@
   ansible.builtin.wait_for_connection:
     timeout: 600
 
-- name: Create VM in CMDB
+- name: Create SC Task
   delegate_to: localhost
   register: r_sc_task_update
   servicenow.itsm.api:
     resource: sc_task
     action: patch
     sys_id: "{{ update_sc_task_sys_id[inventory_hostname] | default(update_sc_task_sys_id) }}"
-    data: "{{ combine(update_sc_task_data, update_sc_task_data_overrides[inventory_hostname]|default({})) }}"
+    data: "{{ update_sc_task_data | default({}) | combine(update_sc_task_data_overrides[inventory_hostname]|default({})) }}"
       # short_description: "{{ sctask_short_description | default(omit) }}"
       # description: "{{ sctask_description | default(omit) }}"
       # assigned_to: "{{ sctask_assigned_to | default(omit) }}"
