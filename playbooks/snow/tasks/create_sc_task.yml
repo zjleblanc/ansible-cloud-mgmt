@@ -1,3 +1,7 @@
+- name: Merge variables with data
+  ansible.builtin.set_fact:
+    _create_sc_task_data: "{{ create_sc_task_data | combine(create_sc_task_data_overrides) }}"
+
 - name: Wait for system to be reachable
   ansible.builtin.wait_for_connection:
     timeout: 600
@@ -8,7 +12,7 @@
   servicenow.itsm.api:
     resource: sc_task
     action: post
-    data: "{{ create_sctask_data }}"
+    data: "{{ _create_sc_task_data }}"
       # short_description: "{{ sctask_short_description | default(omit) }}"
       # description: "{{ sctask_description | default(omit) }}"
       # assigned_to: "{{ sctask_assigned_to | default(omit) }}"
