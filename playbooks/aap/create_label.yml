@@ -1,0 +1,17 @@
+---
+- name: Create Label
+  hosts: localhost
+  gather_facts: false
+  become: false
+
+  tasks:
+    - name: Create Label
+      ansible.controller.label:
+        name: "{{ label }}"
+        organization: "{{ organization }}"
+
+    - name: Post Event
+      ansible.builtin.set_stats:
+        data:
+          label: "{{ label }}"
+          payload: "{{ payload }}"
