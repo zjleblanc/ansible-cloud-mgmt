@@ -11,6 +11,7 @@
 
 - name: Create VM in CMDB
   delegate_to: localhost
+  register: r_ci_create
   servicenow.itsm.configuration_item:
     name: "{{ inventory_hostname }}"
     sys_class_name: cmdb_ci_server
@@ -33,3 +34,12 @@
       justification: "{{ ci_justification | default(tags['purpose']) | default(omit) }}"
       short_description: "{{ ci_short_description | default(tags['info']) | default('CI created by Ansible vm lifecycle management process') | default(omit) }}"
       assigned_to: "{{ ci_assigned_to | default(tags['assigned_to']) | default(omit) }}"
+
+- name: Set stats
+  ansible.builtin.set_stats:
+    data: >
+      {
+        "ci_created": {
+          "{{ inventory_hostname }}": {{ r_ci_create.record }}
+        }
+      }
