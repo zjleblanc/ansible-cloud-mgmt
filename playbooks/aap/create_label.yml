@@ -13,6 +13,4 @@
     - name: Post Event
       ansible.builtin.set_stats:
         data:
-          labeled_event:
-            label: "{{ label }}"
-            payload: "{{ ansible_eda.event['payload'] }}"
+          labeled_event: "{{ ansible_eda.event['payload'] | combine({ 'aap_label': label }) }}"
