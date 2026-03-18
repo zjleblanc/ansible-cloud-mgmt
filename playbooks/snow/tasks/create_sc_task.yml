@@ -6,7 +6,7 @@
   ansible.builtin.wait_for_connection:
     timeout: 600
 
-- name: Create VM in CMDB
+- name: Create SC Task
   delegate_to: localhost
   register: r_sc_task_create
   servicenow.itsm.api:
