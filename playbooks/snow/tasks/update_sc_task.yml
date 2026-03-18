@@ -2,7 +2,7 @@
   ansible.builtin.wait_for_connection:
     timeout: 600
 
-- name: Create SC Task
+- name: Update SC Task
   delegate_to: localhost
   register: r_sc_task_update
   servicenow.itsm.api:
