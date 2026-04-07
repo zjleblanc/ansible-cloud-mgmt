@@ -16,7 +16,7 @@
           loop: "{{ sn_manage_resources }}"
           loop_control:
             loop_var: _resource
-            label: "{{ sn_resource.name }}"
+            label: "{{ _resource.name }}"
           ansible.builtin.include_tasks:
             file: "tasks/{{ sn_manage_action | default(action) }}_{{ sn_resource }}s.yml"
 
