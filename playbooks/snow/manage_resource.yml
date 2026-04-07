@@ -23,5 +23,6 @@
         - name: Zero Out Resources
           ansible.builtin.set_stats:
             data:
+              sn_cis_created: "{{ _sn_cis_created }}"
               sn_manage_resources: []
 ...
