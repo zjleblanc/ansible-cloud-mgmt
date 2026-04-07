@@ -1,0 +1,32 @@
+- name: Create multiple CIs in CMDB
+  when: sn_ci_records is defined and sn_ci_records | length
+  delegate_to: localhost
+  loop: "{{ sn_ci_records }}"
+  loop_control:
+    loop_var: record
+    label: "{{ record.name }}"
+  register: r_cis_created
+  servicenow.itsm.configuration_item:
+    name: "{{ record.name }}"
+    sys_class_name: "{{ record.sys_class_name }}"
+    ip_address: "{{ record.ip_address | default(omit) }}"
+    mac_address: "{{ record.mac_address | default(omit) }}"
+    serial_number: "{{ record.serial_number | default(omit) }}"
+    other: "{{ record.other | default(omit) }}"
+
+- name: Build ci_created map for workflow stats
+  when: r_cis_created is defined and r_cis_created.results is defined
+  loop: "{{ r_cis_created.results }}"
+  loop_control:
+    loop_var: record
+  ansible.builtin.set_fact:
+    _sn_cis_created: "{{ _sn_ci_created | default({}) | combine({ record.item.name: record.record }) }}"
+
+- name: Set stats
+  ansible.builtin.set_stats:
+    data: >
+      {
+        "ci_created": {
+          "{{ inventory_hostname }}": {{ _sn_cis_created }}
+        }
+      }

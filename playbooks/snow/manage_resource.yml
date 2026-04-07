@@ -4,7 +4,17 @@
   gather_facts: false
 
   tasks:
-    - name: Complete CR Management
+    - name: Complete Resource Management
+      when: sn_manage_resources is not defined
       ansible.builtin.include_tasks:
         file: "tasks/{{ sn_manage_action | default(action) }}_{{ sn_resource }}.yml"
+
+    - name: Complete Resource Management | Multiple
+      when: sn_manage_resources is defined
+      loop: "{{ sn_manage_resources }}"
+      loop_control:
+        loop_var: sn_resource
+        label: "{{ sn_resource.name }}"
+      ansible.builtin.include_tasks:
+        file: "tasks/{{ sn_manage_action | default(action) }}_{{ sn_resource }}s.yml"
 ...
