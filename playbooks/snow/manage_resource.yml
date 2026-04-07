@@ -5,16 +5,23 @@
 
   tasks:
     - name: Complete Resource Management
-      when: sn_manage_resources is not defined
+      when: not sn_manage_multiple|default(false)
       ansible.builtin.include_tasks:
         file: "tasks/{{ sn_manage_action | default(action) }}_{{ sn_resource }}.yml"
 
     - name: Complete Resource Management | Multiple
-      when: sn_manage_resources is defined
-      loop: "{{ sn_manage_resources }}"
-      loop_control:
-        loop_var: sn_resource
-        label: "{{ sn_resource.name }}"
-      ansible.builtin.include_tasks:
-        file: "tasks/{{ sn_manage_action | default(action) }}_{{ sn_resource }}s.yml"
+      when: sn_manage_multiple|default(false)
+      block:
+        - name: Create Resources
+          loop: "{{ sn_manage_resources }}"
+          loop_control:
+            loop_var: _resource
+            label: "{{ sn_resource.name }}"
+          ansible.builtin.include_tasks:
+            file: "tasks/{{ sn_manage_action | default(action) }}_{{ sn_resource }}s.yml"
+
+        - name: Zero Out Resources
+          ansible.builtin.set_stats:
+            data:
+              sn_manage_resources: []
 ...
