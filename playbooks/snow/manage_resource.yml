@@ -1,6 +1,6 @@
 ---
 - name: Manage ServiceNow Resources
-  hosts: "{{ _hosts | default(localhost) }}"
+  hosts: "{{ _hosts | default('localhost') }}"
   gather_facts: false
 
   tasks:
