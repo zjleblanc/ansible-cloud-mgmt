@@ -15,15 +15,15 @@
 - name: Assert CIs resolved
   ansible.builtin.assert:
     that:
-      - r_rel_child.record | length == 1
-      - r_rel_parent.record | length == 1
+      - r_rel_child.records | length == 1
+      - r_rel_parent.records | length == 1
     fail_msg: Expected one parent CI and one child CI to be resolved.
 
 - name: Create relationship
   servicenow.itsm.configuration_item_relations:
     name: "{{ _rel.child.split('/')[-1] }} {{ _rel.type }} {{ _rel.parent.split('/')[-1] }}"
-    parent_sys_id: "{{ r_parent_sys_id.record[0].sys_id }}"
+    parent_sys_id: "{{ r_parent_sys_id.records[0].sys_id }}"
     parent_classname: "{{ _rel.parent_type }}"
     targets:
       - name: "{{ _rel.child.split('/')[-1] }}"
-        sys_id: "{{ r_child_sys_id.record[0].sys_id }}"
+        sys_id: "{{ r_child_sys_id.records[0].sys_id }}"
