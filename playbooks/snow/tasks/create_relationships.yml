@@ -3,14 +3,14 @@
   servicenow.itsm.configuration_item_info:
     sys_class_name: "{{ _rel.child_type }}"
     query:
-      - correlation_id: "{{ _rel.child }}"
+      - correlation_id: "= {{ _rel.child }}"
 
 - name: Look up parent CI by correlation_id
   register: r_parent_sys_id
   servicenow.itsm.configuration_item_info:
     sys_class_name: "{{ _rel.parent_type }}"
     query:
-      - correlation_id: "{{ _rel.parent }}"
+      - correlation_id: "= {{ _rel.parent }}"
 
 - name: Assert CIs resolved
   ansible.builtin.assert:
