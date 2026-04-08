@@ -1,0 +1,29 @@
+- name: Look up child CI by correlation_id
+  register: r_child_sys_id
+  servicenow.itsm.configuration_item_info:
+    sys_class_name: "{{ _rel.child_type }}"
+    query:
+      - correlation_id: "{{ _rel.child }}"
+
+- name: Look up parent CI by correlation_id
+  register: r_parent_sys_id
+  servicenow.itsm.configuration_item_info:
+    sys_class_name: "{{ _rel.parent_type }}"
+    query:
+      - correlation_id: "{{ _rel.parent }}"
+
+- name: Assert CIs resolved
+  ansible.builtin.assert:
+    that:
+      - r_rel_child.record | length == 1
+      - r_rel_parent.record | length == 1
+    fail_msg: Expected one parent CI and one child CI to be resolved.
+
+- name: Create relationship
+  servicenow.itsm.configuration_item_relations:
+    name: "{{ _rel.child.split('/')[-1] }} {{ _rel.type }} {{ _rel.parent.split('/')[-1] }}"
+    parent_sys_id: "{{ r_parent_sys_id.record[0].sys_id }}"
+    parent_classname: "{{ _rel.parent_type }}"
+    targets:
+      - name: "{{ _rel.child.split('/')[-1] }}"
+        sys_id: "{{ r_child_sys_id.record[0].sys_id }}"

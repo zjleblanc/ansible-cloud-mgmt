@@ -20,9 +20,21 @@
           ansible.builtin.include_tasks:
             file: "tasks/{{ sn_manage_action | default(action) }}_{{ sn_resource }}s.yml"
 
-        - name: Zero Out Resources
+        - name: Create Relationships
+          when: sn_manage_relationships is defined and sn_manage_relationships | length > 0
+          loop: "{{ sn_manage_relationships }}"
+          loop_control:
+            loop_var: _rel
+            label: "{{ _rel.child.split('/')[-1] }} {{ _rel.type }} {{ _rel.parent.split('/')[-1] }}"
+          ansible.builtin.include_tasks:
+            file: "tasks/{{ sn_manage_action | default(action) }}_relationships.yml"
+            apply:
+              delegate_to: localhost
+
+        - name: Record created items and clear stats
           ansible.builtin.set_stats:
             data:
               sn_cis_created: "{{ _sn_cis_created }}"
               sn_manage_resources: []
+              sn_manage_relationships: []
 ...
