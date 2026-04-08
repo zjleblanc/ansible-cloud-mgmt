@@ -23,7 +23,6 @@
 
 - name: Create relationship
   servicenow.itsm.configuration_item_relations:
-    name: "{{ _rel.child.split('/')[-1] }} {{ _rel.type }} {{ _rel.parent.split('/')[-1] }}"
     parent_sys_id: "{{ r_parent.records[0].sys_id }}"
     parent_classname: "{{ _rel.parent_type }}"
     targets:
