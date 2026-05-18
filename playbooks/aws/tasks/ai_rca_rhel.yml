@@ -17,7 +17,6 @@
       lvm_lvs: lvs 2>/dev/null
 
 - name: Run RHEL diagnostic commands on target host
-  delegate_to: "{{ _host }}"
   register: r_ai_rca_cmds
   loop: "{{ ai_rca_rhel_commands | dict2items }}"
   loop_control:
@@ -48,6 +47,7 @@
   when: ai_rca_api_key | length > 0
   register: r_ai_rca
   no_log: "{{ ai_rca_secure_logging | default(true) | bool }}"
+  delegate_to: localhost
   ansible.builtin.uri:
     url: "{{ ai_rca_api_url }}"
     method: POST
@@ -87,6 +87,7 @@
   when:
     - incident_sys_id is defined
     - ai_rca_result is defined
+  delegate_to: localhost
   servicenow.itsm.incident:
     sys_id: "{{ incident_sys_id }}"
     other:

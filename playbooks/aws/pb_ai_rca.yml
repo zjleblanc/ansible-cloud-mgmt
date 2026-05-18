@@ -1,5 +1,5 @@
 ---
-- name: Add disk space to EC2 instance
+- name: Generate AI Root-Cause Analysis for Incident
   hosts: "{{ _host }}"
   gather_facts: true
 
@@ -10,6 +10,7 @@
     - name: Update state of incident
       when: incident_sys_id is defined
       tags: snow
+      delegate_to: localhost
       servicenow.itsm.incident:
         sys_id: "{{ incident_sys_id }}"
         state: in_progress
