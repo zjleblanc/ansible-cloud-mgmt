@@ -1,6 +1,6 @@
 ---
 - name: Add disk space to EC2 instance
-  hosts: _host
+  hosts: "{{ _host }}"
   gather_facts: true
 
   environment:
