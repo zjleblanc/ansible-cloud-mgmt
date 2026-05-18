@@ -26,12 +26,12 @@ launch_templates:
     lt_jinja: rhel_dev
   rhel_dynatrace:
     lt_name: ansible-rhel-oneagent
-    lt_image_id: ami-05645490d14a24bae9 # RHEL10
+    lt_image_id: ami-05645490d14a24bae # RHEL10
     lt_instance_type: t2.medium
     lt_jinja: rhel
   rhel_datadog:
     lt_name: ansible-rhel-datadog
-    lt_image_id: ami-05645490d14a24bae9 # RHEL10
+    lt_image_id: ami-05645490d14a24bae # RHEL10
     lt_instance_type: t2.medium
     lt_jinja: rhel_datadog
   windows:
