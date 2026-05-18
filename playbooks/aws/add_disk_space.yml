@@ -4,9 +4,6 @@
   gather_facts: false
   tags: expand_disk
 
-  vars:
-    ansible_python_interpreter: /usr/bin/python3
-
   environment:
     AWS_REGION: "{{ _aws_region | default('us-east-2') }}"
 
