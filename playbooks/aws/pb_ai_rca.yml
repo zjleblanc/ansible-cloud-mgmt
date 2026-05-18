@@ -17,6 +17,7 @@
 
     - name: Gather information about a particular instance using ID
       register: r_instance_info
+      delegate_to: localhost
       amazon.aws.ec2_instance_info:
         filters:
           tag:Name: "{{ _host }}"
