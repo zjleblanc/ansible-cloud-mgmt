@@ -1,0 +1,30 @@
+---
+- name: Add disk space to EC2 instance
+  hosts: _host
+  gather_facts: true
+
+  environment:
+    AWS_REGION: "{{ _aws_region | default('us-east-2') }}"
+
+  tasks:
+    - name: Update state of incident
+      when: incident_sys_id is defined
+      tags: snow
+      servicenow.itsm.incident:
+        sys_id: "{{ incident_sys_id }}"
+        state: in_progress
+
+    - name: Gather information about a particular instance using ID
+      register: r_instance_info
+      amazon.aws.ec2_instance_info:
+        filters:
+          tag:Name: "{{ _host }}"
+          instance-state-name: ["running"]
+
+    - name: Determine platform
+      ansible.builtin.set_fact:
+        host_platform: "{{ hostvars[_host]['platform_details'] | default('unknown') | lower }}"
+
+    - name: Use AI for RCA | RHEL
+      when: host_platform is search('red hat')
+      ansible.builtin.include_tasks: tasks/ai_rca_rhel.yml
