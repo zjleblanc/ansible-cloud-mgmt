@@ -1,0 +1,13 @@
+- name: Create multiple CIs in CMDB
+  register: r_ci_created
+  servicenow.itsm.configuration_item:
+    name: "{{ _resource.name }}"
+    sys_class_name: "{{ _resource.sys_class_name }}"
+    ip_address: "{{ _resource.ip_address | default(omit) }}"
+    mac_address: "{{ _resource.mac_address | default(omit) }}"
+    serial_number: "{{ _resource.serial_number | default(omit) }}"
+    other: "{{ _resource.other | default(omit) }}"
+
+- name: Aggregate created CIs
+  ansible.builtin.set_fact:
+    _sn_cis_created: "{{ _sn_cis_created | default({}) | combine({ r_ci_created.record.name: r_ci_created.record }) }}"

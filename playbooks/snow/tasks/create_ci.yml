@@ -9,7 +9,7 @@
   ansible.builtin.set_fact:
     sn_os_name: "{{ (ansible_distribution is search('RedHat')) | ternary('Linux Red Hat', 'Windows') }}"
 
-- name: Create VM in CMDB
+- name: Create CI in CMDB
   delegate_to: localhost
   register: r_ci_create
   servicenow.itsm.configuration_item:
