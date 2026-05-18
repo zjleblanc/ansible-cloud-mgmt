@@ -26,15 +26,9 @@
   changed_when: false
   failed_when: false
 
-- name: Build diagnostic bundle for AI analysis
+- name: Build diagnostic bundle and resolve API endpoint
   ansible.builtin.set_fact:
     ai_rca_diagnostics: "{{ dict(r_ai_rca_cmds.results | map(attribute='item.key') | zip(r_ai_rca_cmds.results | map(attribute='stdout'))) }}"
-    ai_rca_api_key: "{{ ai_rca_api_key | default(lookup('ansible.builtin.env', 'AI_RCA_API_KEY', default=''), true) | default(lookup('ansible.builtin.env', 'OPENAI_API_KEY', default=''), true) }}"
-    ai_rca_api_base: "{{ ai_rca_api_url | default(lookup('ansible.builtin.env', 'AI_RCA_API_URL', default=''), true) | default(lookup('ansible.builtin.env', 'OPENAI_API_BASE', default='https://api.openai.com/v1'), true) }}"
-    ai_rca_model: "{{ ai_rca_model | default(lookup('ansible.builtin.env', 'AI_RCA_MODEL', default='gpt-4o-mini'), true) }}"
-
-- name: Resolve OpenAPI chat completions endpoint
-  ansible.builtin.set_fact:
     ai_rca_api_url: "{{ ai_rca_api_base if 'chat/completions' in ai_rca_api_base else ai_rca_api_base ~ '/chat/completions' }}"
 
 - name: Build AI RCA request payload
@@ -82,9 +76,7 @@
 - name: Skip AI RCA when API key is not configured
   when: ai_rca_api_key | length == 0
   ansible.builtin.debug:
-    msg: >-
-      Skipping AI RCA: set AI_RCA_API_KEY or OPENAI_API_KEY (or pass ai_rca_api_key)
-      to enable OpenAPI-compatible analysis.
+    msg: Skipping AI RCA — configure ai_rca_api_key in the job credential.
 
 - name: Set AI RCA result from API response
   when: r_ai_rca is defined and r_ai_rca.json is defined
