@@ -67,7 +67,7 @@
               ~ 'host diagnostics and identify the most likely root cause of the '
               ~ 'reported issue. Respond with: (1) probable root cause, (2) supporting '
               ~ 'evidence from the data, (3) recommended remediation steps, and (4) '
-              ~ 'commands to verify the fix. Be concise and actionable.'
+              ~ 'commands to verify the fix. Be concise and actionable. Provide results in vanilla HTML not Markdown.'
             ) }}
         - role: user
           content: "{{ ai_rca_user_prompt }}"
@@ -95,5 +95,5 @@
         [code]
           <h3>AI Root Cause Analysis</h3>
           <p>Automated analysis for <b>{{ _host }}</b> based on RHEL diagnostics</p>
+          {{ ai_rca_result }}
         [/code]
-        {{ ai_rca_result | codify }}
