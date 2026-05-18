@@ -1,0 +1,106 @@
+---
+- name: Define RHEL diagnostic commands for RCA
+  ansible.builtin.set_fact:
+    ai_rca_rhel_commands:
+      df_h: df -h
+      df_i: df -i
+      disk_usage_top: du -xh / --max-depth=1 2>/dev/null | sort -hr | head -20
+      lsblk: lsblk -f
+      mounts: mount
+      free: free -h
+      uptime: uptime
+      failed_units: systemctl --failed --no-pager
+      journal_errors: journalctl -p err..alert -n 100 --no-pager
+      dmesg_tail: dmesg -T 2>/dev/null | tail -100
+      lvm_pvs: pvs 2>/dev/null
+      lvm_vgs: vgs 2>/dev/null
+      lvm_lvs: lvs 2>/dev/null
+
+- name: Run RHEL diagnostic commands on target host
+  delegate_to: "{{ _host }}"
+  register: r_ai_rca_cmds
+  loop: "{{ ai_rca_rhel_commands | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  ansible.builtin.shell: "{{ item.value }}"
+  changed_when: false
+  failed_when: false
+
+- name: Build diagnostic bundle for AI analysis
+  ansible.builtin.set_fact:
+    ai_rca_diagnostics: "{{ dict(r_ai_rca_cmds.results | map(attribute='item.key') | zip(r_ai_rca_cmds.results | map(attribute='stdout'))) }}"
+    ai_rca_api_key: "{{ ai_rca_api_key | default(lookup('ansible.builtin.env', 'AI_RCA_API_KEY', default=''), true) | default(lookup('ansible.builtin.env', 'OPENAI_API_KEY', default=''), true) }}"
+    ai_rca_api_base: "{{ ai_rca_api_url | default(lookup('ansible.builtin.env', 'AI_RCA_API_URL', default=''), true) | default(lookup('ansible.builtin.env', 'OPENAI_API_BASE', default='https://api.openai.com/v1'), true) }}"
+    ai_rca_model: "{{ ai_rca_model | default(lookup('ansible.builtin.env', 'AI_RCA_MODEL', default='gpt-4o-mini'), true) }}"
+
+- name: Resolve OpenAPI chat completions endpoint
+  ansible.builtin.set_fact:
+    ai_rca_api_url: "{{ ai_rca_api_base if 'chat/completions' in ai_rca_api_base else ai_rca_api_base ~ '/chat/completions' }}"
+
+- name: Build AI RCA request payload
+  ansible.builtin.set_fact:
+    ai_rca_user_prompt: >-
+      {{
+        {
+          'host': _host,
+          'platform': host_platform | default('red hat'),
+          'issue_context': error_context | default('Disk or system health alert triggered automated remediation'),
+          'ec2_instance_id': (r_instance_info.instances[0].instance_id if r_instance_info is defined else none),
+          'diagnostics': ai_rca_diagnostics
+        } | to_nice_json
+      }}
+
+- name: Request AI root cause analysis from OpenAPI-compatible endpoint
+  when: ai_rca_api_key | length > 0
+  register: r_ai_rca
+  no_log: "{{ ai_rca_secure_logging | default(true) | bool }}"
+  ansible.builtin.uri:
+    url: "{{ ai_rca_api_url }}"
+    method: POST
+    validate_certs: "{{ ai_rca_validate_certs | default(true) | bool }}"
+    headers:
+      Authorization: "Bearer {{ ai_rca_api_key }}"
+      Content-Type: application/json
+    body_format: json
+    body:
+      model: "{{ ai_rca_model }}"
+      temperature: "{{ ai_rca_temperature | default(0.2) | float }}"
+      messages:
+        - role: system
+          content: >-
+            {{ ai_rca_system_prompt | default(
+              'You are a senior Red Hat Enterprise Linux SRE. Analyze the provided '
+              ~ 'host diagnostics and identify the most likely root cause of the '
+              ~ 'reported issue. Respond with: (1) probable root cause, (2) supporting '
+              ~ 'evidence from the data, (3) recommended remediation steps, and (4) '
+              ~ 'commands to verify the fix. Be concise and actionable.'
+            ) }}
+        - role: user
+          content: "{{ ai_rca_user_prompt }}"
+    status_code: [200]
+
+- name: Skip AI RCA when API key is not configured
+  when: ai_rca_api_key | length == 0
+  ansible.builtin.debug:
+    msg: >-
+      Skipping AI RCA: set AI_RCA_API_KEY or OPENAI_API_KEY (or pass ai_rca_api_key)
+      to enable OpenAPI-compatible analysis.
+
+- name: Set AI RCA result from API response
+  when: r_ai_rca is defined and r_ai_rca.json is defined
+  ansible.builtin.set_fact:
+    ai_rca_result: "{{ r_ai_rca.json.choices[0].message.content }}"
+
+- name: Add AI RCA analysis to incident
+  when:
+    - incident_sys_id is defined
+    - ai_rca_result is defined
+  servicenow.itsm.incident:
+    sys_id: "{{ incident_sys_id }}"
+    other:
+      comments: >-
+        [code]
+          <h3>AI Root Cause Analysis</h3>
+          <p>Automated analysis for <b>{{ _host }}</b> based on RHEL diagnostics</p>
+        [/code]
+        {{ ai_rca_result | codify }}

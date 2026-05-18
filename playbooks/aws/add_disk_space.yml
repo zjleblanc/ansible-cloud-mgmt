@@ -29,6 +29,10 @@
       ansible.builtin.set_fact:
         host_platform: "{{ hostvars[_host]['platform_details'] | default('unknown') | lower }}"
 
+    - name: Use AI for RCA | RHEL
+      when: host_platform is search('red hat')
+      ansible.builtin.include_tasks: tasks/ai_rca_rhel.yml
+
     - name: Resize volume | RHEL
       when: host_platform is search('red hat')
       ansible.builtin.include_tasks: tasks/resize_vol_rhel.yml
