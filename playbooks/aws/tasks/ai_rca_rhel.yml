@@ -90,7 +90,7 @@
   vars:
     ai_expert_review_prompt:
       diagnostics: "{{ ai_rca_user_prompt }}"
-      proposed_rca: "{{ ai_rca_result }}"
+      proposed_rca: "{{ r_ai_rca.json.choices[0].message.content }}"
   ansible.builtin.uri:
     url: "{{ ai_rca_api_url }}"
     method: POST
