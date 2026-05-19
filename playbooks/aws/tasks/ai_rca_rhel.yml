@@ -46,6 +46,7 @@
   delegate_to: localhost
   ansible.builtin.uri:
     url: "{{ ai_rca_api_url }}"
+    timeout: 60
     method: POST
     validate_certs: "{{ ai_rca_validate_certs | default(true) | bool }}"
     headers:
@@ -93,6 +94,7 @@
       proposed_rca: "{{ r_ai_rca.json.choices[0].message.content }}"
   ansible.builtin.uri:
     url: "{{ ai_rca_api_url }}"
+    timeout: 60
     method: POST
     validate_certs: "{{ ai_rca_validate_certs | default(true) | bool }}"
     headers:
@@ -105,11 +107,11 @@
       messages:
         - role: system
           content: >-
-            {{ ai_rca_system_prompt | default(
+            {{ ai_expert_review_system_prompt | default(
               'You are an Enterprise Architect overseeing all IT infrastructure and operations. Analyze the provided '
-              ~ 'host diagnostics and review the proposed RCA for accuracy and completeness. '
-              ~ 'Correct any errors or omissions. Deliver a concise and actionable report based on your review.'
-              ~ 'Provide results in HTML not Markdown.'
+              ~ 'host diagnostics and review the proposed RCA for accuracy and completeness. Correct any errors or omissions. '
+              ~ 'Deliver supporting commentary for the proposed RCA that will be posted to the same incident. '
+              ~ 'Do not repeat information and provide your answer in HTML not Markdown.'
             ) }}
         - role: user
           content: "{{ ai_expert_review_prompt | to_json }}"
