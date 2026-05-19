@@ -89,8 +89,8 @@
   delegate_to: localhost
   vars:
     ai_expert_review_prompt:
-      diagnostics: {{ ai_rca_user_prompt }}
-      proposed_rca: {{ ai_rca_result }}
+      diagnostics: "{{ ai_rca_user_prompt }}"
+      proposed_rca: "{{ ai_rca_result }}"
   ansible.builtin.uri:
     url: "{{ ai_rca_api_url }}"
     method: POST
