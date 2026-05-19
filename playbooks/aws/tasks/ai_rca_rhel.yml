@@ -32,16 +32,12 @@
 
 - name: Build AI RCA request payload
   ansible.builtin.set_fact:
-    ai_rca_user_prompt: >-
-      {{
-        {
-          'host': _host,
-          'platform': host_platform | default('red hat'),
-          'issue_context': error_context | default('Disk or system health alert triggered automated remediation'),
-          'ec2_instance_id': (r_instance_info.instances[0].instance_id if r_instance_info is defined else none),
-          'diagnostics': ai_rca_diagnostics
-        } | to_nice_json
-      }}
+    ai_rca_user_prompt:
+      host: "{{ _host }}"
+      platform: "{{ host_platform | default('red hat') }}"
+      issue_context: "{{ error_context | default('Disk or system health alert triggered automated remediation') }}"
+      ec2_instance_id: "{{ r_instance_info.instances[0].instance_id if r_instance_info is defined else none }}"
+      diagnostics: "{{ ai_rca_diagnostics }}"
 
 - name: Request AI root cause analysis from OpenAPI-compatible endpoint
   when: ai_rca_api_key | length > 0
@@ -57,7 +53,7 @@
       Content-Type: application/json
     body_format: json
     body:
-      model: "{{ ai_rca_model }}"
+      model: "llama-scout-17b"
       temperature: "{{ ai_rca_temperature | default(0.2) | float }}"
       messages:
         - role: system
@@ -67,33 +63,67 @@
               ~ 'host diagnostics and identify the most likely root cause of the '
               ~ 'reported issue. Respond with: (1) probable root cause, (2) supporting '
               ~ 'evidence from the data, (3) recommended remediation steps, and (4) '
-              ~ 'commands to verify the fix. Be concise and actionable. Provide results in vanilla HTML not Markdown.'
+              ~ 'commands to verify the fix. Be concise and actionable. Provide results in HTML not Markdown.'
             ) }}
         - role: user
-          content: "{{ ai_rca_user_prompt }}"
+          content: "{{ ai_rca_user_prompt | to_json}}"
     status_code: [200]
-
-- name: Skip AI RCA when API key is not configured
-  when: ai_rca_api_key | length == 0
-  ansible.builtin.debug:
-    msg: Skipping AI RCA — configure ai_rca_api_key in the job credential.
-
-- name: Set AI RCA result from API response
-  when: r_ai_rca is defined and r_ai_rca.json is defined
-  ansible.builtin.set_fact:
-    ai_rca_result: "{{ r_ai_rca.json.choices[0].message.content }}"
 
 - name: Add AI RCA analysis to incident
   when:
     - incident_sys_id is defined
-    - ai_rca_result is defined
+    - r_ai_rca is defined and r_ai_rca.json is defined
   delegate_to: localhost
   servicenow.itsm.incident:
     sys_id: "{{ incident_sys_id }}"
     other:
       comments: >-
         [code]
-          <h3>AI Root Cause Analysis</h3>
-          <p>Automated analysis for <b>{{ _host }}</b> based on RHEL diagnostics</p>
-          {{ ai_rca_result }}
+          {{ r_ai_rca.json.choices[0].message.content }}
+        [/code]
+
+- name: Request expert review of RCA
+  when: ai_rca_api_key | length > 0
+  register: r_ai_expert_review
+  no_log: "{{ ai_rca_secure_logging | default(true) | bool }}"
+  delegate_to: localhost
+  vars:
+    ai_expert_review_prompt:
+      diagnostics: {{ ai_rca_user_prompt }}
+      proposed_rca: {{ ai_rca_result }}
+  ansible.builtin.uri:
+    url: "{{ ai_rca_api_url }}"
+    method: POST
+    validate_certs: "{{ ai_rca_validate_certs | default(true) | bool }}"
+    headers:
+      Authorization: "Bearer {{ ai_rca_api_key }}"
+      Content-Type: application/json
+    body_format: json
+    body:
+      model: "openai/deepseek-r1-distill-qwen-14b"
+      temperature: "{{ ai_rca_temperature | default(0.2) | float }}"
+      messages:
+        - role: system
+          content: >-
+            {{ ai_rca_system_prompt | default(
+              'You are an Enterprise Architect overseeing all IT infrastructure and operations. Analyze the provided '
+              ~ 'host diagnostics and review the proposed RCA for accuracy and completeness. '
+              ~ 'Correct any errors or omissions. Deliver a concise and actionable report based on your review.'
+              ~ 'Provide results in HTML not Markdown.'
+            ) }}
+        - role: user
+          content: "{{ ai_expert_review_prompt | to_json }}"
+    status_code: [200]
+
+- name: Add AI Expert Review to incident
+  when:
+    - incident_sys_id is defined
+    - r_ai_expert_review is defined and r_ai_expert_review.json is defined
+  delegate_to: localhost
+  servicenow.itsm.incident:
+    sys_id: "{{ incident_sys_id }}"
+    other:
+      comments: >-
+        [code]
+          {{ r_ai_expert_review.json.choices[0].message.content }}
         [/code]
