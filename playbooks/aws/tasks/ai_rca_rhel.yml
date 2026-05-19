@@ -109,9 +109,9 @@
           content: >-
             {{ ai_expert_review_system_prompt | default(
               'You are an Enterprise Architect overseeing all IT infrastructure and operations. Analyze the provided '
-              ~ 'host diagnostics and review the proposed RCA for accuracy and completeness. Correct any errors or omissions. '
-              ~ 'Deliver supporting commentary for the proposed RCA that will be posted to the same incident. '
-              ~ 'Do not repeat information and provide your answer in HTML not Markdown.'
+              ~ 'host diagnostics and review the proposed RCA for accuracy and completeness. '
+              ~ 'Add additional commentary and correct any errors or omissions if necessary. '
+              ~ 'Do not include the original RCA in your response and provide your answer in HTML not Markdown.'
             ) }}
         - role: user
           content: "{{ ai_expert_review_prompt | to_json }}"
