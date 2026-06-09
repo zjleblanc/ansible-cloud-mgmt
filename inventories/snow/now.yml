@@ -8,7 +8,6 @@ plugin: servicenow.itsm.now
 # No expressions here, 1:1 mapping between
 # column value and hostvar
 columns:
-  - name
   - host_name
   - fqdn
   - ip_address
@@ -39,8 +38,8 @@ groups:
 
 compose:
   ansible_host: fqdn | ternary(fqdn, ip_address) | ternary(ip_address, name) # precedence fqdn -> ip_adress -> name
+  ci_name: name
   classification: classification | lower
-  target_env: lookup('ansible.builtin.env', 'target_env', allow_unsafe=True)
 
 # If using a single filter or combining with OR, query is a nice structure
 # query:
