@@ -1,7 +1,7 @@
 plugin: servicenow.itsm.now
 
 # Environment variables for connection details
-# SN_HOST="https://example.service-now.com"
+# SN_HOST="https://openflake.example.com:8000"
 # SN_USERNAME="admin"
 # SN_PASSWORD="password"
 
@@ -47,4 +47,4 @@ compose:
 #   - os_version: "!="
 
 # If using a filter that requires AND operations, sysparm_query is necessary
-sysparm_query: sys_created_by=zleblanc # plain english: the os is AIX and the os version is defined
+sysparm_query: sys_created_by=admin # plain english: the os is AIX and the os version is defined
