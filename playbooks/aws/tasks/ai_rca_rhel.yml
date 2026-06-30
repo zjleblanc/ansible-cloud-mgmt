@@ -54,7 +54,7 @@
       Content-Type: application/json
     body_format: json
     body:
-      model: "llama-scout-17b"
+      model: "{{ ai_rca_model_sysadmin | default('llama-scout-17b') }}"
       temperature: "{{ ai_rca_temperature | default(0.2) | float }}"
       messages:
         - role: system
@@ -102,7 +102,7 @@
       Content-Type: application/json
     body_format: json
     body:
-      model: "openai/deepseek-r1-distill-qwen-14b"
+      model: "{{ ai_rca_model_expert | default('deepseek-r1-distill-qwen-14b') }}"
       temperature: "{{ ai_rca_temperature | default(0.2) | float }}"
       messages:
         - role: system
