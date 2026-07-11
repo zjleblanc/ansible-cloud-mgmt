@@ -25,7 +25,7 @@
   ansible.builtin.uri:
     url: "{{ lookup('ansible.builtin.env', 'CONTROLLER_HOST') }}{{ _host_metric_record.url }}"
     method: DELETE
-    status_code: [200,204]
+    status_code: [200, 204]
     headers:
       Authorization: "Bearer {{ lookup('ansible.builtin.env', 'CONTROLLER_OAUTH_TOKEN') }}"
 

@@ -69,7 +69,7 @@
           ansible.builtin.copy:
             content: "{{ item.data }}"
             dest: "{{ item.path }}"
-            mode: 0755
+            mode: "0755"
 
         - name: Add attachment
           servicenow.itsm.incident:

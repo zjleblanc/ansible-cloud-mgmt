@@ -2,7 +2,7 @@
 ansible-navigator:
   ansible:
     inventory:
-      help: False
+      help: false
       # entries:
       #   - inventories/aws/amazon.aws.aws_ec2.yaml
   execution-environment:

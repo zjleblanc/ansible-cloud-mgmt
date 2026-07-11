@@ -3,7 +3,7 @@
   ansible.builtin.systemd:
     name: firewalld
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Permanently enable internal firewall rule
   ansible.posix.firewalld:

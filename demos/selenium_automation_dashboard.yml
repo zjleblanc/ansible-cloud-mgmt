@@ -64,4 +64,4 @@
         sys_id: "{{ r_incident.record.sys_id }}"
         state: closed
         close_code: Solved (Permanently)
-        close_notes: Automation Dashboard successfully restarted 
+        close_notes: Automation Dashboard successfully restarted

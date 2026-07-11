@@ -1,9 +1,10 @@
+---
 plugin: community.vmware.vmware_vm_inventory
 strict: false
 validate_certs: false
 
 hostnames:
-- config.name
+  - config.name
 
 resources:
   - datacenter:

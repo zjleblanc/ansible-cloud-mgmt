@@ -21,7 +21,7 @@
   loop: "{{ ai_rca_rhel_commands | dict2items }}"
   loop_control:
     label: "{{ item.key }}"
-  ansible.builtin.shell: "{{ item.value }}"
+  ansible.builtin.command: "{{ item.value }}"
   changed_when: false
   failed_when: false
 
@@ -67,7 +67,7 @@
               ~ 'commands to verify the fix. Be concise and actionable. Provide results in HTML not Markdown.'
             ) }}
         - role: user
-          content: "{{ ai_rca_user_prompt | to_json}}"
+          content: "{{ ai_rca_user_prompt | to_json }}"
     status_code: [200]
 
 - name: Add AI RCA analysis to incident

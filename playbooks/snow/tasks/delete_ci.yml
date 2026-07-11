@@ -1,3 +1,4 @@
+---
 - name: Remove VM from CMDB
   delegate_to: localhost
   servicenow.itsm.configuration_item:

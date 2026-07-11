@@ -1,3 +1,4 @@
+---
 - name: Provision a VMWare Guest
   hosts: localhost
   tags: deploy
@@ -12,7 +13,7 @@
     vmware_cluster_name: Cluster-1
     vmware_os: rhel9
     vmware_templates:
-      rhel9: 
+      rhel9:
         name: zleblanc-rhel9-tmpl
         userdata: userdata.rhel9.j2
     # vmware_public_key: ssh-rsa AAAA ...
@@ -27,8 +28,8 @@
         template: "{{ vmware_templates[vmware_os]['name'] }}"
         validate_certs: false
         hardware:
-          memory_mb: "{{ vmware_mem_gb|default(2) * 1024 }}"
-          num_cpus: "{{ vmware_cpu_count|default(2) }}"
+          memory_mb: "{{ vmware_mem_gb | default(2) * 1024 }}"
+          num_cpus: "{{ vmware_cpu_count | default(2) }}"
         advanced_settings:
           - key: guestinfo.userdata
             value: "{{ lookup('ansible.builtin.template', 'templates/' + vmware_templates[vmware_os]['userdata']) | ansible.builtin.b64encode }}"
@@ -44,8 +45,8 @@
         vmware_guest_subdomain: "{{ vmware_guest_subdomain }}"
         ansible_host: "{{ r_vmware_guest['instance']['ipv4'] }}"
         ansible_ssh_common_args: >-
-          -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null 
-          -o ProxyCommand="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i {{ lookup('env', 'SSH_PROXY_KEY') }} -W %h:%p -q {{ ssh_proxy_username }}@{{ ssh_proxy_host }}"
+          -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null  -o ProxyCommand="ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i {{ lookup('env',
+          'SSH_PROXY_KEY') }} -W %h:%p -q {{ ssh_proxy_username }}@{{ ssh_proxy_host }}"
 
 - name: Bonus play --> Connect to the newly provisioned guest
   hosts: new_guest

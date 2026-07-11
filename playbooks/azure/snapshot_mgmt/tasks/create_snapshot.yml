@@ -36,9 +36,10 @@
 
 - name: Tag snapshot
   ansible.builtin.uri:
-    url: "https://management.azure.com/subscriptions/{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}/resourceGroups/{{ r_disk_snapshot.id.split('/')[4] }}/providers/Microsoft.Compute/snapshots/{{ r_disk_snapshot.id.split('/')[-1] }}?api-version=2023-04-02"
+    url: "https://management.azure.com/subscriptions/{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}/resourceGroups/{{ r_disk_snapshot.id.split('/')[4] }}/providers/Microsoft.Compute/snapshots/{{
+      r_disk_snapshot.id.split('/')[-1] }}?api-version=2023-04-02"
     method: PATCH
-    status_code: [200,202]
+    status_code: [200, 202]
     headers:
       Authorization: "Bearer {{ r_arm_login.json.access_token }}"
     body_format: json

@@ -9,8 +9,9 @@
       block:
         - name: Get windows processes
           register: r_windows_procs
-          ansible.windows.win_powershell: 
-            script: $Ansible.Result = $( Get-Process * | Select-Object -Property ProcessName,Id,Path,StartTime,CPU,PagedMemorySize64,NonpagedSystemMemorySize64,VirtualMemorySize64) 
+          ansible.windows.win_powershell:
+            script: $Ansible.Result = $( Get-Process * | Select-Object -Property
+              ProcessName,Id,Path,StartTime,CPU,PagedMemorySize64,NonpagedSystemMemorySize64,VirtualMemorySize64)
 
         - name: Set table facts
           ansible.builtin.set_fact:

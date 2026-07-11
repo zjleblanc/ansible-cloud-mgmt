@@ -1,3 +1,4 @@
+---
 - name: Create change request
   servicenow.itsm.change_request:
     type: "{{ cr_type }}"

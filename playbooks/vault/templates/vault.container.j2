@@ -1,0 +1,22 @@
+[Unit]
+Description=HashiCorp Vault (Podman Quadlet)
+Documentation=https://developer.hashicorp.com/vault/docs
+Wants=network-online.target
+After=network-online.target
+
+[Container]
+Image={{ vault_container_image }}
+ContainerName={{ vault_container_name }}
+PublishPort={{ vault_port }}:{{ vault_port }}
+Volume={{ vault_storage_path }}:{{ vault_container_storage_path }}:Z
+Volume={{ vault_config_path }}:{{ vault_container_config_path }}:Z
+Volume={{ vault_tls_cert_dest | dirname }}:{{ vault_container_tls_dir }}:Z
+AddCapability=IPC_LOCK
+Exec=server -config={{ vault_container_config_path }}/vault.hcl
+
+[Service]
+Restart=always
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target default.target

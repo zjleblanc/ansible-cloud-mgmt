@@ -1,0 +1,81 @@
+---
+- name: Install yum-utils
+  become: true
+  ansible.builtin.dnf:
+    name: yum-utils
+
+- name: Add Hashicorp repository
+  become: true
+  ansible.builtin.yum_repository:
+    name: Hashicorp
+    description: Hashicorp Stable - $basearch
+    baseurl: https://rpm.releases.hashicorp.com/RHEL/$releasever/$basearch/stable
+    enabled: true
+    gpgcheck: true
+    gpgkey: https://rpm.releases.hashicorp.com/gpg
+
+- name: Install vault
+  become: true
+  ansible.builtin.dnf:
+    name: vault
+
+- name: Create storage directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ vault_storage_path }}"
+    owner: vault
+    group: vault
+    mode: "0755"
+    state: directory
+
+- name: Ensure TLS directory ownership
+  become: true
+  when: vault_tls_enabled | bool
+  ansible.builtin.file:
+    path: "{{ vault_tls_cert_dest | dirname }}"
+    owner: vault
+    group: vault
+    mode: "0755"
+    state: directory
+
+- name: Stat TLS files
+  become: true
+  when: vault_tls_enabled | bool
+  register: r_rpm_tls_files
+  loop:
+    - "{{ vault_tls_cert_dest }}"
+    - "{{ vault_tls_key_dest }}"
+  ansible.builtin.stat:
+    path: "{{ item }}"
+
+- name: Set TLS file ownership
+  become: true
+  when: item.stat.exists | default(false)
+  loop: "{{ r_rpm_tls_files.results | default([]) }}"
+  loop_control:
+    label: "{{ item.item | default(item) }}"
+  ansible.builtin.file:
+    path: "{{ item.item }}"
+    owner: vault
+    group: vault
+
+- name: Template vault config
+  become: true
+  ansible.builtin.template:
+    src: templates/vault.hcl.j2
+    dest: /etc/vault.d/vault.hcl
+    owner: vault
+    group: vault
+    mode: "0640"
+
+- name: Start vault service
+  become: true
+  ansible.builtin.service:
+    name: vault
+    enabled: true
+    state: restarted
+
+- name: Set vault CLI facts for RPM deployment
+  ansible.builtin.set_fact:
+    vault_cli: vault
+    vault_cli_addr: "{{ vault_addr }}"

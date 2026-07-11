@@ -9,7 +9,7 @@ disable_cache = true
 disable_mlock = true
 
 storage "file" {
-  path = "{{ vault_storage_path }}"
+  path = "{{ vault_config_storage_path | default(vault_storage_path) }}"
 }
 
 # HTTP listener
@@ -23,7 +23,7 @@ listener "tcp" {
 listener "tcp" {
   address       = "0.0.0.0:{{ vault_port | default('8200') }}"
   tls_disable   = 0
-  tls_cert_file = "{{ vault_tls_cert_dest }}"
-  tls_key_file  = "{{ vault_tls_key_dest }}"
+  tls_cert_file = "{{ vault_config_tls_cert | default(vault_tls_cert_dest) }}"
+  tls_key_file  = "{{ vault_config_tls_key | default(vault_tls_key_dest) }}"
 }
 {% endif %}

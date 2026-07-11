@@ -3,16 +3,16 @@
   ansible.builtin.systemd:
     name: zookeeper
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Start kafka
   ansible.builtin.systemd:
     name: kafka
     state: started
-    enabled: yes
+    enabled: true
 
 - name: Start firewalld
   ansible.builtin.systemd:
     name: firewalld
     state: started
-    enabled: yes
+    enabled: true

@@ -15,4 +15,5 @@
         secret: "{{ az_client_secret }}"
         vault: "{{ az_vault_url }}"
       ansible.builtin.set_fact: # noqa yaml[line-length]
-        test_secret: "{{ lookup('azure.azcollection.azure_keyvault_secret', az_kv_secret_name, vault_url=vault, client_id=client, secret=secret, tenant_id=tenant) }}"
+        test_secret: "{{ lookup('azure.azcollection.azure_keyvault_secret', az_kv_secret_name, vault_url=vault, client_id=client, secret=secret, tenant_id=tenant)
+          }}"

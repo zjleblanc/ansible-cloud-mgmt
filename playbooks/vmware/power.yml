@@ -3,7 +3,7 @@
   hosts: localhost
   become: false
   gather_facts: false
-  
+
   vars:
     vm_name: vmware-demo-1
     vm_desired_state: poweredoff

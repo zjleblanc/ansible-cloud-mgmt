@@ -1,6 +1,6 @@
 ---
-- hosts: localhost
-  name: Manage TMDB account with uri
+- name: Manage TMDB account with uri
+  hosts: localhost
   gather_facts: false
 
   vars:

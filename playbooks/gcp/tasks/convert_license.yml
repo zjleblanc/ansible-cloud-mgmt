@@ -8,7 +8,7 @@
   loop: "{{ instance.disks }}"
   loop_control:
     loop_var: _disk
-  when: _disk.licenses is defined 
+  when: _disk.licenses is defined
   ansible.builtin.set_fact:
     _license: "{{ _disk.licenses | first }}"
 

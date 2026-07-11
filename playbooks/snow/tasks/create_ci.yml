@@ -1,3 +1,4 @@
+---
 - name: Wait for system to be reachable
   ansible.builtin.wait_for_connection:
     timeout: 600
@@ -37,7 +38,7 @@
 
 - name: Set stats
   ansible.builtin.set_stats:
-    data: >
+    data: >-
       {
         "ci_created": {
           "{{ inventory_hostname }}": {{ r_ci_create.record }}

@@ -37,4 +37,3 @@
               sn_cis_created: "{{ _sn_cis_created }}"
               sn_manage_resources: []
               sn_manage_relationships: []
-...

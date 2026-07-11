@@ -3,7 +3,7 @@
   hosts: "{{ _host }}"
   gather_facts: false
 
-  # vars:
+    # vars:
     # ansible_installation_dir: "/path/to/installation/dir"
     # ansible_backups_dir: "/path/to/backup/dir"
     # cleanup_backups_dir: true
@@ -15,12 +15,12 @@
   tasks:
     - name: Cleanup backup directory
       when: cleanup_backups_dir | bool
-      ansible.builtin.file: 
+      ansible.builtin.file:
         name: "{{ ansible_backups_dir  }}"
         state: absent
 
     - name: Create backup directory
-      ansible.builtin.file: 
+      ansible.builtin.file:
         name: "{{ ansible_backups_dir  }}"
         owner: zach
         group: wheel
@@ -28,7 +28,7 @@
 
     - name: Run the setup script to perform Backup
       when: not (skip_backup | bool)
-      ansible.builtin.command: 
+      ansible.builtin.command:
         cmd: "{{ ansible_installation_dir }}/setup.sh -e 'backup_dest={{ ansible_backups_dir  }}' -b"
 
     - name: Upload backup to S3

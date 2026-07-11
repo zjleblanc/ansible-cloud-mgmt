@@ -1,12 +1,12 @@
+---
 controller_inventories:
--   kind: ''
+  - kind: ""
     name: Cloud Inventory
     organization: Autodotes
     prevent_instance_group_fallback: false
-    variables: '{"ansible_ssh_common_args": "-o StrictHostKeyChecking=no", "autodotes_report_server":
-        "raspi", "autodotes_report_server_user": "zach"}'
--   kind: ''
+    variables: '{"ansible_ssh_common_args": "-o StrictHostKeyChecking=no", "autodotes_report_server": "raspi", "autodotes_report_server_user": "zach"}'
+  - kind: ""
     name: Service Now Inventory
     organization: Autodotes
     prevent_instance_group_fallback: false
-    variables: ''
+    variables: ""

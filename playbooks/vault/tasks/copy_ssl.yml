@@ -1,0 +1,21 @@
+---
+- name: Ensure TLS destination directory exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ vault_tls_cert_dest | dirname }}"
+    mode: "0755"
+    state: directory
+
+- name: Copy TLS certificate to host
+  become: true
+  ansible.builtin.copy:
+    src: "{{ vault_tls_cert_src }}"
+    dest: "{{ vault_tls_cert_dest }}"
+    mode: "0644"
+
+- name: Copy TLS private key to host
+  become: true
+  ansible.builtin.copy:
+    src: "{{ vault_tls_key_src }}"
+    dest: "{{ vault_tls_key_dest }}"
+    mode: "0600"

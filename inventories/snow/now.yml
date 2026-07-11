@@ -1,3 +1,4 @@
+---
 plugin: servicenow.itsm.now
 
 # Environment variables for connection details
@@ -23,7 +24,7 @@ query_additional_columns:
   - sys_created_by
 
 keyed_groups:
-    # example: sn_class_windows_server
+  # example: sn_class_windows_server
   - key: sys_class_name.replace(" ", "_").lower()
     prefix: sn_class
     # example: sn_os_aix

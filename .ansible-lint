@@ -1,0 +1,24 @@
+---
+# https://ansible.readthedocs.io/projects/lint/configuring/
+profile: production
+
+exclude_paths:
+  - .cache/
+  - .venv/
+  - vaulted/
+  - archive/
+  - demos/vars/secrets.yml
+
+# First match wins — classify task/vars files before playbook heuristics
+# kick in for paths under playbooks/ or demos/.
+kinds:
+  - tasks: "**/tasks/*.{yml,yaml}"
+  - vars: "**/vars/*.{yml,yaml}"
+  - handlers: "**/handlers/*.{yml,yaml}"
+  - meta: "**/meta/main.{yml,yaml}"
+  - inventory: "inventories/**/*.{yml,yaml}"
+  - requirements: "collections/requirements.{yml,yaml}"
+  - yaml: "**/ansible-navigator.{yml,yaml}"
+
+offline: false
+use_default_rules: true

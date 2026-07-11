@@ -1,3 +1,4 @@
+---
 - name: Create multiple CIs in CMDB
   register: r_ci_created
   servicenow.itsm.configuration_item:
@@ -10,4 +11,4 @@
 
 - name: Aggregate created CIs
   ansible.builtin.set_fact:
-    _sn_cis_created: "{{ _sn_cis_created | default({}) | combine({ r_ci_created.record.name: r_ci_created.record }) }}"
+    _sn_cis_created: "{{ _sn_cis_created | default({}) | combine({r_ci_created.record.name: r_ci_created.record}) }}"

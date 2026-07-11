@@ -5,7 +5,7 @@
 
   tasks:
     - name: Create in-memory test inventory
-      loop: ['host_one','host_two','host_three']
+      loop: ["host_one", "host_two", "host_three"]
       ansible.builtin.add_host:
         hostname: "{{ item }}"
         groups: local_three
@@ -16,17 +16,17 @@
   become: false
 
   tasks:
-    - name: task one
+    - name: Task one
       ansible.builtin.assert:
         that: inventory_hostname != 'host_one'
         fail_msg: You fell victim to one of the classic blunders
 
-    - name: task two
+    - name: Task two
       ansible.builtin.assert:
         that: inventory_hostname != 'host_two'
         fail_msg: You're gonna need a bigger server
 
-    - name: task three
+    - name: Task three
       ansible.builtin.assert:
         that: inventory_hostname != 'host_three'
         fail_msg: There have always been ghosts in this machine

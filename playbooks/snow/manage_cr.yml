@@ -7,4 +7,3 @@
     - name: Complete CR Management
       ansible.builtin.include_tasks:
         file: "{{ manage_cr_action | default(action) }}_cr.yml"
-...

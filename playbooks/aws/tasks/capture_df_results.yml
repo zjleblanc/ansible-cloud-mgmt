@@ -1,3 +1,4 @@
+---
 - name: Execute df remote | {{ df_stage }}
   when: df_host is defined
   delegate_to: "{{ df_host }}"

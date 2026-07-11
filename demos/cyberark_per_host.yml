@@ -43,7 +43,7 @@
 
     ### WARNING ###
     # This will print your key, delete the job record after inspecting
-    - name: ssh key | Debug secret value 
+    - name: ssh key | Debug secret value
       when: not cyberark_no_log
       delegate_to: localhost
       ansible.builtin.debug:

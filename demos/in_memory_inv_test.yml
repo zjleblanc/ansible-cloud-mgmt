@@ -4,7 +4,7 @@
   gather_facts: false
 
   tasks:
-    - name: add host
+    - name: Add host
       ansible.builtin.add_host:
         name: demo_host
         ansible_host: "192.168.0.120"
@@ -15,5 +15,5 @@
   gather_facts: true
 
   tasks:
-    - debug:
+    - ansible.builtin.debug:
         var: ansible_facts

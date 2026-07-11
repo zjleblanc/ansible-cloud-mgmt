@@ -12,7 +12,7 @@
   servicenow.itsm.api:
     resource: sys_db_object
     action: post
-    data: "{{ table | combine({ 'fields': omit }) }}"
+    data: "{{ table | combine({'fields': omit}) }}"
 
 - name: Create the table fields in Service Now
   when: not r_table_check.record | length
@@ -21,4 +21,4 @@
   servicenow.itsm.api:
     resource: sys_dictionary
     action: post
-    data: "{{ sn_field_defaults | combine({ 'name': table.name }) | combine(item) }}"
+    data: "{{ sn_field_defaults | combine({'name': table.name}) | combine(item) }}"

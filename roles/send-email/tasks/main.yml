@@ -8,7 +8,7 @@
       - email_smtp_password is defined
 
 - name: Sending notification email
-  ansible.builtin.mail:
+  community.general.mail:
     host: "{{ email_smtp_server }}"
     port: "{{ email_smtp_server_port }}"
     secure: try

@@ -72,7 +72,7 @@
 
 - name: Create launch template
   tags: template
-  community.aws.ec2_launch_template:
+  amazon.aws.ec2_launch_template:
     name: "{{ lt_name }}"
     region: "{{ aws_region }}"
     image_id: "{{ lt_image_id }}"

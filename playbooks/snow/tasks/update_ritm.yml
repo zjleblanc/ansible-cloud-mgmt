@@ -1,3 +1,4 @@
+---
 - name: Wait for system to be reachable
   ansible.builtin.wait_for_connection:
     timeout: 600
@@ -9,7 +10,7 @@
     resource: sc_req_item
     action: patch
     sys_id: "{{ update_ritm_sys_id[inventory_hostname] | default(update_ritm_sys_id) }}"
-    data: "{{ update_ritm_data | default({}) | combine(update_ritm_data_overrides[inventory_hostname]|default({})) }}"
+    data: "{{ update_ritm_data | default({}) | combine(update_ritm_data_overrides[inventory_hostname] | default({})) }}"
 
 - name: Set stats
   ansible.builtin.set_stats:

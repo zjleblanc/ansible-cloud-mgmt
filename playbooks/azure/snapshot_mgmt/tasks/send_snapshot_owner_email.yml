@@ -5,5 +5,5 @@
   vars:
     email_smtp_to_address: "{{ owner_email }}"
     email_smtp_subject: "Ansible Notification: {{ owner_snapshots | length }} Expired Snapshots in Azure"
-    email_smtp_body: "{{ lookup('template', 'snapshot-email.html.j2')}}"
+    email_smtp_body: "{{ lookup('template', 'snapshot-email.html.j2') }}"
     email_smtp_subtype: html

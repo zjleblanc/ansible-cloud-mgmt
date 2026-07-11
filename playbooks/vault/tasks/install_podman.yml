@@ -1,0 +1,95 @@
+---
+- name: Install podman
+  become: true
+  ansible.builtin.dnf:
+    name: podman
+    state: present
+
+- name: Create vault host directories
+  become: true
+  loop:
+    - "{{ vault_storage_path }}"
+    - "{{ vault_config_path }}"
+    - "{{ vault_tls_cert_dest | dirname }}"
+  ansible.builtin.file:
+    path: "{{ item }}"
+    owner: "{{ vault_container_uid }}"
+    group: "{{ vault_container_gid }}"
+    mode: "0755"
+    state: directory
+
+- name: Stat TLS files
+  become: true
+  when: vault_tls_enabled | bool
+  register: r_podman_tls_files
+  loop:
+    - "{{ vault_tls_cert_dest }}"
+    - "{{ vault_tls_key_dest }}"
+  ansible.builtin.stat:
+    path: "{{ item }}"
+
+- name: Set TLS file ownership for container
+  become: true
+  when: item.stat.exists | default(false)
+  loop: "{{ r_podman_tls_files.results | default([]) }}"
+  loop_control:
+    label: "{{ item.item | default(item) }}"
+  ansible.builtin.file:
+    path: "{{ item.item }}"
+    owner: "{{ vault_container_uid }}"
+    group: "{{ vault_container_gid }}"
+
+- name: Template vault config for container
+  become: true
+  vars:
+    vault_config_storage_path: "{{ vault_container_storage_path }}"
+    vault_config_tls_cert: "{{ vault_container_tls_dir }}/{{ vault_tls_cert_dest | basename }}"
+    vault_config_tls_key: "{{ vault_container_tls_dir }}/{{ vault_tls_key_dest | basename }}"
+  ansible.builtin.template:
+    src: templates/vault.hcl.j2
+    dest: "{{ vault_config_path }}/vault.hcl"
+    owner: "{{ vault_container_uid }}"
+    group: "{{ vault_container_gid }}"
+    mode: "0640"
+
+- name: Ensure Quadlet unit directory exists
+  become: true
+  ansible.builtin.file:
+    path: /etc/containers/systemd
+    mode: "0755"
+    state: directory
+
+- name: Remove legacy podman generate-systemd unit if present
+  become: true
+  ansible.builtin.file:
+    path: "/etc/systemd/system/container-{{ vault_container_name }}.service"
+    state: absent
+
+- name: Install Vault Quadlet unit
+  become: true
+  ansible.builtin.template:
+    src: templates/vault.container.j2
+    dest: "/etc/containers/systemd/{{ vault_container_name }}.container"
+    mode: "0644"
+  register: r_vault_quadlet
+
+- name: Reload systemd to pick up Quadlet unit
+  become: true
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Enable and start Vault Quadlet service on boot
+  become: true
+  ansible.builtin.systemd:
+    name: "{{ vault_container_name }}.service"
+    enabled: true
+    state: "{{ 'restarted' if r_vault_quadlet.changed else 'started' }}"
+
+- name: Set vault CLI facts for podman deployment
+  ansible.builtin.set_fact:
+    vault_cli_addr: "{{ vault_tls_enabled | ternary('https', 'http') }}://127.0.0.1:{{ vault_port }}"
+    vault_cli: >-
+      podman exec
+      -e VAULT_ADDR={{ vault_tls_enabled | ternary('https', 'http') }}://127.0.0.1:{{ vault_port }}
+      -e VAULT_SKIP_VERIFY=1
+      {{ vault_container_name }} vault

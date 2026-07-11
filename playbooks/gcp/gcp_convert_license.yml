@@ -20,9 +20,9 @@
       register: r_list_vms
       ansible.builtin.command:
         cmd: >-
-          gcloud compute instances list 
-            --project {{ gcp_project }} 
-            --filter='disks[0].licenses:rhel' 
+          gcloud compute instances list
+            --project {{ gcp_project }}
+            --filter='disks[0].licenses:rhel'
             --format='json(name,zone,status,disks[].licenses)'
 
     - name: Extract instance metadata

@@ -5,7 +5,7 @@
   retries: 1
   delay: 30
   ansible.builtin.dnf:
-    name: "{{ dnf_packages | default('*') }}" 
+    name: "{{ dnf_packages | default('*') }}"
     state: latest
     security: true
     update_cache: true
@@ -18,7 +18,7 @@
 - name: Patch host with yum
   when: ansible_pkg_mgr == 'yum'
   register: r_patch_yum
-  ansible.builtin.yum:
+  ansible.builtin.dnf:
     name: "*"
     state: latest
     update_cache: true

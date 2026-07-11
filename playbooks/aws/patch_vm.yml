@@ -54,7 +54,7 @@
         planned_end_date: "{{ lookup('pipe', 'date -d \"+30 minutes\" +\"%Y%m%d %H:%M:%S\"') }}"
         other:
           approval: approved
-      
+
     - name: Patch VM
       block:
         - name: Wait for connection (3m)
@@ -91,7 +91,7 @@
           ansible.builtin.assert:
             that: false
             fail_msg: "Patch failed, see {{ r_chg_task.record.number }}"
-    
+
     - name: Patch succeeded
       when: not (patch_failed | default(false))
       block:
