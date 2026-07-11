@@ -16,8 +16,13 @@
     state: absent
 
 - name: Get host metric
+  vars:
+    host_metric_query:
+      hostname__icontains: "{{ aws_ec2_name }}"
   ansible.builtin.set_fact:
-    _host_metric_record: "{{ lookup('ansible.controller.controller_api', 'host_metrics', query_params={'hostname__icontains': aws_ec2_name}, expect_one=true) }}"
+    _host_metric_record: >-
+      {{ lookup('ansible.controller.controller_api', 'host_metrics',
+         query_params=host_metric_query, expect_one=true) }}
 
 - name: Soft-delete host
   when: not _host_metric_record.deleted

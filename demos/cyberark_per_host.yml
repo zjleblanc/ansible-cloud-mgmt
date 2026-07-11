@@ -4,7 +4,7 @@
   gather_facts: false
 
   pre_tasks:
-    - name: password | Set ansible credentials for each host
+    - name: Password | Set ansible credentials for each host
       when: method == 'password'
       no_log: "{{ cyberark_no_log | default(true) }}"
       ansible.builtin.set_fact:
@@ -12,7 +12,7 @@
         ansible_password: "{{ lookup('cyberark.conjur.conjur_variable', 'BotApp/' + inventory_hostname) }}"
         ansible_python_interpreter: "{{ ansible_playbook_python }}"
 
-    - name: ssh key | Create a temporary file with a specific prefix
+    - name: SSH key | Create a temporary file with a specific prefix
       when: method == 'sshkey'
       delegate_to: localhost
       no_log: "{{ cyberark_no_log | default(true) }}"
@@ -23,7 +23,7 @@
 
     ### IMPORTANT ###
     # Ensure the secret value (a private key file) ends with a newline
-    - name: ssh key | Populate with per-host SSH key
+    - name: SSH key | Populate with per-host SSH key
       when: method == 'sshkey'
       delegate_to: localhost
       no_log: "{{ cyberark_no_log | default(true) }}"
@@ -31,8 +31,9 @@
         content: |
           {{ lookup('cyberark.conjur.conjur_variable', 'BotApp/' + inventory_hostname) }}
         dest: "{{ r_tmp.path }}"
+        mode: "0600"
 
-    - name: ssh key | Set ansible credentials for each host
+    - name: SSH key | Set ansible credentials for each host
       when: method == 'sshkey'
       delegate_to: localhost
       no_log: "{{ cyberark_no_log | default(true) }}"
@@ -43,7 +44,7 @@
 
     ### WARNING ###
     # This will print your key, delete the job record after inspecting
-    - name: ssh key | Debug secret value
+    - name: SSH key | Debug secret value
       when: not cyberark_no_log
       delegate_to: localhost
       ansible.builtin.debug:

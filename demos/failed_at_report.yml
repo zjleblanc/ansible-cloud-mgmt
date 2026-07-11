@@ -1,5 +1,6 @@
 ---
-- hosts: localhost
+- name: Create in-memory inventory for failure demo
+  hosts: localhost
   gather_facts: false
   become: false
 
@@ -11,7 +12,8 @@
         groups: local_three
         ansible_connection: local
 
-- hosts: local_three
+- name: Run failing tasks across in-memory hosts
+  hosts: local_three
   gather_facts: false
   become: false
 

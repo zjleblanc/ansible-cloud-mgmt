@@ -6,7 +6,8 @@
   delay: 30
   ansible.builtin.dnf:
     name: "{{ dnf_packages | default('*') }}"
-    state: latest
+    # Intentional: security patching applies available updates
+    state: latest # noqa: package-latest
     security: true
     update_cache: true
 
@@ -20,7 +21,8 @@
   register: r_patch_yum
   ansible.builtin.dnf:
     name: "*"
-    state: latest
+    # Intentional: patching applies available updates
+    state: latest # noqa: package-latest
     update_cache: true
 
 - name: Set patch results | yum

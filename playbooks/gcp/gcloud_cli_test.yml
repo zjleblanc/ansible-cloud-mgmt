@@ -7,10 +7,12 @@
   pre_tasks:
     - name: Test login with cloud CLI
       no_log: "{{ gcp_secure_logging | default(true) }}"
+      changed_when: false
       ansible.builtin.command:
         cmd: gcloud auth login --cred-file="{{ lookup('ansible.builtin.env', 'GCE_CREDENTIALS_FILE_PATH') }}"
 
   tasks:
     - name: Test project list
+      changed_when: false
       ansible.builtin.command:
         cmd: gcloud projects list

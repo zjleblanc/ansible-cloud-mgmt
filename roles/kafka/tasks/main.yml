@@ -32,7 +32,7 @@
 
 - name: Create Zookeeper data directory (for internal Zookeeper or KRaft)
   ansible.builtin.file:
-    path: "{{ zookeeper_data_dir }}"
+    path: "{{ kafka_zookeeper_data_dir }}"
     state: directory
     owner: kafka
     group: kafka
@@ -40,13 +40,13 @@
 
 - name: Download Kafka tarball
   ansible.builtin.get_url:
-    url: "https://archive.apache.org/dist/kafka/{{ kafka_version }}/kafka_{{ scala_version }}-{{ kafka_version }}.tgz"
-    dest: "/tmp/kafka_{{ scala_version }}-{{ kafka_version }}.tgz"
+    url: "https://archive.apache.org/dist/kafka/{{ kafka_version }}/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz"
+    dest: "/tmp/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz"
     mode: "0644"
 
 - name: Extract Kafka tarball
   ansible.builtin.unarchive:
-    src: "/tmp/kafka_{{ scala_version }}-{{ kafka_version }}.tgz"
+    src: "/tmp/kafka_{{ kafka_scala_version }}-{{ kafka_version }}.tgz"
     dest: "{{ kafka_install_dir }}"
     remote_src: true
     owner: kafka

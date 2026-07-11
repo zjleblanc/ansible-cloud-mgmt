@@ -2,19 +2,19 @@
 # https://pre-commit.com
 default_install_hook_types: [pre-commit]
 repos:
-  # - repo: https://github.com/ansible/ansible-lint
-  #   rev: v26.4.0
-  #   hooks:
-  #     - id: ansible-lint
-  #       name: ansible-lint
-  #       description: Lint all Ansible content with ansible-lint
-  #       language_version: python3
-  #       # ansible-lint discovers files itself; do not pass filenames
-  #       # https://github.com/ansible/ansible-lint/issues/611
-  #       pass_filenames: false
-  #       always_run: true
-  #       additional_dependencies:
-  #         - ansible-core>=2.19.0
+  - repo: https://github.com/ansible/ansible-lint
+    rev: v26.4.0
+    hooks:
+      - id: ansible-lint
+        name: ansible-lint
+        description: Lint all Ansible content with ansible-lint
+        language_version: python3
+        # ansible-lint discovers files itself; do not pass filenames
+        # https://github.com/ansible/ansible-lint/issues/611
+        pass_filenames: false
+        always_run: true
+        additional_dependencies:
+          - ansible-core>=2.19.0
 
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.30.0

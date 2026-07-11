@@ -22,6 +22,7 @@
   block:
     # The disk update command requires stopping the VM first
     - name: Stop vm
+      changed_when: true
       ansible.builtin.command:
         cmd: gcloud compute instances stop {{ instance.name }} --project {{ gcp_project }} --zone={{ instance.zone }}
 
@@ -30,6 +31,7 @@
     - name: Update license
       vars:
         base_license: projects/rhel-cloud/global/licenses
+      changed_when: true
       ansible.builtin.command:
         cmd: >-
           gcloud compute disks update {{ instance.name }}
@@ -38,5 +40,6 @@
             --replace-license={{ base_license }}/rhel-{{ _version }}-{{ _type }},{{ base_license }}/rhel-{{ _version }}-{{ target_type }}
 
     - name: Start VM
+      changed_when: true
       ansible.builtin.command:
         cmd: gcloud compute instances start {{ instance.name }} --project {{ gcp_project }} --zone={{ instance.zone }}

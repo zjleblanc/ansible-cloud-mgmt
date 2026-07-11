@@ -3,11 +3,13 @@
   when: df_host is defined
   delegate_to: "{{ df_host }}"
   register: r_df_cmd_remote
+  changed_when: false
   ansible.builtin.command: df
 
 - name: Execute df | {{ df_stage }}
   when: df_host is not defined
   register: r_df_cmd
+  changed_when: false
   ansible.builtin.command: df
 
 - name: Save df results

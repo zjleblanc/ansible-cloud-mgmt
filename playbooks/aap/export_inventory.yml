@@ -17,3 +17,4 @@
       ansible.builtin.copy:
         content: "{{ r_get_inventory | to_nice_yaml }}"
         dest: "{{ playbook_dir }}/export.yml"
+        mode: "0644"

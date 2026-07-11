@@ -34,6 +34,7 @@
           ansible.builtin.copy:
             content: "{{ lookup('community.hashi_vault.hashi_vault', secret_container + '/' + inventory_hostname + ':ssh') }}"
             dest: "{{ r_tmp.path }}"
+            mode: "0600"
 
         - name: Set ansible credentials for each host
           delegate_to: localhost

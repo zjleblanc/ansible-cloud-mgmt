@@ -3,10 +3,12 @@
   hosts: localhost
   gather_facts: false
 
-  vars_files:
-    - vars/secrets.yml
-
   tasks:
+    # include_vars (not vars_files) so syntax-check/lint need not decrypt vault
+    - name: Load vaulted demo secrets
+      ansible.builtin.include_vars:
+        file: "{{ demo_secrets_file | default('vars/secrets.yml') }}"
+
     - name: Simulate Application down
       delegate_to: "{{ automation_dashboard_server }}"
       ansible.builtin.systemd_service:

@@ -1,0 +1,33 @@
+---
+# tasks file for send_email (formerly send-email)
+- name: Check for required params
+  vars:
+    _to: "{{ send_email_smtp_to_address | default(email_smtp_to_address | default('')) }}"
+    _user: "{{ send_email_smtp_username | default(email_smtp_username | default('')) }}"
+    _password: "{{ send_email_smtp_password | default(email_smtp_password | default('')) }}"
+  ansible.builtin.assert:
+    that:
+      - _to | length > 0
+      - _user | length > 0
+      - _password | length > 0
+    fail_msg: >-
+      send_email requires to/username/password via send_email_smtp_* or legacy email_smtp_* vars
+
+- name: Sending notification email
+  vars:
+    _to: "{{ send_email_smtp_to_address | default(email_smtp_to_address) }}"
+    _user: "{{ send_email_smtp_username | default(email_smtp_username) }}"
+    _password: "{{ send_email_smtp_password | default(email_smtp_password) }}"
+    _headers: "{{ send_email_headers | default(email_headers | default(omit)) }}"
+  community.general.mail:
+    host: "{{ send_email_smtp_server }}"
+    port: "{{ send_email_smtp_server_port }}"
+    secure: try
+    from: "{{ send_email_smtp_from_address }}"
+    to: "{{ _to }}"
+    subject: "{{ send_email_smtp_subject }}"
+    body: "{{ send_email_smtp_body }}"
+    subtype: "{{ send_email_smtp_subtype }}"
+    headers: "{{ _headers }}"
+    username: "{{ _user }}"
+    password: "{{ _password }}"

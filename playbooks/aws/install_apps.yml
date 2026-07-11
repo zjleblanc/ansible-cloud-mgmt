@@ -13,7 +13,7 @@
       ansible.builtin.setup:
 
   roles:
-    - name: kafka
+    - role: kafka
       when: "'kafka' in install_apps"
       vars:
         kafka_mode: "{{ _kafka_mode | default('zookeeper') }}"

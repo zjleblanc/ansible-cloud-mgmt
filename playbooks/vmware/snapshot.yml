@@ -26,7 +26,7 @@
         days_since_last_snapshot: "{{ r_guest_snapshot_info.guest_snapshots | last_snapshot }}"
 
     - name: Snapshot vm
-      when: days_since_last_snapshot|int < 0 or days_since_last_snapshot|int >= snapshot_ttl_days
+      when: days_since_last_snapshot | int < 0 or days_since_last_snapshot | int >= snapshot_ttl_days
       block:
         - name: Create snapshot
           register: r_vmware_snapshot

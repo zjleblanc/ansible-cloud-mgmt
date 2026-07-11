@@ -15,5 +15,6 @@
   gather_facts: true
 
   tasks:
-    - ansible.builtin.debug:
+    - name: Debug ansible facts
+      ansible.builtin.debug:
         var: ansible_facts

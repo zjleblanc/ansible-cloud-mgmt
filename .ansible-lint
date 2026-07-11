@@ -7,6 +7,7 @@ exclude_paths:
   - .venv/
   - vaulted/
   - archive/
+  # Vault ciphertext — not lintable Ansible source
   - demos/vars/secrets.yml
 
 # First match wins — classify task/vars files before playbook heuristics
@@ -17,8 +18,14 @@ kinds:
   - handlers: "**/handlers/*.{yml,yaml}"
   - meta: "**/meta/main.{yml,yaml}"
   - inventory: "inventories/**/*.{yml,yaml}"
-  - requirements: "collections/requirements.{yml,yaml}"
+  - requirements: "{collections,tests}/requirements.{yml,yaml}"
   - yaml: "**/ansible-navigator.{yml,yaml}"
+
+# Satisfy syntax-check for playbooks that expect AAP/extra vars at runtime.
+# These do not change playbook runtime behavior.
+extra_vars:
+  _host: localhost
+  _hosts: localhost
 
 offline: false
 use_default_rules: true

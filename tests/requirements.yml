@@ -1,0 +1,21 @@
+---
+# Lint-only collection deps (ansible-lint auto-installs from tests/requirements.yml).
+# Keep out of collections/requirements.yml so AAP project sync does not download these.
+collections:
+  - name: amazon.aws
+  - name: ansible.controller
+  - name: ansible.posix
+  - name: ansible.windows
+  - name: awx.awx
+  - name: azure.azcollection
+  - name: community.aws
+  - name: community.general
+  - name: community.hashi_vault
+  - name: community.vmware
+  - name: community.windows
+  - name: cyberark.conjur
+  - name: datadog.dd
+  - name: infra.ah_configuration
+  - name: servicenow.itsm
+  - name: vmware.vmware_rest
+  - name: zjleblanc.reporting

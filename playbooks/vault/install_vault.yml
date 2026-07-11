@@ -61,6 +61,7 @@
     - name: Vault init
       become: true
       register: r_vault_init
+      changed_when: r_vault_init.rc == 0
       no_log: "{{ vault_no_log | default(true) }}"
       environment:
         VAULT_ADDR: "{{ vault_cli_addr }}"
@@ -82,6 +83,8 @@
     - name: Vault unseal
       become: true
       loop: "{{ vault_init_data.unseal_keys_b64[:3] }}"
+      register: r_vault_unseal
+      changed_when: r_vault_unseal.rc == 0
       no_log: "{{ vault_no_log | default(true) }}"
       environment:
         VAULT_ADDR: "{{ vault_cli_addr }}"
@@ -91,6 +94,7 @@
     - name: Vault status
       become: true
       register: r_vault_status
+      changed_when: false
       no_log: "{{ vault_no_log | default(true) }}"
       environment:
         VAULT_ADDR: "{{ vault_cli_addr }}"

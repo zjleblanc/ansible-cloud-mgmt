@@ -1,0 +1,21 @@
+---
+# defaults file for send_email (formerly send-email)
+#
+# Prefixed names are canonical. Legacy email_smtp_* names remain supported
+# when passed by callers (include_role vars, extra vars, etc.).
+send_email_smtp_server: "{{ email_smtp_server | default('smtp.gmail.com') }}"
+send_email_smtp_server_port: "{{ email_smtp_server_port | default(587) }}"
+send_email_smtp_from_address: "{{ email_smtp_from_address | default('ansible-zach@gmail.com') }}"
+send_email_smtp_subject: "{{ email_smtp_subject | default('Ansible Notification') }}"
+send_email_smtp_body: "{{ email_smtp_body | default('This is an ansible notification.') }}"
+send_email_smtp_replyto_address: "{{ email_smtp_replyto_address | default('no-reply@gmail.com') }}"
+send_email_smtp_subtype: "{{ email_smtp_subtype | default('plain') }}"
+
+# Required (canonical or legacy):
+# send_email_smtp_to_address / email_smtp_to_address
+# send_email_smtp_username / email_smtp_username
+# send_email_smtp_password / email_smtp_password
+
+# Optional:
+# send_email_headers / email_headers:
+#   - Reply-To="{{ send_email_smtp_replyto_address }}"

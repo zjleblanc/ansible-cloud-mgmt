@@ -6,7 +6,7 @@ After=zookeeper.service
 [Service]
 Type=simple
 User=root
-Environment="JAVA_HOME={{ java_home }}"
+Environment="JAVA_HOME={{ kafka_java_home }}"
 ExecStart={{ kafka_install_dir }}/bin/kafka-server-start.sh {{ kafka_install_dir }}/config/server.properties
 ExecStop={{ kafka_install_dir }}/bin/kafka-server-stop.sh
 Restart=on-abnormal

@@ -16,20 +16,22 @@
     - name: Cleanup backup directory
       when: cleanup_backups_dir | bool
       ansible.builtin.file:
-        name: "{{ ansible_backups_dir  }}"
+        name: "{{ ansible_backups_dir }}"
         state: absent
 
     - name: Create backup directory
       ansible.builtin.file:
-        name: "{{ ansible_backups_dir  }}"
+        name: "{{ ansible_backups_dir }}"
         owner: zach
         group: wheel
+        mode: "0755"
         state: directory
 
     - name: Run the setup script to perform Backup
       when: not (skip_backup | bool)
+      changed_when: true
       ansible.builtin.command:
-        cmd: "{{ ansible_installation_dir }}/setup.sh -e 'backup_dest={{ ansible_backups_dir  }}' -b"
+        cmd: "{{ ansible_installation_dir }}/setup.sh -e 'backup_dest={{ ansible_backups_dir }}' -b"
 
     - name: Upload backup to S3
       when: upload_backup_to_s3 | bool

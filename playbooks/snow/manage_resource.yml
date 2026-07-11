@@ -5,12 +5,12 @@
 
   tasks:
     - name: Complete Resource Management
-      when: not sn_manage_multiple|default(false)
+      when: not sn_manage_multiple | default(false)
       ansible.builtin.include_tasks:
         file: "tasks/{{ sn_manage_action | default(action) }}_{{ sn_resource }}.yml"
 
     - name: Complete Resource Management | Multiple
-      when: sn_manage_multiple|default(false)
+      when: sn_manage_multiple | default(false)
       block:
         - name: Create Resources
           loop: "{{ sn_manage_resources }}"

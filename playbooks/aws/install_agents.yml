@@ -10,7 +10,7 @@
         timeout: 180
 
   roles:
-    - name: datadog.dd.agent
+    - role: datadog.dd.agent
       when: target_platform == 'rhel_datadog'
       vars:
         datadog_api_key: "{{ lookup('env', 'DATADOG_API_TOKEN') | default('UNDEF') }}"

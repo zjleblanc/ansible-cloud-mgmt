@@ -1,23 +1,25 @@
 ---
 - name: Create topic
-  register: r_topic_create
+  register: kafka_r_topic_create
+  changed_when: kafka_r_topic_create.rc == 0
   failed_when:
-    - r_topic_create.rc > 0
-    - r_topic_create.stdout is not search("already exists")
+    - kafka_r_topic_create.rc > 0
+    - kafka_r_topic_create.stdout is not search("already exists")
   ansible.builtin.command:
     cmd: "{{ kafka_install_dir }}/bin/kafka-topics.sh --create --topic {{ demo_topic }} --bootstrap-server localhost:9092"
 
 - name: Describe topic
-  register: r_topic_desc
+  register: kafka_r_topic_desc
+  changed_when: false
   ansible.builtin.command:
     cmd: "{{ kafka_install_dir }}/bin/kafka-topics.sh --describe --topic {{ demo_topic }} --bootstrap-server localhost:9092"
 
 - name: Display topic description
-  when: r_topic_desc is success
+  when: kafka_r_topic_desc is success
   ansible.builtin.debug:
-    var: r_topic_desc.stdout_lines
+    var: kafka_r_topic_desc.stdout_lines
 
 - name: Display test command
-  when: r_topic_desc is success
+  when: kafka_r_topic_desc is success
   ansible.builtin.debug:
     msg: "Test the topic remotely: kafka-console-producer.sh --topic {{ demo_topic }} --bootstrap-server {{ ansible_host }}:9093"

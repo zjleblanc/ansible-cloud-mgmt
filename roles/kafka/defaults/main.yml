@@ -1,7 +1,11 @@
 ---
-kafka_version: "3.7.0" # Specify your desired Kafka version
-scala_version: "2.13" # Specify the Scala version compatible with your Kafka version
+# defaults file for kafka
+#
+# Prefixed names are canonical. Legacy unprefixed names (scala_version,
+# zookeeper_data_dir, java_home) remain supported when passed by callers.
+kafka_version: "3.7.0"
+kafka_scala_version: "{{ scala_version | default('2.13') }}"
 kafka_install_dir: "/opt/kafka"
 kafka_data_dir: "/var/lib/kafka"
-zookeeper_data_dir: "/var/lib/zookeeper" # For internal Zookeeper or KRaft
-java_home: "/usr/lib/jvm/jre-11-openjdk" # Adjust based on your Java installation
+kafka_zookeeper_data_dir: "{{ zookeeper_data_dir | default('/var/lib/zookeeper') }}"
+kafka_java_home: "{{ java_home | default('/usr/lib/jvm/jre-11-openjdk') }}"

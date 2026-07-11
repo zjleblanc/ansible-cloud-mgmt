@@ -35,9 +35,15 @@
       scope: https://management.azure.com/.default
 
 - name: Tag snapshot
+  vars:
+    snapshot_rg: "{{ r_disk_snapshot.id.split('/')[4] }}"
+    snapshot_name: "{{ r_disk_snapshot.id.split('/')[-1] }}"
+    snapshot_sub: "{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}"
+    snapshot_api: "2023-04-02"
   ansible.builtin.uri:
-    url: "https://management.azure.com/subscriptions/{{ lookup('env', 'AZURE_SUBSCRIPTION_ID') }}/resourceGroups/{{ r_disk_snapshot.id.split('/')[4] }}/providers/Microsoft.Compute/snapshots/{{
-      r_disk_snapshot.id.split('/')[-1] }}?api-version=2023-04-02"
+    url: >-
+      https://management.azure.com/subscriptions/{{ snapshot_sub }}/resourceGroups/{{ snapshot_rg
+      }}/providers/Microsoft.Compute/snapshots/{{ snapshot_name }}?api-version={{ snapshot_api }}
     method: PATCH
     status_code: [200, 202]
     headers:

@@ -30,6 +30,7 @@
       block:
         - name: Get linux processes
           register: r_linux_procs
+          changed_when: false
           ansible.builtin.command: ps axu
 
         - name: Set table data fact
