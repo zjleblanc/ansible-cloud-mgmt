@@ -12,7 +12,20 @@ repos:
         # ansible-lint discovers files itself; do not pass filenames
         # https://github.com/ansible/ansible-lint/issues/611
         pass_filenames: false
-        always_run: true
+        # Override upstream always_run so the hook is skipped when no
+        # Ansible-related files are staged. When it does run, lint still
+        # covers the whole project (pass_filenames: false).
+        always_run: false
+        files: >-
+          (?x)^(
+            \.ansible-lint$|
+            ansible\.cfg$|
+            ansible-navigator\.ya?ml$|
+            (playbooks|demos|roles|inventories|collections|tests)/|
+            (filter_plugins|inventory_plugins)/.*\.py$|
+            demos/(callback_plugins|filter_plugins)/.*\.py$|
+            .*\.(yml|yaml)$
+          )
         additional_dependencies:
           - ansible-core>=2.19.0
 

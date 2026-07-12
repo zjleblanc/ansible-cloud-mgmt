@@ -17,7 +17,7 @@ pre-commit run --all-files
 
 | Hook | Tool | Expectation |
 | --- | --- | --- |
-| `ansible-lint` | ansible-lint `v26.4.0` + `ansible-core>=2.19.0` | Lint **all** Ansible content (hook always runs; does not rely on staged filenames) |
+| `ansible-lint` | ansible-lint `v26.4.0` + `ansible-core>=2.19.0` | Runs only when Ansible-related files are staged; still lints the full project (`pass_filenames: false`) |
 | `gitleaks` | gitleaks `v8.30.0` | No secrets, tokens, private keys, or credential material in the diff |
 
 Do not skip hooks (`--no-verify`) unless the user explicitly requests it. Fix lint and secret findings instead.
@@ -26,6 +26,7 @@ Do not skip hooks (`--no-verify`) unless the user explicitly requests it. Fix li
 
 Config: [`.ansible-lint`](./.ansible-lint)
 
+- **Pre-commit trigger:** the hook runs only when staged paths match Ansible-related `files` patterns in `.pre-commit-config.yaml` (playbooks, roles, demos, inventories, YAML, lint config, plugins, etc.). It does not run for unrelated changes (e.g. README-only commits).
 - **Profile:** `production` — treat violations as blockers, not suggestions.
 - **Kinds:** task/vars/handlers/meta paths are classified before playbook heuristics (important for files under `playbooks/` and `demos/`).
 - **Extra vars for syntax-check:** `_host` and `_hosts` default to `localhost` so playbooks that parameterize hosts still parse offline.
