@@ -1,0 +1,47 @@
+---
+plugin: jira_assets
+
+# Connection — prefer env vars or AAP credentials
+# JIRA_CLOUD_ID="your-cloud-id"
+# JIRA_WORKSPACE_ID="your-workspace-id"
+# JIRA_EMAIL="user@example.com"
+# JIRA_API_TOKEN="your-api-token"
+# or OAuth:
+# JIRA_BEARER_TOKEN="your-bearer-token"
+#
+# Or set directly in this file:
+# cloud_id: "your-cloud-id"
+# workspace_id: "your-workspace-id"
+
+aql_query: "objectType = Server"
+
+hostname_source: Name
+
+# Attribute display names (or snake_case) to expose as hostvars.
+# Empty list exposes all flattened attributes plus system fields.
+columns:
+  - Name
+  - IP Address
+  - OS
+  - Status
+  - Environment
+  - Location
+
+keyed_groups:
+  - key: object_type
+    prefix: jira_type
+  - key: os | default('unknown', true) | replace(' ', '_') | lower
+    prefix: jira_os
+
+groups:
+  jira_active: status | default('') | lower == 'active'
+
+compose:
+  ansible_host: ip_address | default(omit)
+  ci_name: name
+
+# cache: true
+# cache_plugin: ansible.builtin.jsonfile
+# cache_timeout: 3600
+# cache_connection: /tmp/jira_assets_cache
+# cache_prefix: jira_assets

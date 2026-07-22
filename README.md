@@ -163,6 +163,18 @@ Supporting demo assets (not standalone entry playbooks):
 
 ---
 
+## Inventories
+
+| Path | Plugin | Description |
+| --- | --- | --- |
+| [`inventories/aws/`](inventories/aws/) | `amazon.aws.aws_ec2` | EC2 dynamic inventory |
+| [`inventories/custom.yaml`](inventories/custom.yaml) | `custom_inv` | Sample custom inventory plugin |
+| [`inventories/jira_assets/`](inventories/jira_assets/) | `jira_assets` | Jira Assets (CMDB) dynamic inventory via AQL |
+| [`inventories/snow/`](inventories/snow/) | `servicenow.itsm.now` | ServiceNow CMDB dynamic inventory |
+| [`inventories/vmware/`](inventories/vmware/) | `community.vmware.vmware_vm_inventory` | VMware VM dynamic inventory |
+
+Custom inventory plugins live under [`inventory_plugins/`](inventory_plugins/).
+
 ## Roles
 
 | Role | Description |
