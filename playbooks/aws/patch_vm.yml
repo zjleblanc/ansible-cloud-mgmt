@@ -13,7 +13,7 @@
       servicenow.itsm.change_request:
         type: standard
         state: new
-        requested_by: zleblanc
+        requested_by: "{{ lookup('env', 'SN_USERNAME') }}"
         short_description: Patch EC2s
         description: "Affected hosts: {{ ','.join(ansible_play_hosts) }}"
         category: system_software
@@ -47,7 +47,7 @@
         change_request_number: "{{ r_chg_req.record.number }}"
         type: implementation
         state: open
-        assigned_to: zleblanc
+        assigned_to: "{{ lookup('env', 'SN_USERNAME') }}"
         short_description: "patching {{ inventory_hostname }}"
         description: "starting patch @ {{ ansible_date_time.iso8601 }}"
         planned_start_date: "{{ lookup('pipe', 'date +\"%Y%m%d %H:%M:%S\"') }}"

@@ -10,7 +10,7 @@
         type: standard
         template: Demo Standard Change Template ZL - 1
         state: new
-        requested_by: zleblanc
+        requested_by: "{{ lookup('env', 'SN_USERNAME') }}"
         assignment_group: Ansible West Tigers
         # short_description: update an application
         # description: This change is for a test for upgrading an application
@@ -21,7 +21,7 @@
           u_subcategory: IT Tools
           u_target_environment: Dev
           u_impacted_business_unit: Corporate
-          assigned_to: Zach LeBlanc
+          assigned_to: "{{ lookup('env', 'SN_USERNAME') }}"
           cmdb_ci: Acrobat
           work_notes: This is a change to Adobe Acrobat
 
