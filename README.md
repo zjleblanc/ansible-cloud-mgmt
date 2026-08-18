@@ -11,6 +11,7 @@ Ansible playbooks, demos, roles, and supporting tooling for cloud and platform m
 | `roles/` | Shared Ansible roles (`kafka`, `send_email`) |
 | `inventories/` | Inventory sources (dynamic and static) |
 | `collections/` | Collection requirements for project sync (AAP) |
+| `CHANGELOG.md` | Project history and notable changes |
 | `tests/` | Lint-only collection requirements for `ansible-lint` |
 | `scripts/` | Helper scripts (Postman conversion, CVE reporting, etc.) |
 | `assets/` | API Postman collections and related assets |
