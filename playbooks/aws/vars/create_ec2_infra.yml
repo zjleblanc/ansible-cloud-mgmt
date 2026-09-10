@@ -58,25 +58,48 @@ aws_base_tags:
   purpose: "{{ aws_purpose_tag }}"
 
 aws_sg_rules:
-  - proto: tcp
+  - rule_desc: Public HTTP/HTTPS
+    proto: tcp
+    cidr_ip: 0.0.0.0/0
     ports:
       - 80 # HTTP
       - 443 # HTTPS
+  - rule_desc: Public SSH
+    proto: tcp
+    cidr_ip: 0.0.0.0/0
+    ports:
       - 22 # SSH
+  - rule_desc: Public WinRM and RDP
+    proto: tcp
+    cidr_ip: 0.0.0.0/0
+    ports:
       - 5986 # WinRM
       - 3389 # RDP
-      - 9090 # Cockpit
-      - 9093 # Kafka
+  - rule_desc: Public Cockpit web console
+    proto: tcp
     cidr_ip: 0.0.0.0/0
-  - proto: icmp
+    ports:
+      - 9090 # Cockpit
+  - rule_desc: Public Kafka broker
+    proto: tcp
+    cidr_ip: 0.0.0.0/0
+    ports:
+      - 9093 # Kafka
+  - rule_desc: Lightwell demo application
+    proto: tcp
+    cidr_ip: 0.0.0.0/0
+    ports:
+      - 8080 # Lightwell Demo App Dev
+      - 8081 # Lightwell Demo App Prod
+  - rule_desc: ICMP ping
+    proto: icmp
+    cidr_ip: 0.0.0.0/0
     to_port: -1
     from_port: -1
-    cidr_ip: 0.0.0.0/0
-  - proto: tcp
+  - rule_desc: Active Directory and DNS - TCP
+    proto: tcp
+    cidr_ip: "{{ aws_vpc_cidr_block }}"
     ports:
-      - 80 # HTTP
-      - 5986 # WinRM
-      - 3389 # RDP
       - 53 # DNS
       - 88 # Kerberos Authentication
       - 135 # RPC
@@ -84,23 +107,58 @@ aws_sg_rules:
       - 389 # LDAP
       - 445 # SMB
       - 464 # Kerberos Authentication
-      - 5432 # PostgreSQL
       - 636 # LDAPS (LDAP over TLS)
-      - 873 # Rsync
-      - 3268-3269 # Global Catalog
-      - 1024-65535 # Ephemeral RPC ports
+  - rule_desc: AD Global Catalog
+    proto: tcp
     cidr_ip: "{{ aws_vpc_cidr_block }}"
-  - proto: udp
+    ports:
+      - 3268-3269 # Global Catalog
+  - rule_desc: Internal web and Windows remote
+    proto: tcp
+    cidr_ip: "{{ aws_vpc_cidr_block }}"
+    ports:
+      - 80 # HTTP
+      - 5986 # WinRM
+      - 3389 # RDP
+  - rule_desc: PostgreSQL database
+    proto: tcp
+    cidr_ip: "{{ aws_vpc_cidr_block }}"
+    ports:
+      - 5432 # PostgreSQL
+  - rule_desc: Rsync
+    proto: tcp
+    cidr_ip: "{{ aws_vpc_cidr_block }}"
+    ports:
+      - 873 # Rsync
+  - rule_desc: Ephemeral RPC ports
+    proto: tcp
+    cidr_ip: "{{ aws_vpc_cidr_block }}"
+    ports:
+      - 1024-65535 # Ephemeral RPC ports
+  - rule_desc: Active Directory and DNS - UDP
+    proto: udp
+    cidr_ip: "{{ aws_vpc_cidr_block }}"
     ports:
       - 53 # DNS
       - 88 # Kerberos Authentication
-      - 123 # NTP
-      - 137-138 # Netlogon
       - 389 # LDAP
       - 445 # SMB
       - 464 # Kerberos Authentication
-      - 1024-65535 # Ephemeral RPC ports
+  - rule_desc: NTP time sync
+    proto: udp
     cidr_ip: "{{ aws_vpc_cidr_block }}"
+    ports:
+      - 123 # NTP
+  - rule_desc: Netlogon
+    proto: udp
+    cidr_ip: "{{ aws_vpc_cidr_block }}"
+    ports:
+      - 137-138 # Netlogon
+  - rule_desc: Ephemeral RPC ports
+    proto: udp
+    cidr_ip: "{{ aws_vpc_cidr_block }}"
+    ports:
+      - 1024-65535 # Ephemeral RPC ports
 
 aws_sg_rules_egress:
   - proto: -1
