@@ -85,12 +85,14 @@ aws_sg_rules:
     cidr_ip: 0.0.0.0/0
     ports:
       - 9093 # Kafka
-  - rule_desc: Lightwell demo application
+  - rule_desc: Lightwell demo apps
     proto: tcp
     cidr_ip: 0.0.0.0/0
     ports:
-      - 8080 # Lightwell Demo App Dev
-      - 8081 # Lightwell Demo App Prod
+      - 8080 # Lightwell python:dev
+      - 8081 # Lightwell python:prod
+      - 8082 # Lightwell java:dev
+      - 8083 # Lightwell java:prod
   - rule_desc: ICMP ping
     proto: icmp
     cidr_ip: 0.0.0.0/0
