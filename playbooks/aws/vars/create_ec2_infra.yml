@@ -89,10 +89,7 @@ aws_sg_rules:
     proto: tcp
     cidr_ip: 0.0.0.0/0
     ports:
-      - 8080 # Lightwell python:dev
-      - 8081 # Lightwell python:prod
-      - 8082 # Lightwell java:dev
-      - 8083 # Lightwell java:prod
+      - 8080-8083 # python:dev, python:prod, java:dev, java:prod
   - rule_desc: ICMP ping
     proto: icmp
     cidr_ip: 0.0.0.0/0
