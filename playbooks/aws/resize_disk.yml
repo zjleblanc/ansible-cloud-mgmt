@@ -82,7 +82,7 @@
       vars:
         target_or_growth_gib: "{{ (disk_target is defined) | ternary(requested_size_gib, current_volume_size | float + requested_size_gib) }}"
       ansible.builtin.set_fact:
-        new_volume_size: "{{ target_or_growth_gib | round(0, 'ceil') | int }}"
+        new_volume_size: "{{ target_or_growth_gib | float | round(0, 'ceil') | int }}"
 
     - name: Ensure the new volume size is larger than the current size
       ansible.builtin.assert:
