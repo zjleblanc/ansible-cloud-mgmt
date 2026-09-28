@@ -12,7 +12,7 @@
       ansible.builtin.assert:
         that:
           - disk_growth is defined or disk_target is defined
-          - not (disk_growth is defined and disk_target is defined)
+          - disk_growth < 0 or disk_target < 0
           - disk_unit is defined and disk_unit in ['GB', 'MB', 'TB']
           - _host is defined
         fail_msg: >-
