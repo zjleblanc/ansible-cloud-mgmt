@@ -45,7 +45,7 @@
               request: "{{ r_ritm_info.record[0].request }}"
               request_item: "{{ ritm_sys_id }}"
               short_description: "Disk resize for {{ _host }}"
-              state: 2 # Work in Progress
+              state: "2" # Work in Progress
               assigned_to: "{{ sc_task_assigned_to | default(omit) }}"
 
         - name: Save SC Task sys_id for later updates
@@ -166,7 +166,7 @@
             action: patch
             sys_id: "{{ sc_task_sys_id }}"
             data:
-              state: 3 # Closed Complete
+              state: "3" # Closed Complete
               work_notes: Disk resize and filesystem expansion completed by Ansible.
 
         - name: Set state to closed
