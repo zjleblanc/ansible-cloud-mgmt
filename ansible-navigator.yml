@@ -7,7 +7,7 @@ ansible-navigator:
       #   - inventories/aws/amazon.aws.aws_ec2.yaml
   execution-environment:
     container-engine: docker
-    image: automation-hub.autodotes.com/ee-default:d7393656
+    image: quay.io/zleblanc/ee-default:latest
     environment-variables:
       pass:
         - AWS_ACCESS_KEY

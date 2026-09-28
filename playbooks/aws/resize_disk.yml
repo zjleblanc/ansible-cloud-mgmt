@@ -1,0 +1,176 @@
+---
+- name: Resize EC2 disk based on growth or target
+  hosts: localhost
+  gather_facts: false
+  tags: expand_disk
+
+  environment:
+    AWS_REGION: "{{ _aws_region | default('us-east-2') }}"
+
+  tasks:
+    - name: Validate disk sizing inputs
+      ansible.builtin.assert:
+        that:
+          - disk_growth is defined or disk_target is defined
+          - not (disk_growth is defined and disk_target is defined)
+          - disk_unit is defined and disk_unit in ['GB', 'MB', 'TB']
+          - _host is defined
+        fail_msg: >-
+          Exactly one of disk_growth or disk_target must be provided, along with
+          disk_unit (one of GB, MB, TB) and _host.
+
+    - name: Warn that ITSM tracking will be skipped
+      when: ritm_number is not defined
+      ansible.builtin.debug:
+        msg: >-
+          ritm_number was not provided; SC Task creation and ITSM tracking steps
+          will be skipped for this run.
+
+    - name: Manage SC Task tracking for this request
+      when: ritm_number is defined
+      tags: snow
+      block:
+        - name: Get RITM record to determine associated REQ
+          register: r_ritm_info
+          servicenow.itsm.api_info:
+            resource: sc_req_item
+            sysparm_query: "sys_id={{ ritm_sys_id }}"
+
+        - name: Create SC Task linked to the RITM and REQ
+          register: r_sc_task_create
+          servicenow.itsm.api:
+            resource: sc_task
+            action: post
+            data:
+              request: "{{ r_ritm_info.record[0].request.value }}"
+              request_item: "{{ ritm_sys_id }}"
+              short_description: "Disk resize for {{ _host }}"
+              state: 2 # Work in Progress
+              assigned_to: "{{ sc_task_assigned_to | default(omit) }}"
+
+        - name: Save SC Task sys_id for later updates
+          ansible.builtin.set_fact:
+            sc_task_sys_id: "{{ r_sc_task_create.record.sys_id }}"
+
+    - name: Gather information about a particular instance using ID
+      register: r_instance_info
+      amazon.aws.ec2_instance_info:
+        filters:
+          tag:Name: "{{ _host }}"
+          instance-state-name: ["running"]
+
+    - name: Get current volume info
+      register: r_vol_info
+      amazon.aws.ec2_vol_info:
+        filters:
+          volume-id: "{{ r_instance_info['instances'][0]['block_device_mappings'][0]['ebs']['volume_id'] }}"
+
+    - name: Determine current volume size in GiB
+      ansible.builtin.set_fact:
+        current_volume_size: "{{ r_vol_info['volumes'][0].size }}"
+
+    - name: Convert requested value to GiB
+      vars:
+        unit_to_gib:
+          MB: 0.0009765625 # 1 GiB = 1024 MiB
+          GB: 1
+          TB: 1024
+      ansible.builtin.set_fact:
+        requested_size_gib: "{{ (disk_target | default(disk_growth)) | float * unit_to_gib[disk_unit] }}"
+
+    - name: Calculate the new target volume size
+      vars:
+        target_or_growth_gib: "{{ (disk_target is defined) | ternary(requested_size_gib, current_volume_size | float + requested_size_gib) }}"
+      ansible.builtin.set_fact:
+        new_volume_size: "{{ target_or_growth_gib | round(0, 'ceil') | int }}"
+
+    - name: Ensure the new volume size is larger than the current size
+      ansible.builtin.assert:
+        that:
+          - new_volume_size | int > current_volume_size | int
+        fail_msg: >-
+          Calculated new_volume_size ({{ new_volume_size }} GiB) must be greater than
+          the current volume size ({{ current_volume_size }} GiB). EBS volumes cannot shrink.
+
+    - name: Determine platform
+      ansible.builtin.set_fact:
+        host_platform: "{{ hostvars[_host]['platform_details'] | default('unknown') | lower }}"
+
+    - name: Resize volume | RHEL
+      when: host_platform is search('red hat')
+      ansible.builtin.include_tasks: tasks/resize_vol_rhel_dynamic.yml
+
+    - name: Resize volume | Windows
+      when: host_platform is search('windows')
+      ansible.builtin.include_tasks: tasks/resize_vol_windows_dynamic.yml
+
+- name: Expand the filesystem
+  hosts: ec2_post_reboot
+  gather_facts: false
+  tags: expand_fs
+
+  tasks:
+    - name: Wait for system to become reachable
+      ansible.builtin.wait_for_connection:
+        timeout: "{{ reboot_timeout | default(300) }}"
+
+    - name: Resize drive to max available size
+      when: host_platform is search('windows')
+      community.windows.win_partition:
+        drive_letter: C
+        partition_size: -1
+
+    - name: Gather facts
+      ansible.builtin.setup:
+        gather_subset:
+          - devices
+          - mounts
+
+    - name: Add facts to SC Task
+      when: sc_task_sys_id is defined
+      tags: snow
+      block:
+        - name: Add df results post remediation
+          when: host_platform is search('red hat')
+          vars:
+            df_stage: post_remediation
+            df_comment_header: After Remediation
+          ansible.builtin.include_tasks: tasks/capture_df_results_sc_task.yml
+
+        - name: Setup attachment files
+          delegate_to: localhost
+          ansible.builtin.set_fact:
+            attachment_files:
+              - path: /tmp/ansible_facts.json
+                data: "{{ ansible_facts | to_nice_json }}"
+
+        - name: Create attachments
+          delegate_to: localhost
+          loop: "{{ attachment_files }}"
+          ansible.builtin.copy:
+            content: "{{ item.data }}"
+            dest: "{{ item.path }}"
+            mode: "0755"
+
+        - name: Upload attachments to SC Task
+          delegate_to: localhost
+          servicenow.itsm.attachment_upload:
+            table_name: sc_task
+            table_sys_id: "{{ sc_task_sys_id }}"
+            attachments: "{{ attachment_files | json_query('[].{path: path}') }}"
+
+        - name: Close SC Task
+          delegate_to: localhost
+          servicenow.itsm.api:
+            resource: sc_task
+            action: patch
+            sys_id: "{{ sc_task_sys_id }}"
+            data:
+              state: 3 # Closed Complete
+              work_notes: Disk resize and filesystem expansion completed by Ansible.
+
+        - name: Set state to closed
+          ansible.builtin.set_stats:
+            data:
+              sc_task_state: closed
+              close_notes: Dynatrace + Event-Driven Ansible auto-remediation successful

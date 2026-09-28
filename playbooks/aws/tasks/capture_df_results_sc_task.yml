@@ -1,0 +1,33 @@
+---
+- name: Execute df remote | {{ df_stage }}
+  when: df_host is defined
+  delegate_to: "{{ df_host }}"
+  register: r_df_cmd_remote
+  changed_when: false
+  ansible.builtin.command: df
+
+- name: Execute df | {{ df_stage }}
+  when: df_host is not defined
+  register: r_df_cmd
+  changed_when: false
+  ansible.builtin.command: df
+
+- name: Save df results
+  ansible.builtin.set_fact:
+    df_result: "{{ (df_host is defined) | ternary(r_df_cmd_remote, r_df_cmd) }}"
+
+- name: Add df results to SC Task | {{ df_stage }}
+  delegate_to: localhost
+  vars:
+    df_root_stat: "{{ df_result.stdout | community.general.jc('df') | selectattr('mounted_on', 'equalto', '/') }}"
+  servicenow.itsm.api:
+    resource: sc_task
+    action: patch
+    sys_id: "{{ sc_task_sys_id }}"
+    data:
+      work_notes: >-
+        [code]
+          <h3>{{ df_comment_header | default('df results') }}<h3>
+          <p>Structured output from <b>df</b> on {{ _host }}</p>
+        [/code]
+        {{ df_root_stat | to_nice_json(indent=2) | codify }}
