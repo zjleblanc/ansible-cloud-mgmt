@@ -42,7 +42,7 @@
             resource: sc_task
             action: post
             data:
-              request: "{{ r_ritm_info.record[0].request.value }}"
+              request: "{{ r_ritm_info.record[0].request }}"
               request_item: "{{ ritm_sys_id }}"
               short_description: "Disk resize for {{ _host }}"
               state: 2 # Work in Progress
