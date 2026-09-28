@@ -76,11 +76,11 @@
           GB: 1
           TB: 1024
       ansible.builtin.set_fact:
-        requested_size_gib: "{{ (disk_target | default(disk_growth)) | float * unit_to_gib[disk_unit] }}"
+        requested_size_gib: "{{ ((disk_target | float >= 0) | ternary(disk_target, disk_growth)) | float * unit_to_gib[disk_unit] }}"
 
     - name: Calculate the new target volume size
       vars:
-        target_or_growth_gib: "{{ (disk_target is defined) | ternary(requested_size_gib, current_volume_size | float + requested_size_gib) }}"
+        target_or_growth_gib: "{{ (disk_target | float >= 0) | ternary(requested_size_gib, current_volume_size | float + requested_size_gib) }}"
       ansible.builtin.set_fact:
         new_volume_size: "{{ target_or_growth_gib | float | round(0, 'ceil') | int }}"
 
