@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-09-29 — Fix disk resize target/growth calculation in resize_disk.yml
+
+### Fixed
+- `playbooks/aws/resize_disk.yml`: fixed the growth-vs-target volume size calculation, which could silently resolve to `0 GiB` (or raise a templating type error) depending on the execution environment's Ansible-core/Jinja version. `requested_size_gib` is now explicitly cast with `| float` at every arithmetic use site instead of relying on the templar to preserve native numeric types across `set_fact`/`vars` boundaries.
+- Added defensive `| float` casts to the `disk_growth`/`disk_target` sentinel comparisons in the input validation assert and the growth/target selection `ternary()` conditions, so string-typed extra vars (e.g. from CLI `-e` or text-type survey fields) no longer break the comparison.
+
 ## 2026-09-28 — Point ansible-navigator at the personal ee-default image
 
 ### Changed
