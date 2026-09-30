@@ -220,7 +220,7 @@
             action: patch
             sys_id: "{{ sc_task_sys_id }}"
             data:
-              state: "3" # Closed Complete
+              state: "6" # Resolved
               work_notes: "Service {{ service_name }} restarted successfully on {{ _host }} by Ansible."
 
         - name: Set state to closed
