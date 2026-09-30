@@ -92,6 +92,49 @@
       ansible.builtin.wait_for_connection:
         timeout: "{{ connection_timeout | default(120) }}"
 
+    - name: Check service status before restart | RHEL
+      when: host_platform is search('red hat')
+      register: r_pre_check_rhel
+      ansible.builtin.systemd:
+        name: "{{ service_name }}"
+
+    - name: Check service status before restart | Windows
+      when: host_platform is search('windows')
+      register: r_pre_check_windows
+      ansible.windows.win_service_info:
+        name: "{{ service_name }}"
+
+    - name: Add pre-restart status to SC Task | RHEL
+      when:
+        - sc_task_sys_id is defined
+        - host_platform is search('red hat')
+      tags: snow
+      delegate_to: localhost
+      servicenow.itsm.api:
+        resource: sc_task
+        action: patch
+        sys_id: "{{ sc_task_sys_id }}"
+        data:
+          work_notes: >-
+            Pre-restart status of {{ service_name }} on {{ _host }}:
+            ActiveState={{ r_pre_check_rhel.status.ActiveState }},
+            SubState={{ r_pre_check_rhel.status.SubState }}.
+
+    - name: Add pre-restart status to SC Task | Windows
+      when:
+        - sc_task_sys_id is defined
+        - host_platform is search('windows')
+      tags: snow
+      delegate_to: localhost
+      servicenow.itsm.api:
+        resource: sc_task
+        action: patch
+        sys_id: "{{ sc_task_sys_id }}"
+        data:
+          work_notes: >-
+            Pre-restart status of {{ service_name }} on {{ _host }}:
+            state={{ r_pre_check_windows.services[0].state }}.
+
     - name: Restart service | RHEL
       when: host_platform is search('red hat')
       register: r_restart_rhel
@@ -131,6 +174,37 @@
         that:
           - r_verify_windows.services[0].state == 'running'
         fail_msg: "Service {{ service_name }} is not running after restart on {{ _host }}."
+
+    - name: Add post-restart status to SC Task | RHEL
+      when:
+        - sc_task_sys_id is defined
+        - host_platform is search('red hat')
+      tags: snow
+      delegate_to: localhost
+      servicenow.itsm.api:
+        resource: sc_task
+        action: patch
+        sys_id: "{{ sc_task_sys_id }}"
+        data:
+          work_notes: >-
+            Post-restart status of {{ service_name }} on {{ _host }}:
+            ActiveState={{ r_verify_rhel.status.ActiveState }},
+            SubState={{ r_verify_rhel.status.SubState }}.
+
+    - name: Add post-restart status to SC Task | Windows
+      when:
+        - sc_task_sys_id is defined
+        - host_platform is search('windows')
+      tags: snow
+      delegate_to: localhost
+      servicenow.itsm.api:
+        resource: sc_task
+        action: patch
+        sys_id: "{{ sc_task_sys_id }}"
+        data:
+          work_notes: >-
+            Post-restart status of {{ service_name }} on {{ _host }}:
+            state={{ r_verify_windows.services[0].state }}.
 
     - name: Update SC Task with restart results
       when: sc_task_sys_id is defined
