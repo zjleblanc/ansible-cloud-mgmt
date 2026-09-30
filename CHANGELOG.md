@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - `playbooks/aws/restart_service.yml`: added pre-restart and post-restart status checks for RHEL (`ansible.builtin.systemd`) and Windows (`ansible.windows.win_service_info`) services.
 - Added tasks to post these status checks as work notes to the ServiceNow SC Task (when `sc_task_sys_id` is defined), providing a detailed audit trail of the service state before and after the restart operation.
+- Added `become: true` to RHEL systemd tasks to ensure sufficient privileges for service management.
 
 ## 2026-09-30 — Migrate redis role to valkey
 

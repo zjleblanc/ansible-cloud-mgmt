@@ -94,6 +94,7 @@
 
     - name: Check service status before restart | RHEL
       when: host_platform is search('red hat')
+      become: true
       register: r_pre_check_rhel
       ansible.builtin.systemd:
         name: "{{ service_name }}"
@@ -137,6 +138,7 @@
 
     - name: Restart service | RHEL
       when: host_platform is search('red hat')
+      become: true
       register: r_restart_rhel
       ansible.builtin.systemd:
         name: "{{ service_name }}"
@@ -151,6 +153,7 @@
 
     - name: Verify service is running | RHEL
       when: host_platform is search('red hat')
+      become: true
       register: r_verify_rhel
       ansible.builtin.systemd:
         name: "{{ service_name }}"
