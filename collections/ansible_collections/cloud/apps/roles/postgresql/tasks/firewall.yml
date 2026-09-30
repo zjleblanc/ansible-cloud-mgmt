@@ -1,0 +1,13 @@
+---
+- name: Start firewalld
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: Permanently enable PostgreSQL firewall rule
+  ansible.posix.firewalld:
+    port: "{{ postgresql_port }}/tcp"
+    state: enabled
+    permanent: true
+    immediate: true

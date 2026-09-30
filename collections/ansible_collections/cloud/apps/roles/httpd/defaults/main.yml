@@ -1,0 +1,7 @@
+---
+# defaults file for httpd
+httpd_listen_port: 80
+httpd_document_root: "/var/www/html"
+httpd_server_name: "{{ ansible_fqdn }}"
+httpd_enable_ssl: true
+httpd_manage_firewall: true

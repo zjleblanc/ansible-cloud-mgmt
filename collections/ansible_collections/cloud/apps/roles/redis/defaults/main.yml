@@ -1,0 +1,7 @@
+---
+# defaults file for redis
+redis_bind: "127.0.0.1"
+redis_port: 6379
+redis_maxmemory: "256mb"
+redis_maxmemory_policy: "noeviction"
+redis_manage_firewall: true

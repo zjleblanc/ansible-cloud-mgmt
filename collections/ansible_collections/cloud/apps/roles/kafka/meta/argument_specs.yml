@@ -1,0 +1,62 @@
+---
+argument_specs:
+  main:
+    short_description: Install and configure Apache Kafka
+    description:
+      - Installs Apache Kafka with either ZooKeeper or KRaft mode on RHEL.
+      - Downloads the Kafka release tarball, creates a dedicated system
+        user, configures systemd units, and manages firewalld rules for
+        the internal and external listeners.
+    author:
+      - Zach LeBlanc
+    options:
+      kafka_version:
+        type: str
+        required: false
+        default: "3.7.0"
+        description: Kafka release version to download and install.
+      kafka_scala_version:
+        type: str
+        required: false
+        default: "2.13"
+        description: >-
+          Scala version of the Kafka build. Legacy alias: scala_version.
+      kafka_install_dir:
+        type: str
+        required: false
+        default: "/opt/kafka"
+        description: Filesystem path where Kafka is installed.
+      kafka_data_dir:
+        type: str
+        required: false
+        default: "/var/lib/kafka"
+        description: Filesystem path for Kafka broker data.
+      kafka_zookeeper_data_dir:
+        type: str
+        required: false
+        default: "/var/lib/zookeeper"
+        description: >-
+          Filesystem path for ZooKeeper data. Legacy alias:
+          zookeeper_data_dir.
+      kafka_java_home:
+        type: str
+        required: false
+        default: "/usr/lib/jvm/jre-11-openjdk"
+        description: >-
+          JAVA_HOME path used by the Kafka and ZooKeeper systemd services.
+          Legacy alias: java_home.
+      kafka_mode:
+        type: str
+        required: false
+        default: "zookeeper"
+        choices:
+          - zookeeper
+          - kraft
+        description: Kafka coordination mode to configure.
+      demo_topic:
+        type: str
+        required: false
+        default: ""
+        description: >-
+          Optional topic name to create for demo purposes after Kafka is
+          installed. Skipped when empty.

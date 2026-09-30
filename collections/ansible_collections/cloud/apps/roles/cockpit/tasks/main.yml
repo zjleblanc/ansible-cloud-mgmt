@@ -1,0 +1,18 @@
+---
+- name: Install packages
+  notify: Start cockpit
+  ansible.builtin.dnf:
+    name: "{{ cockpit_packages + ['firewalld', 'python3-firewall'] }}"
+    state: present
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Manage firewall
+  when: cockpit_manage_firewall | bool
+  ansible.builtin.include_tasks:
+    file: tasks/firewall.yml
+
+- name: Ensure services ready
+  ansible.builtin.meta: flush_handlers

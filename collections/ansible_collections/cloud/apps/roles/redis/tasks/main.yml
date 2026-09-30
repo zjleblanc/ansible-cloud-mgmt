@@ -1,0 +1,35 @@
+---
+- name: Install packages
+  ansible.builtin.dnf:
+    name:
+      - redis
+      - firewalld
+      - python3-firewall
+    state: present
+
+- name: Configure redis.conf
+  notify: Restart redis
+  ansible.builtin.template:
+    src: redis.conf.j2
+    dest: /etc/redis/redis.conf
+    owner: root
+    group: redis
+    mode: "0640"
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Manage firewall
+  when: redis_manage_firewall | bool
+  ansible.builtin.include_tasks:
+    file: tasks/firewall.yml
+
+- name: Ensure services ready
+  ansible.builtin.meta: flush_handlers
+
+- name: Ensure redis is enabled and started
+  ansible.builtin.systemd:
+    name: redis
+    state: started
+    enabled: true

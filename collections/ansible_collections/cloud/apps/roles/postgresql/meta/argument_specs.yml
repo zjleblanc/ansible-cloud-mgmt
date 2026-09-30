@@ -1,0 +1,80 @@
+---
+argument_specs:
+  main:
+    short_description: Install and configure a PostgreSQL server
+    description:
+      - Installs PostgreSQL from the RHEL AppStream repository,
+        initializes the database cluster, configures listen_addresses,
+        port, and pg_hba.conf, and manages the firewalld rule.
+    author:
+      - Zach LeBlanc
+    options:
+      postgresql_listen_addresses:
+        type: str
+        required: false
+        default: "localhost"
+        description: >-
+          Address(es) PostgreSQL listens on. Comma-separated list, or
+          '*' for all interfaces.
+      postgresql_port:
+        type: int
+        required: false
+        default: 5432
+        description: TCP port PostgreSQL listens on.
+      postgresql_data_dir:
+        type: str
+        required: false
+        default: "/var/lib/pgsql/data"
+        description: PostgreSQL data directory (PGDATA) managed by this role.
+      postgresql_hba_entries:
+        type: list
+        elements: dict
+        required: false
+        default:
+          - type: local
+            database: all
+            user: all
+            method: peer
+          - type: host
+            database: all
+            user: all
+            address: "127.0.0.1/32"
+            method: scram-sha-256
+          - type: host
+            database: all
+            user: all
+            address: "::1/128"
+            method: scram-sha-256
+        description: List of entries rendered into pg_hba.conf, in order.
+        options:
+          type:
+            type: str
+            required: true
+            description: >-
+              Connection type: local, host, hostssl, or hostnossl.
+          database:
+            type: str
+            required: true
+            description: Database name, comma-separated list, or 'all'.
+          user:
+            type: str
+            required: true
+            description: User name, comma-separated list, or 'all'.
+          address:
+            type: str
+            required: false
+            description: >-
+              CIDR address or hostname. Omit for local connections.
+          method:
+            type: str
+            required: true
+            description: >-
+              Authentication method (peer, scram-sha-256, md5, trust,
+              ident, etc.).
+      postgresql_manage_firewall:
+        type: bool
+        required: false
+        default: true
+        description: >-
+          Whether to enable firewalld and open the configured
+          postgresql_port over TCP.

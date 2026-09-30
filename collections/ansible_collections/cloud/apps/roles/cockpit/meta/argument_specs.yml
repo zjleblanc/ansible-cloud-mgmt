@@ -1,0 +1,28 @@
+---
+argument_specs:
+  main:
+    short_description: Install and enable the Cockpit web console
+    description:
+      - Installs Cockpit packages and enables the cockpit.socket systemd
+        unit on RHEL.
+      - Optionally opens the Cockpit firewalld service (port 9090/tcp).
+    author:
+      - Zach LeBlanc
+    options:
+      cockpit_packages:
+        type: list
+        elements: str
+        required: false
+        default:
+          - cockpit
+          - cockpit-ws
+        description: >-
+          List of Cockpit packages to install. Extend with plugins such
+          as cockpit-storaged or cockpit-networkmanager as needed.
+      cockpit_manage_firewall:
+        type: bool
+        required: false
+        default: true
+        description: >-
+          Whether to enable firewalld and open the Cockpit service
+          (9090/tcp).

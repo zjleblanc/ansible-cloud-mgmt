@@ -1,0 +1,15 @@
+# {{ ansible_managed }}
+# Managed by the cloud.apps.httpd role — do not edit by hand.
+
+<VirtualHost *:{{ httpd_listen_port }}>
+    ServerName {{ httpd_server_name }}
+    DocumentRoot {{ httpd_document_root }}
+
+    <Directory "{{ httpd_document_root }}">
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog logs/error_log
+    CustomLog logs/access_log combined
+</VirtualHost>

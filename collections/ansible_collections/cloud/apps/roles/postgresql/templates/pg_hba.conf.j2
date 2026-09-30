@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+# PostgreSQL Client Authentication Configuration File
+# Managed by the cloud.apps.postgresql role — do not edit by hand.
+#
+# TYPE  DATABASE        USER            ADDRESS                 METHOD
+{% for entry in postgresql_hba_entries %}
+{{ '%-7s' | format(entry.type) }} {{ '%-15s' | format(entry.database) }} {{ '%-15s' | format(entry.user) }} {{ '%-23s' | format(entry.address | default('')) }} {{ entry.method }}
+{% endfor %}

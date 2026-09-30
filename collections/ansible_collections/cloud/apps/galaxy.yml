@@ -1,0 +1,17 @@
+---
+namespace: cloud
+name: apps
+version: 1.0.0
+readme: README.md
+authors:
+  - Zach LeBlanc
+description: Roles for deploying common applications on RHEL
+license:
+  - MIT
+tags:
+  - linux
+  - rhel
+  - applications
+repository: https://github.com/zjleblanc/ansible-cloud-mgmt
+issues: https://github.com/zjleblanc/ansible-cloud-mgmt/issues
+build_ignore: []

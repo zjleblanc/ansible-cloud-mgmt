@@ -1,0 +1,21 @@
+---
+- name: Start firewalld
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: Permanently enable HTTP firewall rule
+  ansible.posix.firewalld:
+    port: "{{ httpd_listen_port }}/tcp"
+    state: enabled
+    permanent: true
+    immediate: true
+
+- name: Permanently enable HTTPS firewall rule
+  when: httpd_enable_ssl | bool
+  ansible.posix.firewalld:
+    port: "443/tcp"
+    state: enabled
+    permanent: true
+    immediate: true

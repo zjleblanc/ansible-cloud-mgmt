@@ -13,7 +13,19 @@
       ansible.builtin.setup:
 
   roles:
-    - role: kafka
+    - role: cloud.apps.kafka
       when: "'kafka' in install_apps"
       vars:
         kafka_mode: "{{ _kafka_mode | default('zookeeper') }}"
+
+    - role: cloud.apps.httpd
+      when: "'httpd' in install_apps"
+
+    - role: cloud.apps.cockpit
+      when: "'cockpit' in install_apps"
+
+    - role: cloud.apps.postgresql
+      when: "'postgresql' in install_apps"
+
+    - role: cloud.apps.redis
+      when: "'redis' in install_apps"

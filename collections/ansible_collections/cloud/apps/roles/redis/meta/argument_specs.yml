@@ -1,0 +1,46 @@
+---
+argument_specs:
+  main:
+    short_description: Install and configure a Redis server
+    description:
+      - Installs Redis from the RHEL AppStream repository and configures
+        the bind address, port, and memory limits.
+    author:
+      - Zach LeBlanc
+    options:
+      redis_bind:
+        type: str
+        required: false
+        default: "127.0.0.1"
+        description: Interface address Redis binds to.
+      redis_port:
+        type: int
+        required: false
+        default: 6379
+        description: TCP port Redis listens on.
+      redis_maxmemory:
+        type: str
+        required: false
+        default: "256mb"
+        description: >-
+          Maximum memory Redis may use (e.g. 256mb, 1gb). Set to "0" for
+          no limit.
+      redis_maxmemory_policy:
+        type: str
+        required: false
+        default: "noeviction"
+        choices:
+          - noeviction
+          - allkeys-lru
+          - volatile-lru
+          - allkeys-random
+          - volatile-random
+          - volatile-ttl
+        description: Key eviction policy applied once maxmemory is reached.
+      redis_manage_firewall:
+        type: bool
+        required: false
+        default: true
+        description: >-
+          Whether to enable firewalld and open the configured redis_port
+          over TCP.

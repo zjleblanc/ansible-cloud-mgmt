@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-09-30 — Add local `cloud.apps` collection with httpd/cockpit/postgresql/redis roles
+
+### Added
+- Local `cloud.apps` collection at `collections/ansible_collections/cloud/apps/` (`galaxy.yml`, `README.md`, `CHANGELOG.md`, `meta/runtime.yml`) providing RHEL application roles referenced by FQCN (e.g. `cloud.apps.kafka`).
+- `cloud.apps.httpd`, `cloud.apps.cockpit`, `cloud.apps.postgresql`, and `cloud.apps.redis` roles (defaults, tasks, handlers, templates where applicable, `meta/argument_specs.yml`, `README.md`), installing only from standard RHEL BaseOS/AppStream repos.
+- `meta/argument_specs.yml` for every role in the collection, including `kafka`, documenting variable types, defaults, choices, and nested options.
+
+### Changed
+- Migrated the `kafka` role from `roles/kafka/` into `collections/ansible_collections/cloud/apps/roles/kafka/`; updated template `src:` paths and the role README accordingly.
+- `playbooks/aws/install_apps.yml`: roles now referenced by FQCN (`cloud.apps.kafka`, `cloud.apps.httpd`, `cloud.apps.cockpit`, `cloud.apps.postgresql`, `cloud.apps.redis`), each gated on the `install_apps` list variable.
+- `README.md`: updated the repository layout and roles tables to reflect the local `cloud.apps` collection.
+- `demos/docs/eda_kafka_sandbox.md`: updated the kafka role link to its new collection path.
+
+### Removed
+- `roles/kafka/` (superseded by `collections/ansible_collections/cloud/apps/roles/kafka/`).
+
 ## 2026-09-30 — Add restart-service and reboot-machine playbooks with SC Task tracking
 
 ### Added

@@ -1,0 +1,58 @@
+---
+- name: Install packages
+  ansible.builtin.dnf:
+    name:
+      - postgresql-server
+      - postgresql
+      - firewalld
+      - python3-firewall
+    state: present
+
+- name: Initialize PostgreSQL database
+  notify: Restart postgresql
+  ansible.builtin.command:
+    cmd: postgresql-setup --initdb
+    creates: "{{ postgresql_data_dir }}/PG_VERSION"
+  register: postgresql_r_initdb
+  changed_when: postgresql_r_initdb.rc == 0
+
+- name: Configure listen_addresses
+  notify: Restart postgresql
+  ansible.builtin.lineinfile:
+    path: "{{ postgresql_data_dir }}/postgresql.conf"
+    regexp: "^#?listen_addresses\\s*="
+    line: "listen_addresses = '{{ postgresql_listen_addresses }}'"
+
+- name: Configure port
+  notify: Restart postgresql
+  ansible.builtin.lineinfile:
+    path: "{{ postgresql_data_dir }}/postgresql.conf"
+    regexp: "^#?port\\s*="
+    line: "port = {{ postgresql_port }}"
+
+- name: Configure pg_hba.conf
+  notify: Restart postgresql
+  ansible.builtin.template:
+    src: pg_hba.conf.j2
+    dest: "{{ postgresql_data_dir }}/pg_hba.conf"
+    owner: postgres
+    group: postgres
+    mode: "0600"
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Manage firewall
+  when: postgresql_manage_firewall | bool
+  ansible.builtin.include_tasks:
+    file: tasks/firewall.yml
+
+- name: Ensure services ready
+  ansible.builtin.meta: flush_handlers
+
+- name: Ensure postgresql is enabled and started
+  ansible.builtin.systemd:
+    name: postgresql
+    state: started
+    enabled: true

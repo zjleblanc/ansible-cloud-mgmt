@@ -1,0 +1,47 @@
+---
+- name: Install packages
+  ansible.builtin.dnf:
+    name: "{{ ['httpd', 'firewalld', 'python3-firewall'] + (['mod_ssl'] if httpd_enable_ssl else []) }}"
+    state: present
+
+- name: Ensure document root exists
+  ansible.builtin.file:
+    path: "{{ httpd_document_root }}"
+    state: directory
+    owner: apache
+    group: apache
+    mode: "0755"
+
+- name: Configure Listen port
+  notify: Restart httpd
+  ansible.builtin.lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: "^Listen "
+    line: "Listen {{ httpd_listen_port }}"
+
+- name: Configure default vhost
+  notify: Restart httpd
+  ansible.builtin.template:
+    src: vhost.conf.j2
+    dest: /etc/httpd/conf.d/vhost.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+
+- name: Manage firewall
+  when: httpd_manage_firewall | bool
+  ansible.builtin.include_tasks:
+    file: tasks/firewall.yml
+
+- name: Ensure services ready
+  ansible.builtin.meta: flush_handlers
+
+- name: Ensure httpd is enabled and started
+  ansible.builtin.systemd:
+    name: httpd
+    state: started
+    enabled: true

@@ -8,9 +8,9 @@ Ansible playbooks, demos, roles, and supporting tooling for cloud and platform m
 | --- | --- |
 | `playbooks/` | Production-oriented and reusable playbooks by domain |
 | `demos/` | Example / sandbox playbooks and plugins |
-| `roles/` | Shared Ansible roles (`kafka`, `send_email`) |
+| `roles/` | Shared Ansible roles (`send_email`) |
 | `inventories/` | Inventory sources (dynamic and static) |
-| `collections/` | Collection requirements for project sync (AAP) |
+| `collections/` | Collection requirements for project sync (AAP), plus the local `cloud.apps` collection |
 | `CHANGELOG.md` | Project history and notable changes |
 | `tests/` | Lint-only collection requirements for `ansible-lint` |
 | `scripts/` | Helper scripts (Postman conversion, CVE reporting, etc.) |
@@ -182,8 +182,21 @@ Custom inventory plugins live under [`inventory_plugins/`](inventory_plugins/).
 
 | Role | Description |
 | --- | --- |
-| [`kafka`](roles/kafka/) | Install and configure Kafka / ZooKeeper |
 | [`send_email`](roles/send_email/) | Send email notifications |
+
+### Local collection: `cloud.apps`
+
+RHEL application roles live in the local [`cloud.apps`](collections/ansible_collections/cloud/apps/) collection (not published to Galaxy) and are referenced by FQCN, e.g. `cloud.apps.kafka`. See the [collection README](collections/ansible_collections/cloud/apps/README.md) for details.
+
+| Role | Description |
+| --- | --- |
+| [`cloud.apps.kafka`](collections/ansible_collections/cloud/apps/roles/kafka/) | Install and configure Kafka / ZooKeeper |
+| [`cloud.apps.httpd`](collections/ansible_collections/cloud/apps/roles/httpd/) | Install and configure the Apache HTTP Server |
+| [`cloud.apps.cockpit`](collections/ansible_collections/cloud/apps/roles/cockpit/) | Install and enable the Cockpit web console |
+| [`cloud.apps.postgresql`](collections/ansible_collections/cloud/apps/roles/postgresql/) | Install and configure a PostgreSQL server |
+| [`cloud.apps.redis`](collections/ansible_collections/cloud/apps/roles/redis/) | Install and configure a Redis server |
+
+Used by [`playbooks/aws/install_apps.yml`](playbooks/aws/install_apps.yml), which installs applications gated on the `install_apps` list variable.
 
 ## Running playbooks
 

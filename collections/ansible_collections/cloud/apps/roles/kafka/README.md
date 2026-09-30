@@ -1,4 +1,4 @@
-kafka
+cloud.apps.kafka
 =========
 
 Install a kafka instance on linux, configuring zookeeper with an internal and external listener.
@@ -8,12 +8,15 @@ _Tested on Amazon EC2, RHEL 9.3_
 Requirements
 ------------
 
-Linux server with capacity for running lightweight kafka cluster. 
+Linux server with capacity for running lightweight kafka cluster.
 
 _Tested on t2.medium EC2 instance_
 
 Role Variables
 --------------
+
+See [`meta/argument_specs.yml`](meta/argument_specs.yml) for the full,
+validated specification (types, defaults, choices). Summary:
 
 ```yaml
 kafka_version: "3.7.0"
@@ -22,6 +25,8 @@ kafka_install_dir: "/opt/kafka"
 kafka_data_dir: "/var/lib/kafka"
 kafka_zookeeper_data_dir: "/var/lib/zookeeper"  # legacy alias: zookeeper_data_dir
 kafka_java_home: "/usr/lib/jvm/jre-11-openjdk"  # legacy alias: java_home
+kafka_mode: "zookeeper"  # zookeeper | kraft
+demo_topic: ""
 ```
 
 Example Playbook
@@ -43,11 +48,10 @@ Example Playbook
       ansible.builtin.setup:
 
   roles:
-    - name: kafka
+    - role: cloud.apps.kafka
       when: "'kafka' in install_apps"
       vars:
         kafka_mode: "{{ _kafka_mode | default('zookeeper') }}"
-
 ```
 
 License

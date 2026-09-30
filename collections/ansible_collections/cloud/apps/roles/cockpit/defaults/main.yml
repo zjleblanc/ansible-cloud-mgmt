@@ -1,0 +1,6 @@
+---
+# defaults file for cockpit
+cockpit_packages:
+  - cockpit
+  - cockpit-ws
+cockpit_manage_firewall: true

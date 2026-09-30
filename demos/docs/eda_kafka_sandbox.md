@@ -19,7 +19,7 @@ The content provided in this document will enable you to quickly setup Kafka (on
 
 ## Installing Kafka
 
-The [playbook](../../playbooks/aws/install_apps.yml) to install Kafka is designed to fit into a workflow that supports an end-user choosing apps they would like to deploy. The bulk of the work is done via the [kafka role](../../roles/kafka/README.md), which currently supports the following configuration:
+The [playbook](../../playbooks/aws/install_apps.yml) to install Kafka is designed to fit into a workflow that supports an end-user choosing apps they would like to deploy. The bulk of the work is done via the [kafka role](../../collections/ansible_collections/cloud/apps/roles/kafka/README.md), which currently supports the following configuration:
 - Java 11
 - Kafka 3.7.0
 - Scala 2.13

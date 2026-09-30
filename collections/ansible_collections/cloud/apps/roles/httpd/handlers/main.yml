@@ -1,0 +1,12 @@
+---
+- name: Restart httpd
+  ansible.builtin.systemd:
+    name: httpd
+    state: restarted
+    enabled: true
+
+- name: Start firewalld
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: true

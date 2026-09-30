@@ -57,7 +57,7 @@
   when: kafka_mode == 'zookeeper'
   notify: Start kafka
   ansible.builtin.template:
-    src: templates/server.properties.j2
+    src: server.properties.j2
     dest: "{{ kafka_install_dir }}/config/server.properties"
     owner: kafka
     group: kafka
@@ -67,7 +67,7 @@
   when: kafka_mode == 'kraft'
   notify: Start kafka
   ansible.builtin.template:
-    src: templates/kraft_server.properties.j2
+    src: kraft_server.properties.j2
     dest: "{{ kafka_install_dir }}/config/kraft/server.properties"
     owner: kafka
     group: kafka
@@ -76,7 +76,7 @@
 - name: Create Zookeeper systemd service file
   notify: Start zookeeper
   ansible.builtin.template:
-    src: templates/zookeeper.service.j2
+    src: zookeeper.service.j2
     dest: /etc/systemd/system/zookeeper.service
     owner: root
     group: root
@@ -85,7 +85,7 @@
 - name: Create Kafka systemd service file
   notify: Start kafka
   ansible.builtin.template:
-    src: templates/kafka.service.j2
+    src: kafka.service.j2
     dest: /etc/systemd/system/kafka.service
     owner: root
     group: root

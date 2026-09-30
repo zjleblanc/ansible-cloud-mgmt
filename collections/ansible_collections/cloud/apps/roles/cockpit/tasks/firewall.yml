@@ -1,0 +1,13 @@
+---
+- name: Start firewalld
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: Permanently enable cockpit firewall service
+  ansible.posix.firewalld:
+    service: cockpit
+    state: enabled
+    permanent: true
+    immediate: true

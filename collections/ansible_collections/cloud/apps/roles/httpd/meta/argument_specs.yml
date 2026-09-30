@@ -1,0 +1,42 @@
+---
+argument_specs:
+  main:
+    short_description: Install and configure the Apache HTTP Server
+    description:
+      - Installs httpd from the RHEL BaseOS repository, configures the
+        listen port and a default virtual host, and manages the
+        firewalld rules.
+    author:
+      - Zach LeBlanc
+    options:
+      httpd_listen_port:
+        type: int
+        required: false
+        default: 80
+        description: TCP port httpd listens on.
+      httpd_document_root:
+        type: str
+        required: false
+        default: "/var/www/html"
+        description: Document root for the default virtual host.
+      httpd_server_name:
+        type: str
+        required: false
+        description: >-
+          ServerName for the default virtual host. Defaults to the
+          target host's FQDN (ansible_fqdn) when not set.
+      httpd_enable_ssl:
+        type: bool
+        required: false
+        default: true
+        description: >-
+          Whether to install mod_ssl and open the HTTPS firewall port
+          (443/tcp) in addition to httpd_listen_port.
+      httpd_manage_firewall:
+        type: bool
+        required: false
+        default: true
+        description: >-
+          Whether to enable firewalld and open the configured
+          httpd_listen_port (and 443/tcp when httpd_enable_ssl is true)
+          over TCP.
