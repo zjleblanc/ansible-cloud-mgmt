@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - `playbooks/aws/install_apps.yml`: converted static `roles:` block to `tasks:` using `ansible.builtin.include_role` for application installs; reordered `when:` keys to immediately follow `name:` per new style rule.
+- Added `collections` symlinks in `playbooks/aws/` and `playbooks/azure/snapshot_mgmt/` to ensure local collections at the root are findable by playbooks in subdirectories (matching the existing `roles` symlink pattern).
 
 ## 2026-09-30 — Add rhel9_apps and rhel_apps target platforms for EC2 provisioning
 
