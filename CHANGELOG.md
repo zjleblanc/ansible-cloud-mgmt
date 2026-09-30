@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-09-30 — Convert install_apps.yml to include_role tasks and define task key order rule
+
+### Added
+- `.cursor/rules/ansible-task-key-order.mdc` which enforces `name` -> `when` -> module ordering for Ansible tasks as a project style preference.
+
+### Changed
+- `playbooks/aws/install_apps.yml`: converted static `roles:` block to `tasks:` using `ansible.builtin.include_role` for application installs; reordered `when:` keys to immediately follow `name:` per new style rule.
+
 ## 2026-09-30 — Add rhel9_apps and rhel_apps target platforms for EC2 provisioning
 
 ### Added

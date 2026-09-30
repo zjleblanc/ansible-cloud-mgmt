@@ -12,20 +12,30 @@
     - name: Gather facts
       ansible.builtin.setup:
 
-  roles:
-    - role: cloud.apps.kafka
+  tasks:
+    - name: Install kafka
       when: "'kafka' in install_apps"
+      ansible.builtin.include_role:
+        name: cloud.apps.kafka
       vars:
         kafka_mode: "{{ _kafka_mode | default('zookeeper') }}"
 
-    - role: cloud.apps.httpd
+    - name: Install httpd
       when: "'httpd' in install_apps"
+      ansible.builtin.include_role:
+        name: cloud.apps.httpd
 
-    - role: cloud.apps.cockpit
+    - name: Install cockpit
       when: "'cockpit' in install_apps"
+      ansible.builtin.include_role:
+        name: cloud.apps.cockpit
 
-    - role: cloud.apps.postgresql
+    - name: Install postgresql
       when: "'postgresql' in install_apps"
+      ansible.builtin.include_role:
+        name: cloud.apps.postgresql
 
-    - role: cloud.apps.redis
+    - name: Install redis
       when: "'redis' in install_apps"
+      ansible.builtin.include_role:
+        name: cloud.apps.redis

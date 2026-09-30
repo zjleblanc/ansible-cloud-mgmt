@@ -1,0 +1,36 @@
+---
+description: Put `when` immediately after `name` in Ansible tasks
+globs: playbooks/**/*.yml,roles/**/*.yml,demos/**/*.yml,tests/**/*.yml
+alwaysApply: false
+---
+
+# Ansible Task Key Order
+
+In every Ansible task (including `include_role` / `import_role` tasks),
+place `when` directly after `name`, before the module/action keyword and
+its `vars`/args.
+
+```yaml
+# ✅ GOOD
+- name: Install kafka
+  when: "'kafka' in install_apps"
+  ansible.builtin.include_role:
+    name: cloud.apps.kafka
+  vars:
+    kafka_mode: "{{ _kafka_mode | default('zookeeper') }}"
+```
+
+```yaml
+# ❌ BAD — when trails after the module/vars
+- name: Install kafka
+  ansible.builtin.include_role:
+    name: cloud.apps.kafka
+  vars:
+    kafka_mode: "{{ _kafka_mode | default('zookeeper') }}"
+  when: "'kafka' in install_apps"
+```
+
+This is a project style preference, not an ansible-lint requirement —
+both orderings pass `ansible-lint --profile production`. Apply this
+ordering to new/edited tasks; don't mass-reorder unrelated existing tasks
+in the same change.
