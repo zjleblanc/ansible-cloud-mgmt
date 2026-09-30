@@ -67,6 +67,8 @@ Top-level entry playbooks (task/vars includes under each domain are omitted).
 | [`install_apps.yml`](playbooks/aws/install_apps.yml) | Install applications on hosts |
 | [`patch_vm.yml`](playbooks/aws/patch_vm.yml) | Patch EC2 instances (Linux/Windows) |
 | [`pb_ai_rca.yml`](playbooks/aws/pb_ai_rca.yml) | Generate AI root-cause analysis for an incident |
+| [`reboot_machine.yml`](playbooks/aws/reboot_machine.yml) | Reboot an EC2 instance and confirm reconnection (Linux/Windows) |
+| [`restart_service.yml`](playbooks/aws/restart_service.yml) | Restart a named service on an EC2 instance (Linux/Windows) |
 | [`restore_from_snapshot.yml`](playbooks/aws/restore_from_snapshot.yml) | Restore an EC2 volume from snapshot |
 | [`snapshot_vm.yml`](playbooks/aws/snapshot_vm.yml) | Snapshot EC2 volumes |
 

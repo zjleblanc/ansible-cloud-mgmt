@@ -1,0 +1,149 @@
+---
+- name: Reboot an EC2 instance
+  hosts: localhost
+  gather_facts: false
+  tags: reboot_machine
+
+  environment:
+    AWS_REGION: "{{ _aws_region | default('us-east-2') }}"
+
+  tasks:
+    - name: Validate inputs
+      ansible.builtin.assert:
+        that:
+          - _host is defined
+        fail_msg: "_host must be provided to reboot a machine."
+
+    - name: Warn that ITSM tracking will be skipped
+      when: ritm_number is not defined
+      ansible.builtin.debug:
+        msg: >-
+          ritm_number was not provided; SC Task creation and ITSM tracking steps
+          will be skipped for this run.
+
+    - name: Manage SC Task tracking for this request
+      when: ritm_number is defined
+      tags: snow
+      block:
+        - name: Get RITM record to determine associated REQ
+          register: r_ritm_info
+          servicenow.itsm.api_info:
+            resource: sc_req_item
+            sysparm_query: "sys_id={{ ritm_sys_id }}"
+
+        - name: Create SC Task linked to the RITM and REQ
+          register: r_sc_task_create
+          servicenow.itsm.api:
+            resource: sc_task
+            action: post
+            data:
+              request: "{{ r_ritm_info.record[0].request }}"
+              request_item: "{{ ritm_sys_id }}"
+              short_description: "Machine reboot for {{ _host }}"
+              state: "2" # Work in Progress
+              assigned_to: "{{ sc_task_assigned_to | default(omit) }}"
+
+        - name: Save SC Task sys_id for later updates
+          ansible.builtin.set_fact:
+            sc_task_sys_id: "{{ r_sc_task_create.record.sys_id }}"
+
+    - name: Gather information about a particular instance using ID
+      register: r_instance_info
+      amazon.aws.ec2_instance_info:
+        filters:
+          tag:Name: "{{ _host }}"
+          instance-state-name: ["running"]
+
+    - name: Determine platform
+      ansible.builtin.set_fact:
+        host_platform: "{{ hostvars[_host]['platform_details'] | default('unknown') | lower }}"
+
+    - name: Add target host | RHEL
+      when: host_platform is search('red hat')
+      ansible.builtin.add_host:
+        name: ec2_reboot_target
+        ansible_host: "{{ r_instance_info['instances'][0]['public_ip_address'] }}"
+        host_platform: "{{ host_platform }}"
+        sc_task_sys_id: "{{ sc_task_sys_id | default(omit) }}"
+
+    - name: Add target host | Windows
+      when: host_platform is search('windows')
+      ansible.builtin.add_host:
+        name: ec2_reboot_target
+        ansible_host: "{{ r_instance_info['instances'][0]['public_ip_address'] }}"
+        host_platform: "{{ host_platform }}"
+        sc_task_sys_id: "{{ sc_task_sys_id | default(omit) }}"
+        ansible_connection: winrm
+        ansible_port: 5986
+        ansible_winrm_transport: credssp
+        ansible_winrm_server_cert_validation: ignore
+
+- name: Reboot the target machine and confirm reconnection
+  hosts: ec2_reboot_target
+  gather_facts: false
+  become: true
+  tags: reboot_machine
+
+  tasks:
+    - name: Reboot host, wait for disconnect and reboot to complete | RHEL
+      when: host_platform is search('red hat')
+      ansible.builtin.reboot:
+        reboot_timeout: "{{ reboot_timeout | default(600) }}"
+        connect_timeout: "{{ reboot_connect_timeout | default(5) }}"
+        pre_reboot_delay: "{{ pre_reboot_delay | default(0) }}"
+        post_reboot_delay: "{{ post_reboot_delay | default(0) }}"
+        msg: Reboot initiated by Ansible
+        test_command: whoami
+
+    - name: Reboot host, wait for disconnect and reboot to complete | Windows
+      when: host_platform is search('windows')
+      become: false
+      ansible.windows.win_reboot:
+        reboot_timeout: "{{ reboot_timeout | default(600) }}"
+        connect_timeout: "{{ reboot_connect_timeout | default(5) }}"
+        pre_reboot_delay: "{{ pre_reboot_delay | default(2) }}"
+        post_reboot_delay: "{{ post_reboot_delay | default(0) }}"
+        msg: Reboot initiated by Ansible
+
+    - name: Confirm reconnection | RHEL
+      when: host_platform is search('red hat')
+      changed_when: false
+      register: r_uptime
+      ansible.builtin.command: uptime
+
+    - name: Report reconnection | RHEL
+      when: host_platform is search('red hat')
+      ansible.builtin.debug:
+        msg: "{{ _host }} rebooted and reconnected successfully. Uptime: {{ r_uptime.stdout }}"
+
+    - name: Confirm reconnection | Windows
+      when: host_platform is search('windows')
+      changed_when: false
+      register: r_systeminfo
+      ansible.windows.win_command: systeminfo
+
+    - name: Report reconnection | Windows
+      when: host_platform is search('windows')
+      ansible.builtin.debug:
+        msg: "{{ _host }} rebooted and reconnected successfully."
+
+    - name: Update SC Task with reboot results
+      when: sc_task_sys_id is defined
+      tags: snow
+      block:
+        - name: Close SC Task
+          delegate_to: localhost
+          become: false
+          servicenow.itsm.api:
+            resource: sc_task
+            action: patch
+            sys_id: "{{ sc_task_sys_id }}"
+            data:
+              state: "3" # Closed Complete
+              work_notes: "{{ _host }} rebooted and reconnected successfully via Ansible."
+
+        - name: Set state to closed
+          ansible.builtin.set_stats:
+            data:
+              sc_task_state: closed
+              close_notes: Machine reboot and reconnection completed successfully.

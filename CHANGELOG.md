@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-09-30 — Add restart-service and reboot-machine playbooks with SC Task tracking
+
+### Added
+- `playbooks/aws/restart_service.yml` playbook to restart a named service (`service_name`) on an EC2 instance identified by `_host`, supporting RHEL (`ansible.builtin.systemd`) and Windows (`ansible.windows.win_service`), with post-restart verification that the service is active/running.
+- `playbooks/aws/reboot_machine.yml` playbook to reboot an EC2 instance identified by `_host`, supporting RHEL (`ansible.builtin.reboot`) and Windows (`ansible.windows.win_reboot`), which handle disconnection, wait for the reboot to complete, and confirm reconnection before reporting status.
+- Both new playbooks follow the `resize_disk.yml` pattern: input validation, ServiceNow SC Task lifecycle tracking (linked to a RITM and its parent REQ, skipped with a warning when `ritm_number` is not supplied), platform detection via `hostvars`/EC2 instance info, and closing the SC Task with work notes on completion.
+
+### Changed
+- `README.md`: added `reboot_machine.yml` and `restart_service.yml` entries to the AWS playbooks table.
+
 ## 2026-09-29 — Fix disk resize target/growth calculation in resize_disk.yml
 
 ### Fixed
