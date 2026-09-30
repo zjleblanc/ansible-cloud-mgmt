@@ -1,0 +1,7 @@
+---
+# defaults file for valkey
+valkey_bind: "127.0.0.1"
+valkey_port: 6379
+valkey_maxmemory: "256mb"
+valkey_maxmemory_policy: "noeviction"
+valkey_manage_firewall: true

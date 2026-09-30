@@ -1,7 +1,7 @@
 ---
-- name: Restart redis
+- name: Restart valkey
   ansible.builtin.systemd:
-    name: redis
+    name: valkey
     state: restarted
     enabled: true
 

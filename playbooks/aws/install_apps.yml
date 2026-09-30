@@ -35,7 +35,7 @@
       ansible.builtin.include_role:
         name: cloud.apps.postgresql
 
-    - name: Install redis
-      when: "'redis' in install_apps"
+    - name: Install valkey
+      when: "'valkey' in install_apps"
       ansible.builtin.include_role:
-        name: cloud.apps.redis
+        name: cloud.apps.valkey

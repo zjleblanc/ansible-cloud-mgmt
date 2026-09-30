@@ -34,7 +34,7 @@ launch_templates:
       - httpd
       - cockpit
       - postgresql
-      - redis
+      - valkey
   rhel_apps:
     lt_name: ansible-rhel-apps
     lt_image_id: ami-05645490d14a24bae # RHEL10
@@ -44,7 +44,7 @@ launch_templates:
       - httpd
       - cockpit
       - postgresql
-      - redis
+      - valkey
   rhel_dynatrace:
     lt_name: ansible-rhel-oneagent
     lt_image_id: ami-05645490d14a24bae # RHEL10

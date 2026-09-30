@@ -5,9 +5,9 @@
     state: started
     enabled: true
 
-- name: Permanently enable Redis firewall rule
+- name: Permanently enable Valkey firewall rule
   ansible.posix.firewalld:
-    port: "{{ redis_port }}/tcp"
+    port: "{{ valkey_port }}/tcp"
     state: enabled
     permanent: true
     immediate: true

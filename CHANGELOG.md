@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-09-30 — Migrate redis role to valkey
+
+### Changed
+- Renamed the `redis` role to `valkey` within the `cloud.apps` collection.
+- Replaced all references to `redis` with `valkey` across the repository, including variable names (`valkey_port`, etc.), package names in tasks, service names, and template filenames.
+
 ## 2026-09-30 — Convert install_apps.yml to include_role tasks and define task key order rule
 
 ### Added
@@ -14,22 +20,22 @@ All notable changes to this project will be documented in this file.
 ## 2026-09-30 — Add rhel9_apps and rhel_apps target platforms for EC2 provisioning
 
 ### Added
-- `rhel9_apps` and `rhel_apps` entries to `launch_templates` in `playbooks/aws/vars/create_ec2_infra.yml`, modeled on the `rhel_dev` template (RHEL9 and RHEL10 AMIs respectively), each carrying an `install_apps` list (`kafka`, `cockpit`, `postgresql`, `redis`).
+- `rhel9_apps` and `rhel_apps` entries to `launch_templates` in `playbooks/aws/vars/create_ec2_infra.yml`, modeled on the `rhel_dev` template (RHEL9 and RHEL10 AMIs respectively), each carrying an `install_apps` list (`kafka`, `cockpit`, `postgresql`, `valkey`).
 - `lt_install_apps` variable in `create_ec2_infra.yml` that reads the new `install_apps` key from `launch_templates[target_platform]`, defaulting to `[]` for platforms without one.
 
 ### Changed
 - `playbooks/aws/create_vm.yml`: `set_stats` now forwards `install_apps` (from `lt_install_apps`) so a chained `install_apps.yml` run knows which application roles to install for the provisioned platform.
 
-## 2026-09-30 — Add local `cloud.apps` collection with httpd/cockpit/postgresql/redis roles
+## 2026-09-30 — Add local `cloud.apps` collection with httpd/cockpit/postgresql/valkey roles
 
 ### Added
 - Local `cloud.apps` collection at `collections/ansible_collections/cloud/apps/` (`galaxy.yml`, `README.md`, `CHANGELOG.md`, `meta/runtime.yml`) providing RHEL application roles referenced by FQCN (e.g. `cloud.apps.kafka`).
-- `cloud.apps.httpd`, `cloud.apps.cockpit`, `cloud.apps.postgresql`, and `cloud.apps.redis` roles (defaults, tasks, handlers, templates where applicable, `meta/argument_specs.yml`, `README.md`), installing only from standard RHEL BaseOS/AppStream repos.
+- `cloud.apps.httpd`, `cloud.apps.cockpit`, `cloud.apps.postgresql`, and `cloud.apps.valkey` roles (defaults, tasks, handlers, templates where applicable, `meta/argument_specs.yml`, `README.md`), installing only from standard RHEL BaseOS/AppStream repos.
 - `meta/argument_specs.yml` for every role in the collection, including `kafka`, documenting variable types, defaults, choices, and nested options.
 
 ### Changed
 - Migrated the `kafka` role from `roles/kafka/` into `collections/ansible_collections/cloud/apps/roles/kafka/`; updated template `src:` paths and the role README accordingly.
-- `playbooks/aws/install_apps.yml`: roles now referenced by FQCN (`cloud.apps.kafka`, `cloud.apps.httpd`, `cloud.apps.cockpit`, `cloud.apps.postgresql`, `cloud.apps.redis`), each gated on the `install_apps` list variable.
+- `playbooks/aws/install_apps.yml`: roles now referenced by FQCN (`cloud.apps.kafka`, `cloud.apps.httpd`, `cloud.apps.cockpit`, `cloud.apps.postgresql`, `cloud.apps.valkey`), each gated on the `install_apps` list variable.
 - `README.md`: updated the repository layout and roles tables to reflect the local `cloud.apps` collection.
 - `demos/docs/eda_kafka_sandbox.md`: updated the kafka role link to its new collection path.
 

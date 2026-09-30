@@ -1,14 +1,14 @@
-cloud.apps.redis
+cloud.apps.valkey
 =========
 
-Install and configure a Redis server on RHEL.
+Install and configure a Valkey server on RHEL.
 
 _Tested on RHEL 9_
 
 Requirements
 ------------
 
-RHEL server with `redis` available from the AppStream repository (no
+RHEL server with `valkey` available from the AppStream repository (no
 EPEL or third-party repos required).
 
 Role Variables
@@ -18,11 +18,11 @@ See [`meta/argument_specs.yml`](meta/argument_specs.yml) for the full,
 validated specification (types, defaults, choices). Summary:
 
 ```yaml
-redis_bind: "127.0.0.1"
-redis_port: 6379
-redis_maxmemory: "256mb"
-redis_maxmemory_policy: "noeviction"  # noeviction | allkeys-lru | volatile-lru | allkeys-random | volatile-random | volatile-ttl
-redis_manage_firewall: true
+valkey_bind: "127.0.0.1"
+valkey_port: 6379
+valkey_maxmemory: "256mb"
+valkey_maxmemory_policy: "noeviction"  # noeviction | allkeys-lru | volatile-lru | allkeys-random | volatile-random | volatile-ttl
+valkey_manage_firewall: true
 ```
 
 Example Playbook
@@ -36,8 +36,8 @@ Example Playbook
   become: true
 
   roles:
-    - role: cloud.apps.redis
-      when: "'redis' in install_apps"
+    - role: cloud.apps.valkey
+      when: "'valkey' in install_apps"
 ```
 
 License

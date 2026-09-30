@@ -194,7 +194,7 @@ RHEL application roles live in the local [`cloud.apps`](collections/ansible_coll
 | [`cloud.apps.httpd`](collections/ansible_collections/cloud/apps/roles/httpd/) | Install and configure the Apache HTTP Server |
 | [`cloud.apps.cockpit`](collections/ansible_collections/cloud/apps/roles/cockpit/) | Install and enable the Cockpit web console |
 | [`cloud.apps.postgresql`](collections/ansible_collections/cloud/apps/roles/postgresql/) | Install and configure a PostgreSQL server |
-| [`cloud.apps.redis`](collections/ansible_collections/cloud/apps/roles/redis/) | Install and configure a Redis server |
+| [`cloud.apps.valkey`](collections/ansible_collections/cloud/apps/roles/valkey/) | Install and configure a Valkey server |
 
 Used by [`playbooks/aws/install_apps.yml`](playbooks/aws/install_apps.yml), which installs applications gated on the `install_apps` list variable.
 

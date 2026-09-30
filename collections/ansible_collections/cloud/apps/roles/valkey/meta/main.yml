@@ -13,6 +13,6 @@ galaxy_info:
       versions:
         - "9"
 
-  galaxy_tags: ["redis", "cache", "rhel"]
+  galaxy_tags: ["valkey", "cache", "rhel"]
 
 dependencies: []

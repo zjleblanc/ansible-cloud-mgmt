@@ -2,18 +2,18 @@
 - name: Install packages
   ansible.builtin.dnf:
     name:
-      - redis
+      - valkey
       - firewalld
       - python3-firewall
     state: present
 
-- name: Configure redis.conf
-  notify: Restart redis
+- name: Configure valkey.conf
+  notify: Restart valkey
   ansible.builtin.template:
-    src: redis.conf.j2
-    dest: /etc/redis/redis.conf
+    src: valkey.conf.j2
+    dest: /etc/valkey/valkey.conf
     owner: root
-    group: redis
+    group: valkey
     mode: "0640"
 
 - name: Reload systemd daemon
@@ -21,15 +21,15 @@
     daemon_reload: true
 
 - name: Manage firewall
-  when: redis_manage_firewall | bool
+  when: valkey_manage_firewall | bool
   ansible.builtin.include_tasks:
     file: tasks/firewall.yml
 
 - name: Ensure services ready
   ansible.builtin.meta: flush_handlers
 
-- name: Ensure redis is enabled and started
+- name: Ensure valkey is enabled and started
   ansible.builtin.systemd:
-    name: redis
+    name: valkey
     state: started
     enabled: true

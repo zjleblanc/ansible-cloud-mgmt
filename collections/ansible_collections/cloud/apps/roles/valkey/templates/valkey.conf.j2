@@ -1,0 +1,21 @@
+# {{ ansible_managed }}
+# Managed by the cloud.apps.valkey role — do not edit by hand.
+
+bind {{ valkey_bind }}
+port {{ valkey_port }}
+protected-mode yes
+supervised systemd
+
+dir /var/lib/valkey
+logfile /var/log/valkey/valkey.log
+pidfile /var/run/valkey/valkey.pid
+
+maxmemory {{ valkey_maxmemory }}
+maxmemory-policy {{ valkey_maxmemory_policy }}
+
+appendonly yes
+appendfilename "appendonly.aof"
+
+save 900 1
+save 300 10
+save 60 10000

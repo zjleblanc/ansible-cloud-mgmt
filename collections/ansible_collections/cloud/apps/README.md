@@ -20,7 +20,7 @@ only — no EPEL or other third-party repositories are required.
 | [`httpd`](roles/httpd/README.md) | Install and configure the Apache HTTP Server |
 | [`cockpit`](roles/cockpit/README.md) | Install and enable the Cockpit web console |
 | [`postgresql`](roles/postgresql/README.md) | Install and configure a PostgreSQL server |
-| [`redis`](roles/redis/README.md) | Install and configure a Redis server |
+| [`valkey`](roles/valkey/README.md) | Install and configure a Valkey server |
 
 Each role documents its variables in both a `README.md` and a
 `meta/argument_specs.yml` (viewable via `ansible-doc -t role cloud.apps.<role>`).
@@ -53,11 +53,11 @@ each role behind membership in the `install_apps` list:
     - role: cloud.apps.postgresql
       when: "'postgresql' in install_apps"
 
-    - role: cloud.apps.redis
-      when: "'redis' in install_apps"
+    - role: cloud.apps.valkey
+      when: "'valkey' in install_apps"
 ```
 
-Run with, e.g., `install_apps: ["cockpit", "redis"]`.
+Run with, e.g., `install_apps: ["cockpit", "valkey"]`.
 
 ## Author Information
 
