@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## 2026-09-30 — Add rhel9_apps and rhel_apps target platforms for EC2 provisioning
+
+### Added
+- `rhel9_apps` and `rhel_apps` entries to `launch_templates` in `playbooks/aws/vars/create_ec2_infra.yml`, modeled on the `rhel_dev` template (RHEL9 and RHEL10 AMIs respectively), each carrying an `install_apps` list (`kafka`, `cockpit`, `postgresql`, `redis`).
+- `lt_install_apps` variable in `create_ec2_infra.yml` that reads the new `install_apps` key from `launch_templates[target_platform]`, defaulting to `[]` for platforms without one.
+
+### Changed
+- `playbooks/aws/create_vm.yml`: `set_stats` now forwards `install_apps` (from `lt_install_apps`) so a chained `install_apps.yml` run knows which application roles to install for the provisioned platform.
+
 ## 2026-09-30 — Add local `cloud.apps` collection with httpd/cockpit/postgresql/redis roles
 
 ### Added
